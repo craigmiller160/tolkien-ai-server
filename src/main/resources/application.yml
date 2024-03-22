@@ -7,6 +7,8 @@ tolkienai:
       connect-seconds: 10
       socket-seconds: 30
       request-seconds: 120
+  raw-sources:
+    silmarillion: /Users/craigmiller/Documents/silmarillion_raw.txt
 
 spring:
   data:
