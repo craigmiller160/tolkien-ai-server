@@ -6,8 +6,9 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import us.craigmiller160.tolkienai.server.config.RawSourcesProperties
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.io.path.bufferedReader
 import kotlin.io.path.bufferedWriter
 import kotlin.streams.asSequence
 
@@ -16,7 +17,7 @@ class RawSourceParsing(
     private val rawSourcesProperties: RawSourcesProperties
 ) {
     companion object {
-        private const val TEMP_FILE = "temp-parsed.txt"
+        private const val FULL_PARSED_FILE = "parsed.txt"
     }
 
     private val log = LoggerFactory.getLogger(javaClass)
@@ -24,7 +25,8 @@ class RawSourceParsing(
     @EventListener(ApplicationReadyEvent::class)
     fun parse() {
         log.info("Parsing raw Silmarillion text")
-        Paths.get(System.getProperty("user.dir"), TEMP_FILE).bufferedWriter().use { writer ->
+        val tempDirectory = prepareTempDirectory()
+        Paths.get(tempDirectory.toString(), FULL_PARSED_FILE).bufferedWriter().use { writer ->
             File(rawSourcesProperties.silmarillion).bufferedReader().use { reader ->
                 reader.lines()
                     .asSequence()
@@ -39,5 +41,15 @@ class RawSourceParsing(
             }
         }
         log.info("Raw Silmarillion text is parsed")
+    }
+
+    private fun prepareTempDirectory(): Path {
+        val tempDirectoryPath = Paths.get(System.getProperty("user.dir"), "temp")
+        if (Files.exists(tempDirectoryPath)) {
+            Files.walk(tempDirectoryPath)
+                .forEach { Files.delete(it) }
+        }
+        Files.createDirectory(tempDirectoryPath)
+        return tempDirectoryPath
     }
 }
