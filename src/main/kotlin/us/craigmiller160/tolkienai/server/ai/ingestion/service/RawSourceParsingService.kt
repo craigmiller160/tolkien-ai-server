@@ -17,7 +17,6 @@ class RawSourceParsingService(
 ) {
     companion object {
         private const val PARSED_ONE_FILE = "parsed-1.txt"
-        private const val PARSED_TWO_FILE = "parsed-2.txt"
     }
 
     private val log = LoggerFactory.getLogger(javaClass)
@@ -26,19 +25,7 @@ class RawSourceParsingService(
         log.info("Parsing raw Silmarillion text")
         val tempDirectory = prepareTempDirectory()
         parseOne(tempDirectory)
-        parseTwo(tempDirectory)
         log.info("Raw Silmarillion text is parsed")
-    }
-
-    private fun parseTwo(tempDirectory: Path) {
-        log.debug("Performing second parsing of raw Silmarillion text")
-        Paths.get(tempDirectory.toString(), PARSED_TWO_FILE).bufferedWriter().use { writer ->
-            Paths.get(tempDirectory.toString(), PARSED_ONE_FILE).bufferedReader().use { reader ->
-                reader.lines()
-                    .asSequence()
-            }
-        }
-        log.debug("Second parsing of raw Silmarillion text complete")
     }
 
     private fun parseOne(tempDirectory: Path) {
