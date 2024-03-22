@@ -20,7 +20,7 @@ class RawSourceParsingService(
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    fun parse() {
+    fun parseSilmarillion() {
         log.info("Parsing raw Silmarillion text")
         val tempDirectory = prepareTempDirectory()
         Paths.get(tempDirectory.toString(), FULL_PARSED_FILE).bufferedWriter().use { writer ->
