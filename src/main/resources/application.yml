@@ -4,6 +4,6 @@ tolkienai:
     scheme: https
   openai:
     timeouts:
-      connect_seconds: 10
-      socket_seconds: 30
-      request_seconds: 120
+      connect-seconds: 10
+      socket-seconds: 30
+      request-seconds: 120
