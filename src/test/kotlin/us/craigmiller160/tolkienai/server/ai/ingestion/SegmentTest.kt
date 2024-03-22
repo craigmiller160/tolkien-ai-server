@@ -41,7 +41,11 @@ class SegmentTest {
               baseSegment.copy(title = ""),
               "World",
               Result.failure(
-                  InvalidSegmentException("Previous segment has no title, cannot append content"))))
+                  InvalidSegmentException("Previous segment has no title, cannot append content"))),
+          CreateOrUpdateSegmentArg(
+              baseSegment,
+              "",
+              Result.failure(InvalidSegmentException("Invalid line type: DeleteLine"))))
     }
   }
   @ParameterizedTest
