@@ -39,3 +39,4 @@ out/
 .kotlin
 .DS_Store
 secrets.yml
+temp-parsed.txt
