@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import us.craigmiller160.tolkienai.server.ai.ingestion.exception.InvalidSegmentException
+import us.craigmiller160.tolkienai.server.ai.ingestion.service.ParagraphLine
 import us.craigmiller160.tolkienai.server.ai.ingestion.service.Segment
 import us.craigmiller160.tolkienai.server.ai.ingestion.service.TitleLine
 import us.craigmiller160.tolkienai.server.ai.ingestion.service.createOrUpdateSegment
@@ -25,11 +26,22 @@ class SegmentTest {
                   baseSegment.copy(
                       title = "TITLE HELLO", previousLineWrapper = TitleLine("HELLO")))),
           CreateOrUpdateSegmentArg(
+              baseSegment,
+              "World",
+              Result.success(
+                  baseSegment.copy(
+                      content = "Body World", previousLineWrapper = ParagraphLine("World")))),
+          CreateOrUpdateSegmentArg(
               null,
               "World",
               Result.failure(
                   InvalidSegmentException(
-                      "No previous segment with a title to append content to"))))
+                      "No previous segment with a title to append content to"))),
+          CreateOrUpdateSegmentArg(
+              baseSegment.copy(title = ""),
+              "World",
+              Result.failure(
+                  InvalidSegmentException("Previous segment has no title, cannot append content"))))
     }
   }
   @ParameterizedTest
