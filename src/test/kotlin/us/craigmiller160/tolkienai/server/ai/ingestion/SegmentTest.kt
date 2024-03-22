@@ -3,6 +3,8 @@ package us.craigmiller160.tolkienai.server.ai.ingestion
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import us.craigmiller160.tolkienai.server.ai.ingestion.exception.InvalidSegmentException
+import us.craigmiller160.tolkienai.server.ai.ingestion.service.ParagraphLine
 import us.craigmiller160.tolkienai.server.ai.ingestion.service.Segment
 import us.craigmiller160.tolkienai.server.ai.ingestion.service.TitleLine
 import us.craigmiller160.tolkienai.server.ai.ingestion.service.createOrUpdateSegment
@@ -15,14 +17,15 @@ class SegmentTest {
             val baseSegment = Segment("TITLE", "Body", null)
 
             return Stream.of(
-                CreateOrUpdateSegmentArg(null, "HELLO", Segment("HELLO", "", TitleLine("HELLO")))
+                CreateOrUpdateSegmentArg(null, "HELLO", Result.success(Segment("HELLO", "", TitleLine("HELLO")))),
+                CreateOrUpdateSegmentArg(null, "World", Result.failure(InvalidSegmentException("No previous segment with a title to append content to")))
             )
         }
     }
     @ParameterizedTest
     @MethodSource("createOrUpdateSegmentArgs")
     fun `creates or updates segment correctly`(arg: CreateOrUpdateSegmentArg) {
-        val actualSegment = createOrUpdateSegment(arg.previousSegment, arg.currentLine)
+        val actualSegment = runCatching { createOrUpdateSegment(arg.previousSegment, arg.currentLine) }
         assertThat(actualSegment)
             .isEqualTo(arg.expectedSegment)
     }
@@ -30,6 +33,6 @@ class SegmentTest {
     data class CreateOrUpdateSegmentArg(
         val previousSegment: Segment?,
         val currentLine: String,
-        val expectedSegment: Segment
+        val expectedSegment: Result<Segment>
     )
 }
