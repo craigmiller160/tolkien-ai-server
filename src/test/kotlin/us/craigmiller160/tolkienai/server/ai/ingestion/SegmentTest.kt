@@ -18,6 +18,7 @@ class SegmentTest {
 
             return Stream.of(
                 CreateOrUpdateSegmentArg(null, "HELLO", Result.success(Segment("HELLO", "", TitleLine("HELLO")))),
+                CreateOrUpdateSegmentArg(baseSegment, "HELLO", Result.success(baseSegment.copy(title = "TITLE HELLO", previousLineWrapper = TitleLine("HELLO")))),
                 CreateOrUpdateSegmentArg(null, "World", Result.failure(InvalidSegmentException("No previous segment with a title to append content to")))
             )
         }
