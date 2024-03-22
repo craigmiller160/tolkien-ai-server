@@ -12,4 +12,10 @@ tolkienai:
     key: openai_api_key
   weaviate:
     key: weaviate_api_key
+
+spring:
+  data:
+    mongodb:
+      username: mongo_username
+      password: mongo_password
 ```
