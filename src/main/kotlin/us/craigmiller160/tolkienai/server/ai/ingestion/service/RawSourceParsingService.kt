@@ -25,7 +25,20 @@ class RawSourceParsingService(
         log.info("Parsing raw Silmarillion text")
         val tempDirectory = prepareTempDirectory()
         parseOne(tempDirectory)
+        parseTwo(tempDirectory)
         log.info("Raw Silmarillion text is parsed")
+    }
+
+    private fun parseTwo(tempDirectory: Path) {
+        log.debug("Performing second parsing of raw Silmarillion text")
+        Paths.get(tempDirectory.toString(), PARSED_ONE_FILE).bufferedReader().use { reader ->
+            reader.lines()
+                .asSequence()
+                .scan<String, Segment?>(null) { previousSegment, currentLine ->
+                    createOrUpdateSegment(previousSegment, currentLine)
+                }
+        }
+        log.debug("Second parsing of raw Silmarillion text complete")
     }
 
     private fun parseOne(tempDirectory: Path) {
