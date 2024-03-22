@@ -1,6 +1,5 @@
-package us.craigmiller160.tolkienai.server.ai.ingestion
+package us.craigmiller160.tolkienai.server.ai.ingestion.mongo
 
-import com.mongodb.client.MongoClient
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query

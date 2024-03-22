@@ -1,9 +1,7 @@
-package us.craigmiller160.tolkienai.server.ai.ingestion
+package us.craigmiller160.tolkienai.server.ai.ingestion.service
 
 import org.slf4j.LoggerFactory
-import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.event.EventListener
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import us.craigmiller160.tolkienai.server.config.RawSourcesProperties
 import java.io.File
 import java.nio.file.Files
@@ -12,8 +10,8 @@ import java.nio.file.Paths
 import kotlin.io.path.bufferedWriter
 import kotlin.streams.asSequence
 
-@Component
-class RawSourceParsing(
+@Service
+class RawSourceParsingService(
     private val rawSourcesProperties: RawSourcesProperties
 ) {
     companion object {
@@ -22,7 +20,6 @@ class RawSourceParsing(
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-//    @EventListener(ApplicationReadyEvent::class)
     fun parse() {
         log.info("Parsing raw Silmarillion text")
         val tempDirectory = prepareTempDirectory()
