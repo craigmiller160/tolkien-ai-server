@@ -19,6 +19,7 @@ class LineWrapperTest {
                 LineToLineWrapperArg(null, "THE TITLE", TitleLine("THE TITLE")),
                 LineToLineWrapperArg("OTHER TITLE", "THE TITLE", TitleLine("THE TITLE")),
                 LineToLineWrapperArg("Hello", "THE TITLE", TitleLine("THE TITLE")),
+                LineToLineWrapperArg(null, "", DeleteLine(""))
             )
         }
     }
