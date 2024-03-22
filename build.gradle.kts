@@ -23,6 +23,8 @@ java {
 }
 
 dependencies {
+    val kotestVersion = "5.8.1"
+
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -33,6 +35,8 @@ dependencies {
     implementation(platform("com.aallam.openai:openai-client-bom:3.7.0"))
     implementation("com.aallam.openai:openai-client")
     runtimeOnly("io.ktor:ktor-client-okhttp")
+
+    testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
 }
 
 kotlin {
