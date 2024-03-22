@@ -19,16 +19,14 @@ java {
     sourceCompatibility = JavaVersion.VERSION_21
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation("io.weaviate:client:4.6.0")
+    implementation("com.aallam.openai:openai-client:3.7.0")
 }
 
 tasks.withType<KotlinCompile> {
