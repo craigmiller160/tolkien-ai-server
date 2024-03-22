@@ -15,7 +15,7 @@ class ClientConfig {
     @Bean
     fun weaviateClient(props: WeaviateProperties): WeaviateClient =
         Config(props.scheme, props.host)
-            .let { WeaviateAuthClient.apiKey(config, props.key) }
+            .let { WeaviateAuthClient.apiKey(it, props.key) }
 
     @Bean
     fun openaiClient(props: OpenaiProperties): OpenAI =
