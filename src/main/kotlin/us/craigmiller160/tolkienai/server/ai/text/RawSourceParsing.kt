@@ -26,6 +26,7 @@ class RawSourceParsing(
                     .scan<String, LineWrapper?>(null) { previousLineWrapper, currentLine ->
                         lineToLineWrapper(previousLineWrapper?.line, currentLine)
                     }
+                    .filter { it !is DeleteLine }
             }
         }
     }
