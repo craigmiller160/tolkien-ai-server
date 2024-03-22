@@ -45,11 +45,11 @@ class SegmentTest {
           CreateOrUpdateSegmentArg(
               baseSegment,
               "",
-              Result.failure(InvalidSegmentException("Invalid line type: DeleteLine"))),
+              Result.failure(InvalidSegmentException("Invalid line wrapper: DeleteLine"))),
           CreateOrUpdateSegmentArg(
               baseSegment.copy(previousLineWrapper = TitleLine("")),
               "",
-              Result.failure(InvalidSegmentException("Invalid line type: NewLine"))))
+              Result.failure(InvalidSegmentException("Invalid line wrapper: NewLine"))))
     }
   }
   @ParameterizedTest
