@@ -10,6 +10,7 @@ data class TitleLine(override val line: String): LineWrapper
 
 data class DeleteLine(override val line: String): LineWrapper
 
-fun lineToLineWrapper(line: String): LineWrapper {
+fun lineToLineWrapper(previousLine: String?,
+                      currentLine: String): LineWrapper {
 
 }
