@@ -4,6 +4,7 @@ data class Segment(val title: String, val content: String, val previousLineWrapp
 
 fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segment {
   val lineWrapper = lineToLineWrapper(null, currentLine)
+
   if (lineWrapper is TitleLine && previousSegment?.previousLineWrapper is TitleLine) {
     return previousSegment.copy(
         title = "${previousSegment.title} ${lineWrapper.line}", previousLineWrapper = lineWrapper)
