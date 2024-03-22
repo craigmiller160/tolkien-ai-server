@@ -11,6 +11,6 @@ tolkienai:
 spring:
   data:
     mongodb:
-      uri: mongodb://craigpc:30021/${spring.data.mongodb.database}
+      uri: mongodb://craigpc:30021/${spring.data.mongodb.database}?ssl=true
       authentication-database: admin
       database: tolkienai_dev
