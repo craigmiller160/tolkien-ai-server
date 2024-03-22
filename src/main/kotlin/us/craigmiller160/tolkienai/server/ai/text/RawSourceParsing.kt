@@ -8,6 +8,7 @@ import java.io.File
 import java.nio.file.Paths
 import kotlin.io.path.bufferedReader
 import kotlin.io.path.bufferedWriter
+import kotlin.streams.asSequence
 
 @Component
 class RawSourceParsing(
@@ -21,7 +22,10 @@ class RawSourceParsing(
         Paths.get(System.getProperty("user.dir"), TEMP_FILE).bufferedWriter().use { writer ->
             File(rawSourcesProperties.silmarillion).bufferedReader().use { reader ->
                 reader.lines()
-                    .map { it.trim() }
+                    .asSequence()
+                    .scan<String, LineWrapper?>(null) { previousLineWrapper, currentLine ->
+                        lineToLineWrapper(previousLineWrapper?.line, currentLine)
+                    }
             }
         }
     }
