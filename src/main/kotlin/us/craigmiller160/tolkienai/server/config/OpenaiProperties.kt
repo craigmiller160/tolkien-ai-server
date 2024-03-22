@@ -9,7 +9,4 @@ data class OpenaiTimeoutProperties(
 )
 
 @ConfigurationProperties(prefix = "tolkienai.openai")
-data class OpenaiProperties(
-    val key: String,
-    val timeouts: OpenaiTimeoutProperties
-)
+data class OpenaiProperties(val key: String, val timeouts: OpenaiTimeoutProperties)

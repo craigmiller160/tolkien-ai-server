@@ -6,21 +6,19 @@ import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
 
 @Repository
-class IngestionMetadataRepository(
-    private val mongoTemplate: MongoTemplate
-) {
-    fun getIngestionMetadata(): IngestionMetadata =
-        mongoTemplate.findAll(IngestionMetadata::class.java)
-            .firstOrNull()
-            ?: IngestionMetadata("", IngestionStatus.PENDING)
+class IngestionMetadataRepository(private val mongoTemplate: MongoTemplate) {
+  fun getIngestionMetadata(): IngestionMetadata =
+      mongoTemplate.findAll(IngestionMetadata::class.java).firstOrNull()
+          ?: IngestionMetadata("", IngestionStatus.PENDING)
 
-    fun updateIngestionMetadata(metadata: IngestionMetadata): IngestionMetadata {
-        if (metadata.id.isBlank()) {
-            return mongoTemplate.insert(metadata)
-        }
-
-        return Query().addCriteria(Criteria.where("_id").`is`(metadata.id))
-            .let { query -> mongoTemplate.replace(query, metadata) }
-            .let { metadata }
+  fun updateIngestionMetadata(metadata: IngestionMetadata): IngestionMetadata {
+    if (metadata.id.isBlank()) {
+      return mongoTemplate.insert(metadata)
     }
+
+    return Query()
+        .addCriteria(Criteria.where("_id").`is`(metadata.id))
+        .let { query -> mongoTemplate.replace(query, metadata) }
+        .let { metadata }
+  }
 }

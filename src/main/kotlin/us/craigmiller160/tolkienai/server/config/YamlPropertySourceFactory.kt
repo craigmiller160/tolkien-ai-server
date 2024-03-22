@@ -7,12 +7,12 @@ import org.springframework.core.io.support.EncodedResource
 import org.springframework.core.io.support.PropertySourceFactory
 
 class YamlPropertySourceFactory : PropertySourceFactory {
-    override fun createPropertySource(name: String?, resource: EncodedResource): PropertySource<*> {
-        val factory = YamlPropertiesFactoryBean()
-        factory.setResources(resource.resource)
+  override fun createPropertySource(name: String?, resource: EncodedResource): PropertySource<*> {
+    val factory = YamlPropertiesFactoryBean()
+    factory.setResources(resource.resource)
 
-        val properties = factory.getObject()
+    val properties = factory.getObject()
 
-        return PropertiesPropertySource(resource.resource.filename!!, properties!!)
-    }
+    return PropertiesPropertySource(resource.resource.filename!!, properties!!)
+  }
 }
