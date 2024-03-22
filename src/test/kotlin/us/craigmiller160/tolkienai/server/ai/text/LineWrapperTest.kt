@@ -9,7 +9,17 @@ class LineWrapperTest {
     companion object {
         @JvmStatic
         fun lineToLineWrapperArgs(): Stream<LineToLineWrapperArg> {
-            return Stream.of()
+            return Stream.of(
+                LineToLineWrapperArg(null, "Hello", ParagraphLine("Hello")),
+                LineToLineWrapperArg("THE TITLE", "Hello", ParagraphLine("Hello")),
+                LineToLineWrapperArg("World", "Hello", ParagraphLine("Hello")),
+                LineToLineWrapperArg("Hello", "", NewLine("")),
+                LineToLineWrapperArg("THE TITLE", "", NewLine("")),
+                LineToLineWrapperArg("", "", DeleteLine("")),
+                LineToLineWrapperArg(null, "THE TITLE", TitleLine("THE TITLE")),
+                LineToLineWrapperArg("OTHER TITLE", "THE TITLE", TitleLine("THE TITLE")),
+                LineToLineWrapperArg("Hello", "THE TITLE", TitleLine("THE TITLE")),
+            )
         }
     }
     @ParameterizedTest
