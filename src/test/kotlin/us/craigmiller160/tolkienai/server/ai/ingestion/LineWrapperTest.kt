@@ -1,7 +1,7 @@
 package us.craigmiller160.tolkienai.server.ai.ingestion
 
+import io.kotest.matchers.shouldBe
 import java.util.stream.Stream
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import us.craigmiller160.tolkienai.server.ai.ingestion.service.DeleteLine
@@ -32,7 +32,7 @@ class LineWrapperTest {
   @MethodSource("lineToLineWrapperArgs")
   fun `converts lines to LineWrappers correctly`(arg: LineToLineWrapperArg) {
     val actualWrapper = lineToLineWrapper(arg.previousLine, arg.currentLine)
-    assertThat(actualWrapper).isEqualTo(arg.expectedWrapper)
+    actualWrapper.shouldBe(arg.expectedWrapper)
   }
 
   data class LineToLineWrapperArg(
