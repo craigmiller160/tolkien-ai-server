@@ -1,0 +1,9 @@
+tolkienai:
+  weaviate:
+    host: craigpc:30000
+    scheme: https
+  openai:
+    timeouts:
+      connect_seconds: 10
+      socket_seconds: 30
+      request_seconds: 120
