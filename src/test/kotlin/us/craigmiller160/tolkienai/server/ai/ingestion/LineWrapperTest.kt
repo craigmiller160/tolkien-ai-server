@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.ai.text
+package us.craigmiller160.tolkienai.server.ai.ingestion
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest

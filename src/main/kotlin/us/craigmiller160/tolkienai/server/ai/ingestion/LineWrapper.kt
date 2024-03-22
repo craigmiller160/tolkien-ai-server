@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.ai.text
+package us.craigmiller160.tolkienai.server.ai.ingestion
 
 sealed interface LineWrapper {
     val line: String
