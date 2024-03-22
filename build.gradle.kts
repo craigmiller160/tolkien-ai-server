@@ -26,7 +26,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("io.weaviate:client:4.6.0")
-    implementation("com.aallam.openai:openai-client:3.7.0")
+
+    implementation(platform("com.aallam.openai:openai-client-bom:3.7.0"))
+    implementation("com.aallam.openai:openai-client")
+    runtimeOnly("io.ktor:ktor-client-okhttp")
 }
 
 tasks.withType<KotlinCompile> {
