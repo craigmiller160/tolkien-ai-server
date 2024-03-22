@@ -22,7 +22,7 @@ class RawSourceParsing(
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @EventListener(ApplicationReadyEvent::class)
+//    @EventListener(ApplicationReadyEvent::class)
     fun parse() {
         log.info("Parsing raw Silmarillion text")
         val tempDirectory = prepareTempDirectory()

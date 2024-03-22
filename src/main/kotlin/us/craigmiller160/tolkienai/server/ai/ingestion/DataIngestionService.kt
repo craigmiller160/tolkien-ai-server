@@ -1,5 +1,7 @@
 package us.craigmiller160.tolkienai.server.ai.ingestion
 
+import org.bson.Document
+import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
