@@ -27,6 +27,9 @@ class RawSourceParsing(
                         lineToLineWrapper(previousLineWrapper?.line, currentLine)
                     }
                     .filter { it !is DeleteLine }
+                    .forEach { lineWrapper ->
+                        writer.write(lineWrapper.toText())
+                    }
             }
         }
     }

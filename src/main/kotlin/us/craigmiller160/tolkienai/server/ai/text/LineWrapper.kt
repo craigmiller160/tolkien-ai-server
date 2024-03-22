@@ -2,15 +2,25 @@ package us.craigmiller160.tolkienai.server.ai.text
 
 sealed interface LineWrapper {
     val line: String
+
+    fun toText(): String
 }
 
-data class ParagraphLine(override val line: String): LineWrapper
+data class ParagraphLine(override val line: String): LineWrapper {
+    override fun toText(): String = line
+}
 
-data class TitleLine(override val line: String): LineWrapper
+data class TitleLine(override val line: String): LineWrapper {
+    override fun toText(): String = line
+}
 
-data class DeleteLine(override val line: String): LineWrapper
+data class DeleteLine(override val line: String): LineWrapper {
+    override fun toText(): String = ""
+}
 
-data class NewLine(override val line: String): LineWrapper
+data class NewLine(override val line: String): LineWrapper {
+    override fun toText(): String = "\n"
+}
 
 private val allCapsRegex = Regex("^[A-Z\\s0-9]+\$")
 
