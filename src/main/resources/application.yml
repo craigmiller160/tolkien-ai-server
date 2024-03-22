@@ -15,3 +15,7 @@ spring:
     mongodb:
       uri: mongodb://${spring.data.mongodb.username}:${spring.data.mongodb.password}@craigpc:30021/${spring.data.mongodb.database}?ssl=true&authSource=admin
       database: tolkienai_dev
+
+logging:
+  level:
+    us.craigmiller160.tolkienai.server: DEBUG
