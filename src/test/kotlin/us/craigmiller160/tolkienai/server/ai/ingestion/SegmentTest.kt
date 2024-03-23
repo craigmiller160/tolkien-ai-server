@@ -1,7 +1,9 @@
 package us.craigmiller160.tolkienai.server.ai.ingestion
 
+import io.kotest.matchers.result.shouldBeFailure
+import io.kotest.matchers.result.shouldBeSuccess
+import io.kotest.matchers.shouldBe
 import java.util.stream.Stream
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import us.craigmiller160.tolkienai.server.ai.ingestion.exception.InvalidSegmentException
@@ -56,7 +58,14 @@ class SegmentTest {
   @MethodSource("createOrUpdateSegmentArgs")
   fun `creates or updates segment correctly`(arg: CreateOrUpdateSegmentArg) {
     val actualSegment = runCatching { createOrUpdateSegment(arg.previousSegment, arg.currentLine) }
-    assertThat(actualSegment).isEqualTo(arg.expectedSegment)
+    if (arg.expectedSegment.isSuccess) {
+      actualSegment.shouldBeSuccess(arg.expectedSegment.getOrThrow())
+    } else {
+      actualSegment
+          .shouldBeFailure<InvalidSegmentException>()
+          .message
+          .shouldBe(arg.expectedSegment.exceptionOrNull()?.message)
+    }
   }
 
   data class CreateOrUpdateSegmentArg(
