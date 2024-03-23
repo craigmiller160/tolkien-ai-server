@@ -22,17 +22,21 @@ class SegmentTest {
           CreateOrUpdateSegmentArg(
               null, "HELLO", Result.success(Segment("HELLO", "", TitleLine("HELLO")))),
           CreateOrUpdateSegmentArg(
-              baseSegment,
+              baseSegment, "HELLO", Result.success(Segment("HELLO", "", TitleLine("HELLO")))),
+          CreateOrUpdateSegmentArg(
+              baseSegment.copy(content = "", previousLineWrapper = TitleLine("TITLE")),
               "HELLO",
               Result.success(
-                  baseSegment.copy(
-                      title = "TITLE HELLO", previousLineWrapper = TitleLine("HELLO")))),
+                  Segment(
+                      title = "TITLE HELLO",
+                      content = "",
+                      previousLineWrapper = TitleLine("HELLO")))),
           CreateOrUpdateSegmentArg(
               baseSegment,
               "World",
               Result.success(
                   baseSegment.copy(
-                      content = "Body World", previousLineWrapper = ParagraphLine("World")))),
+                      content = "World", previousLineWrapper = ParagraphLine("World")))),
           CreateOrUpdateSegmentArg(
               null,
               "World",
