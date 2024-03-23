@@ -25,12 +25,14 @@ fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segme
     return Segment(title = lineWrapper.line, content = "", previousLineWrapper = lineWrapper)
   }
 
-  if (lineWrapper is ParagraphLine && previousSegment != null) {
+  if (lineWrapper is ParagraphLine && previousSegment == null) {
+    throw InvalidSegmentException("No previous segment with a title to append content to")
+  }
+
+  if (lineWrapper is ParagraphLine) {
     return Segment(
         title = previousSegment.title,
         content = lineWrapper.line,
         previousLineWrapper = lineWrapper)
   }
-
-  TODO()
 }
