@@ -49,7 +49,7 @@ class SegmentTest {
               "",
               Result.failure(InvalidSegmentException("Invalid line wrapper: DeleteLine"))),
           CreateOrUpdateSegmentArg(
-              baseSegment.copy(previousLineWrapper = TitleLine("")),
+              baseSegment.copy(previousLineWrapper = TitleLine("TITLE")),
               "",
               Result.failure(InvalidSegmentException("Invalid line wrapper: NewLine"))))
     }
