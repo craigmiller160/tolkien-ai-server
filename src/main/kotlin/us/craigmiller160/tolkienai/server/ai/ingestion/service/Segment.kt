@@ -13,5 +13,10 @@ fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segme
     return previousSegment.copy(
         title = "${previousSegment.title} ${lineWrapper.line}", previousLineWrapper = lineWrapper)
   }
-  return previousSegment!!
+
+  if (lineWrapper is TitleLine) {
+    return Segment(title = lineWrapper.line, content = "", previousLineWrapper = lineWrapper)
+  }
+
+  TODO()
 }
