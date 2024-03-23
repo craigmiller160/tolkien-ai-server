@@ -26,11 +26,7 @@ class SegmentTest {
           CreateOrUpdateSegmentArg(
               baseSegment.copy(content = "", previousLineWrapper = TitleLine("TITLE")),
               "HELLO",
-              Result.success(
-                  Segment(
-                      title = "TITLE HELLO",
-                      content = "",
-                      previousLineWrapper = TitleLine("HELLO")))),
+              Result.success(Segment("TITLE HELLO", "", TitleLine("HELLO")))),
           CreateOrUpdateSegmentArg(
               baseSegment,
               "World",
