@@ -29,6 +29,10 @@ fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segme
     throw InvalidSegmentException("No previous segment with a title to append content to")
   }
 
+  if (lineWrapper is ParagraphLine && previousSegment?.title.isNullOrBlank()) {
+    throw InvalidSegmentException("Previous segment has no title, cannot append content")
+  }
+
   if (lineWrapper is ParagraphLine && previousSegment != null) {
     return Segment(
         title = previousSegment.title,
