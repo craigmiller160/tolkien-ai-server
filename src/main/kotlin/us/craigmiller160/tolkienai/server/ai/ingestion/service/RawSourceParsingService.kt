@@ -75,7 +75,7 @@ class RawSourceParsingService(
         }
         .filterNotNull()
         .filter { it !is DeleteLine }
-        .joinToString("\n") { it.toText() }
+        .joinToString("") { it.toText() }
         .also {
           if (debugOutputEnabled()) {
             Files.writeString(WHITESPACE_CLEANED_UP_FILE, it)
