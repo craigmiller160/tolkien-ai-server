@@ -30,9 +30,9 @@ class RawSourceParsingService(
     log.info("Raw Silmarillion text is parsed")
   }
 
-  private fun createSegments(tempDirectory: Path, text: String) {
+  private fun createSegments(tempDirectory: Path, text: String): List<String> {
     log.debug("Converting Silmarillion text into segments")
-    text
+    return text
         .lines()
         .scan<String, Segment?>(null) { previousSegment, currentLine ->
           createOrUpdateSegment(previousSegment, currentLine)
@@ -41,7 +41,11 @@ class RawSourceParsingService(
         // The last occurring record with the id will win
         .associateBy { it.id }
         .values
-    log.debug("Silmarillion text converted into segments")
+        .map { it.toText() }
+        .also {
+          // TODO write it out to files for debugging
+          log.debug("Silmarillion text converted into segments")
+        }
   }
 
   private fun cleanupWhiteSpace(tempDirectory: Path): String {

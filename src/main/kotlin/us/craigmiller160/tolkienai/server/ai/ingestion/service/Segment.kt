@@ -8,7 +8,9 @@ data class Segment(
     val content: String,
     val previousLineWrapper: LineWrapper?,
     val id: UUID = UUID.randomUUID()
-)
+) {
+  fun toText(): String = "$title\n$content"
+}
 
 fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segment {
   val lineWrapper = lineToLineWrapper(previousSegment?.previousLineWrapper?.line, currentLine)
