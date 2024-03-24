@@ -88,7 +88,7 @@ class RawSourceParsingService(
 
   private fun prepareDebugDirectory() {
     if (Files.exists(DEBUG_DIRECTORY)) {
-      Files.walk(DEBUG_DIRECTORY).forEach { Files.delete(it) }
+      Files.walk(DEBUG_DIRECTORY).sorted(Comparator.reverseOrder()).forEach { Files.delete(it) }
     }
     Files.createDirectory(DEBUG_DIRECTORY)
     Files.createDirectory(DEBUG_SEGMENTS_DIRECTORY)
