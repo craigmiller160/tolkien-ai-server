@@ -48,7 +48,16 @@ class RawSourceParsingService(
         .also { segments ->
           if (debugOutputEnabled()) {
             runBlocking {
-              segments.mapIndexed { index, segment -> async(Dispatchers.IO) { TODO() } }.awaitAll()
+              segments
+                  .mapIndexed { index, segment ->
+                    async(Dispatchers.IO) {
+                      val segmentFile =
+                          DEBUG_SEGMENTS_DIRECTORY.resolve(
+                              "segment-${index.toString().padStart(10, '0')}.txt")
+                      Files.writeString(segmentFile, segment)
+                    }
+                  }
+                  .awaitAll()
             }
           }
           // TODO write it out to files for debugging
