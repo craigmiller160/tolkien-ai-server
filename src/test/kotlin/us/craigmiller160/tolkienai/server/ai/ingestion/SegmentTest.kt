@@ -38,20 +38,21 @@ class SegmentTest {
               "World",
               Result.failure(
                   InvalidSegmentException(
-                      "No previous segment with a title to append content to"))),
+                      "No previous segment with a title to append content to. Line: World"))),
           CreateOrUpdateSegmentArg(
               baseSegment.copy(title = ""),
               "World",
               Result.failure(
-                  InvalidSegmentException("Previous segment has no title, cannot append content"))),
+                  InvalidSegmentException(
+                      "Previous segment has no title, cannot append content. Line: World"))),
           CreateOrUpdateSegmentArg(
               baseSegment,
               "",
-              Result.failure(InvalidSegmentException("Invalid line wrapper: DeleteLine"))),
+              Result.failure(InvalidSegmentException("Invalid line wrapper: DeleteLine. Line: "))),
           CreateOrUpdateSegmentArg(
               baseSegment.copy(previousLineWrapper = TitleLine("TITLE")),
               "",
-              Result.failure(InvalidSegmentException("Invalid line wrapper: NewLine"))))
+              Result.failure(InvalidSegmentException("Invalid line wrapper: NewLine. Line: "))))
     }
   }
   @ParameterizedTest
