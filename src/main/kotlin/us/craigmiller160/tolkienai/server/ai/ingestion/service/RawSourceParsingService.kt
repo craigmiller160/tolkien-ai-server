@@ -1,8 +1,8 @@
 package us.craigmiller160.tolkienai.server.ai.ingestion.service
 
-import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.io.path.readText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -28,10 +28,15 @@ class RawSourceParsingService(
   fun parseSilmarillion() {
     log.info("Parsing raw Silmarillion text")
     prepareDebugDirectory()
-    cleanupWhiteSpace().let { createSegments(it) }
-
+    Paths.get(rawSourcesProperties.silmarillion)
+        .readText()
+        .let { excludeLines(it) }
+        .let { cleanupWhiteSpace(it) }
+        .let { createSegments(it) }
     log.info("Raw Silmarillion text is parsed")
   }
+
+  private fun excludeLines(text: String) {}
 
   private fun createSegments(text: String): List<String> {
     log.debug("Converting Silmarillion text into segments")
@@ -64,11 +69,9 @@ class RawSourceParsingService(
         }
   }
 
-  private fun cleanupWhiteSpace(): String {
+  private fun cleanupWhiteSpace(text: String): String {
     log.debug("Cleaning up whitespace in Silmarillion text")
-    return File(rawSourcesProperties.silmarillion)
-        .bufferedReader()
-        .readText()
+    return text
         .lines()
         .scan<String, LineWrapper?>(null) { previousLineWrapper, currentLine ->
           lineToLineWrapper(previousLineWrapper?.line, currentLine)
