@@ -29,6 +29,7 @@ class RawSourceParsingService(private val rawSourcesProperties: RawSourcesProper
 
   private fun parseTwo(tempDirectory: Path) {
     log.debug("Performing second parsing of raw Silmarillion text")
+    val segmentTempDirectory = Paths.get(tempDirectory.toString(), "segments")
     Paths.get(tempDirectory.toString(), PARSED_ONE_FILE).bufferedReader().use { reader ->
       reader
           .lines()
@@ -39,6 +40,7 @@ class RawSourceParsingService(private val rawSourcesProperties: RawSourcesProper
           .filterNotNull()
           // The last occurring record with the id will win
           .associateBy { it.id }
+      // TODO parallelize and write out the segments
     }
     log.debug("Second parsing of raw Silmarillion text complete")
   }
