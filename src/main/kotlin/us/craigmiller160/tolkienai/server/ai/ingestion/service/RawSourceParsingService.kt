@@ -60,7 +60,6 @@ class RawSourceParsingService(
                   .awaitAll()
             }
           }
-          // TODO write it out to files for debugging
           log.debug("Silmarillion text converted into segments")
         }
   }
