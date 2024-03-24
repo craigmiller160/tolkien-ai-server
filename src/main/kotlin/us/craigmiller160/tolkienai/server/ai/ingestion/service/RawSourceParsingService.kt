@@ -21,6 +21,7 @@ class RawSourceParsingService(
     private val DEBUG_DIRECTORY = Paths.get(System.getProperty("user.dir"), "temp")
     private val DEBUG_SEGMENTS_DIRECTORY = DEBUG_DIRECTORY.resolve("segments")
     private val WHITESPACE_CLEANED_UP_FILE = DEBUG_DIRECTORY.resolve("whitespace-cleaned.txt")
+    private val EXCLUDED_LINE_RANGE_REGEX = Regex("(?<start>\\d+)-(?<end>\\d+)")
   }
 
   private val log = LoggerFactory.getLogger(javaClass)
@@ -38,6 +39,15 @@ class RawSourceParsingService(
 
   private fun excludeLines(text: String): String {
     log.debug("Excluding lines from raw Silmarillion text")
+    rawSourcesProperties.silmarillion.excludeLines.map { excludedLine ->
+      EXCLUDED_LINE_RANGE_REGEX.matchEntire(excludedLine)?.let { match ->
+        val start = match.groups["start"]?.value?.toInt() ?: TODO()
+        val end = match.groups["end"]?.value?.toInt() ?: TODO()
+        start to end
+      }
+          ?: (excludedLine.toInt() to excludedLine.toInt())
+    }
+    text.lines()
     rawSourcesProperties.silmarillion.excludeLines.forEach { println(it) }
     log.debug("Lines from raw Silmarillion text excluded")
     return text
