@@ -8,7 +8,9 @@ tolkienai:
       socket-seconds: 30
       request-seconds: 120
   raw-sources:
-    silmarillion: /Users/craigmiller/Documents/silmarillion_raw.txt
+    silmarillion:
+      path: /Users/craigmiller/Documents/silmarillion_raw.txt
+      exclude-lines: 1-102
 
 spring:
   profiles:

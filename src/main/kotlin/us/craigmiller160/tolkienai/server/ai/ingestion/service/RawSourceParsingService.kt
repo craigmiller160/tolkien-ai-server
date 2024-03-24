@@ -28,15 +28,20 @@ class RawSourceParsingService(
   fun parseSilmarillion() {
     log.info("Parsing raw Silmarillion text")
     prepareDebugDirectory()
-    Paths.get(rawSourcesProperties.silmarillion)
+    Paths.get(rawSourcesProperties.silmarillion.path)
         .readText()
         .let { excludeLines(it) }
         .let { cleanupWhiteSpace(it) }
         .let { createSegments(it) }
-    log.info("Raw Silmarillion text is parsed")
+        .also { log.info("Raw Silmarillion text is parsed") }
   }
 
-  private fun excludeLines(text: String) {}
+  private fun excludeLines(text: String): String {
+    log.debug("Excluding lines from raw Silmarillion text")
+
+    log.debug("Lines from raw Silmarillion text excluded")
+    return text
+  }
 
   private fun createSegments(text: String): List<String> {
     log.debug("Converting Silmarillion text into segments")
