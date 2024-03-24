@@ -7,13 +7,18 @@ import java.nio.file.Paths
 import kotlin.io.path.bufferedReader
 import kotlin.streams.asSequence
 import org.slf4j.LoggerFactory
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 import us.craigmiller160.tolkienai.server.config.RawSourcesProperties
 
 @Service
-class RawSourceParsingService(private val rawSourcesProperties: RawSourcesProperties) {
+class RawSourceParsingService(
+    private val rawSourcesProperties: RawSourcesProperties,
+    private val environment: Environment
+) {
   companion object {
     private const val PARSED_ONE_FILE = "parsed-1.txt"
+    private const val WHITESPACE_CLEANED_UP_FILE = "whitespace-cleaned-up.txt"
   }
 
   private val log = LoggerFactory.getLogger(javaClass)
@@ -44,9 +49,9 @@ class RawSourceParsingService(private val rawSourcesProperties: RawSourcesProper
     log.debug("Second parsing of raw Silmarillion text complete")
   }
 
-  private fun cleanupWhiteSpace(tempDirectory: Path) {
+  private fun cleanupWhiteSpace(tempDirectory: Path): String {
     log.debug("Cleaning up whitespace in Silmarillion text")
-    File(rawSourcesProperties.silmarillion)
+    return File(rawSourcesProperties.silmarillion)
         .bufferedReader()
         .readText()
         .split("\n")
@@ -56,7 +61,12 @@ class RawSourceParsingService(private val rawSourcesProperties: RawSourcesProper
         .filterNotNull()
         .filter { it !is DeleteLine }
         .joinToString("\n") { it.toText() }
-    log.debug("Silmarillion text whitespace cleaned up")
+        .also {
+          if (environment.matchesProfiles("dev")) {
+            File(WHITESPACE_CLEANED_UP_FILE).bufferedWriter().write(it)
+          }
+          log.debug("Silmarillion text whitespace cleaned up")
+        }
   }
 
   private fun prepareTempDirectory(): Path {
