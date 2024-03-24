@@ -30,9 +30,15 @@ class RawSourceParsingService(private val rawSourcesProperties: RawSourcesProper
   private fun parseTwo(tempDirectory: Path) {
     log.debug("Performing second parsing of raw Silmarillion text")
     Paths.get(tempDirectory.toString(), PARSED_ONE_FILE).bufferedReader().use { reader ->
-      reader.lines().asSequence().scan<String, Segment?>(null) { previousSegment, currentLine ->
-        createOrUpdateSegment(previousSegment, currentLine)
-      }
+      reader
+          .lines()
+          .asSequence()
+          .scan<String, Segment?>(null) { previousSegment, currentLine ->
+            createOrUpdateSegment(previousSegment, currentLine)
+          }
+          .filterNotNull()
+          // The last occurring record with the id will win
+          .associateBy { it.id }
     }
     log.debug("Second parsing of raw Silmarillion text complete")
   }
