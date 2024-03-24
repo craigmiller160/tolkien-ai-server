@@ -5,7 +5,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.bufferedReader
-import kotlin.streams.asSequence
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
@@ -26,27 +25,23 @@ class RawSourceParsingService(
   fun parseSilmarillion() {
     log.info("Parsing raw Silmarillion text")
     val tempDirectory = prepareTempDirectory()
-    cleanupWhiteSpace(tempDirectory)
-    parseTwo(tempDirectory)
+    cleanupWhiteSpace(tempDirectory).let { createSegments(tempDirectory, it) }
+
     log.info("Raw Silmarillion text is parsed")
   }
 
-  private fun parseTwo(tempDirectory: Path) {
-    log.debug("Performing second parsing of raw Silmarillion text")
-    val segmentTempDirectory = Paths.get(tempDirectory.toString(), "segments")
-    Paths.get(tempDirectory.toString(), PARSED_ONE_FILE).bufferedReader().use { reader ->
-      reader
-          .lines()
-          .asSequence()
-          .scan<String, Segment?>(null) { previousSegment, currentLine ->
-            createOrUpdateSegment(previousSegment, currentLine)
-          }
-          .filterNotNull()
-          // The last occurring record with the id will win
-          .associateBy { it.id }
-      // TODO parallelize and write out the segments
-    }
-    log.debug("Second parsing of raw Silmarillion text complete")
+  private fun createSegments(tempDirectory: Path, text: String) {
+    log.debug("Converting Silmarillion text into segments")
+    text
+        .lines()
+        .scan<String, Segment?>(null) { previousSegment, currentLine ->
+          createOrUpdateSegment(previousSegment, currentLine)
+        }
+        .filterNotNull()
+        // The last occurring record with the id will win
+        .associateBy { it.id }
+        .values
+    log.debug("Silmarillion text converted into segments")
   }
 
   private fun cleanupWhiteSpace(tempDirectory: Path): String {
@@ -54,7 +49,7 @@ class RawSourceParsingService(
     return File(rawSourcesProperties.silmarillion)
         .bufferedReader()
         .readText()
-        .split("\n")
+        .lines()
         .scan<String, LineWrapper?>(null) { previousLineWrapper, currentLine ->
           lineToLineWrapper(previousLineWrapper?.line, currentLine)
         }
