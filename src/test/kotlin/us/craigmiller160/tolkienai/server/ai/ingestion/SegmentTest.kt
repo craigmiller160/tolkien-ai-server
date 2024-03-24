@@ -52,7 +52,13 @@ class SegmentTest {
           CreateOrUpdateSegmentArg(
               baseSegment.copy(previousLineWrapper = TitleLine("TITLE")),
               "",
-              Result.failure(InvalidSegmentException("Invalid line wrapper: NewLine. Line: "))))
+              Result.failure(InvalidSegmentException("Invalid line wrapper: NewLine. Line: "))),
+          CreateOrUpdateSegmentArg(
+              baseSegment.copy(previousLineWrapper = TitleLine("TITLE"), content = ""),
+              "World",
+              Result.success(
+                  baseSegment.copy(
+                      content = "World", previousLineWrapper = ParagraphLine("World")))))
     }
   }
   @ParameterizedTest
