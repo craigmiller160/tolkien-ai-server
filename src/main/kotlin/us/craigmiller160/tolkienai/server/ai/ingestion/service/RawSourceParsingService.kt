@@ -39,16 +39,21 @@ class RawSourceParsingService(
 
   private fun excludeLines(text: String): String {
     log.debug("Excluding lines from raw Silmarillion text")
-    rawSourcesProperties.silmarillion.excludeLines.map { excludedLine ->
-      val match = EXCLUDED_LINE_RANGE_REGEX.matchEntire(excludedLine)
-      val start = match?.groups?.get("start")?.value?.toInt() ?: excludedLine.toInt()
-      val end = match?.groups?.get("end")?.value?.toInt() ?: excludedLine.toInt()
-      start to end
-    }
-    text.lines()
-    rawSourcesProperties.silmarillion.excludeLines.forEach { println(it) }
-    log.debug("Lines from raw Silmarillion text excluded")
+    val linesToExclude =
+        rawSourcesProperties.silmarillion.excludeLines.map { excludedLine ->
+          val match = EXCLUDED_LINE_RANGE_REGEX.matchEntire(excludedLine)
+          val start = match?.groups?.get("start")?.value?.toInt() ?: excludedLine.toInt()
+          val end = match?.groups?.get("end")?.value?.toInt() ?: excludedLine.toInt()
+          start to end
+        }
     return text
+        .lines()
+        .filterIndexed { index, _ ->
+          val modifiedIndex = index + 1
+          linesToExclude.find { (start, end) -> modifiedIndex in start..end } == null
+        }
+        .joinToString("\n")
+        .also { log.debug("Lines from raw Silmarillion text excluded") }
   }
 
   private fun createSegments(text: String): List<String> {
