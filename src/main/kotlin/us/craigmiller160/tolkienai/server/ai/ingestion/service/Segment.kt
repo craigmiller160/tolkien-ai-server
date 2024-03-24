@@ -15,7 +15,8 @@ data class Segment(
 fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segment {
   val lineWrapper = lineToLineWrapper(previousSegment?.previousLineWrapper?.line, currentLine)
   if (lineWrapper is NewLine || lineWrapper is DeleteLine) {
-    throw InvalidSegmentException("Invalid line wrapper: ${lineWrapper.javaClass.simpleName}")
+    throw InvalidSegmentException(
+        "Invalid line wrapper: ${lineWrapper.javaClass.simpleName}. Line: $currentLine")
   }
 
   if (lineWrapper is TitleLine && previousSegment?.previousLineWrapper is TitleLine) {
@@ -28,11 +29,13 @@ fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segme
   }
 
   if (lineWrapper is ParagraphLine && previousSegment == null) {
-    throw InvalidSegmentException("No previous segment with a title to append content to")
+    throw InvalidSegmentException(
+        "No previous segment with a title to append content to. Line: $currentLine")
   }
 
   if (lineWrapper is ParagraphLine && previousSegment?.title.isNullOrBlank()) {
-    throw InvalidSegmentException("Previous segment has no title, cannot append content")
+    throw InvalidSegmentException(
+        "Previous segment has no title, cannot append content. Line: $currentLine")
   }
 
   if (lineWrapper is ParagraphLine && previousSegment != null) {
@@ -42,5 +45,6 @@ fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segme
         previousLineWrapper = lineWrapper)
   }
 
-  throw InvalidSegmentException("Unknown set of conditions, unable to create or update segment")
+  throw InvalidSegmentException(
+      "Unknown set of conditions, unable to create or update segment. Line: $currentLine")
 }
