@@ -22,7 +22,7 @@ data class NewLine(override val line: String) : LineWrapper {
   override fun toText(): String = "\n"
 }
 
-private val allCapsRegex = Regex("^[A-Z\\s0-9]+\$")
+private val allCapsRegex = Regex("^[A-Z\\s0-9\\p{Punct}]+\$")
 
 fun lineToLineWrapper(previousLine: String?, currentLine: String): LineWrapper {
   if (allCapsRegex.matches(currentLine)) {
