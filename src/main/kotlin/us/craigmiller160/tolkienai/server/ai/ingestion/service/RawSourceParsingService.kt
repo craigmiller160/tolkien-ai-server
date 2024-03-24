@@ -38,7 +38,7 @@ class RawSourceParsingService(
 
   private fun excludeLines(text: String): String {
     log.debug("Excluding lines from raw Silmarillion text")
-
+    rawSourcesProperties.silmarillion.excludeLines.forEach { println(it) }
     log.debug("Lines from raw Silmarillion text excluded")
     return text
   }
