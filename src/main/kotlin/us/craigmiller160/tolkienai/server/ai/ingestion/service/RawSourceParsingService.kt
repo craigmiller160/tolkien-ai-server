@@ -2,9 +2,11 @@ package us.craigmiller160.tolkienai.server.ai.ingestion.service
 
 import java.io.File
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.io.path.bufferedReader
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
@@ -16,21 +18,22 @@ class RawSourceParsingService(
     private val environment: Environment
 ) {
   companion object {
-    private const val PARSED_ONE_FILE = "parsed-1.txt"
-    private const val WHITESPACE_CLEANED_UP_FILE = "whitespace-cleaned-up.txt"
+    private val DEBUG_DIRECTORY = Paths.get(System.getProperty("user.dir"), "temp")
+    private val DEBUG_SEGMENTS_DIRECTORY = DEBUG_DIRECTORY.resolve("segments")
+    private val WHITESPACE_CLEANED_UP_FILE = DEBUG_DIRECTORY.resolve("whitespace-cleaned.txt")
   }
 
   private val log = LoggerFactory.getLogger(javaClass)
 
   fun parseSilmarillion() {
     log.info("Parsing raw Silmarillion text")
-    val tempDirectory = prepareTempDirectory()
-    cleanupWhiteSpace(tempDirectory).let { createSegments(tempDirectory, it) }
+    prepareDebugDirectory()
+    cleanupWhiteSpace().let { createSegments(it) }
 
     log.info("Raw Silmarillion text is parsed")
   }
 
-  private fun createSegments(tempDirectory: Path, text: String): List<String> {
+  private fun createSegments(text: String): List<String> {
     log.debug("Converting Silmarillion text into segments")
     return text
         .lines()
@@ -42,13 +45,18 @@ class RawSourceParsingService(
         .associateBy { it.id }
         .values
         .map { it.toText() }
-        .also {
+        .also { segments ->
+          if (debugOutputEnabled()) {
+            runBlocking {
+              segments.mapIndexed { index, segment -> async(Dispatchers.IO) { TODO() } }.awaitAll()
+            }
+          }
           // TODO write it out to files for debugging
           log.debug("Silmarillion text converted into segments")
         }
   }
 
-  private fun cleanupWhiteSpace(tempDirectory: Path): String {
+  private fun cleanupWhiteSpace(): String {
     log.debug("Cleaning up whitespace in Silmarillion text")
     return File(rawSourcesProperties.silmarillion)
         .bufferedReader()
@@ -61,19 +69,20 @@ class RawSourceParsingService(
         .filter { it !is DeleteLine }
         .joinToString("\n") { it.toText() }
         .also {
-          if (environment.matchesProfiles("dev")) {
-            File(WHITESPACE_CLEANED_UP_FILE).bufferedWriter().write(it)
+          if (debugOutputEnabled()) {
+            Files.writeString(WHITESPACE_CLEANED_UP_FILE, it)
           }
           log.debug("Silmarillion text whitespace cleaned up")
         }
   }
 
-  private fun prepareTempDirectory(): Path {
-    val tempDirectoryPath = Paths.get(System.getProperty("user.dir"), "temp")
-    if (Files.exists(tempDirectoryPath)) {
-      Files.walk(tempDirectoryPath).forEach { Files.delete(it) }
+  private fun debugOutputEnabled(): Boolean = environment.matchesProfiles("dev")
+
+  private fun prepareDebugDirectory() {
+    if (Files.exists(DEBUG_DIRECTORY)) {
+      Files.walk(DEBUG_DIRECTORY).forEach { Files.delete(it) }
     }
-    Files.createDirectory(tempDirectoryPath)
-    return tempDirectoryPath
+    Files.createDirectory(DEBUG_DIRECTORY)
+    Files.createDirectory(DEBUG_SEGMENTS_DIRECTORY)
   }
 }
