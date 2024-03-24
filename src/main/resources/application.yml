@@ -12,7 +12,7 @@ tolkienai:
       path: /Users/craigmiller/Documents/silmarillion_raw.txt
       exclude-lines:
         - 1-238
-#        - 16019-16410
+        - 16016-16410
 
 spring:
   profiles:
