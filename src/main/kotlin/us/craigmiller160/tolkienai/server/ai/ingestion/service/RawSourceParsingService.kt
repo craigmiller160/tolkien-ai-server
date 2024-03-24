@@ -5,7 +5,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.bufferedReader
-import kotlin.io.path.bufferedWriter
 import kotlin.streams.asSequence
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -22,7 +21,7 @@ class RawSourceParsingService(private val rawSourcesProperties: RawSourcesProper
   fun parseSilmarillion() {
     log.info("Parsing raw Silmarillion text")
     val tempDirectory = prepareTempDirectory()
-    parseOne(tempDirectory)
+    cleanupWhiteSpace(tempDirectory)
     parseTwo(tempDirectory)
     log.info("Raw Silmarillion text is parsed")
   }
@@ -45,22 +44,19 @@ class RawSourceParsingService(private val rawSourcesProperties: RawSourcesProper
     log.debug("Second parsing of raw Silmarillion text complete")
   }
 
-  private fun parseOne(tempDirectory: Path) {
-    log.debug("Performing first parsing of raw Silmarillion text")
-    Paths.get(tempDirectory.toString(), PARSED_ONE_FILE).bufferedWriter().use { writer ->
-      File(rawSourcesProperties.silmarillion).bufferedReader().use { reader ->
-        reader
-            .lines()
-            .asSequence()
-            .scan<String, LineWrapper?>(null) { previousLineWrapper, currentLine ->
-              lineToLineWrapper(previousLineWrapper?.line, currentLine)
-            }
-            .filterNotNull()
-            .filter { it !is DeleteLine }
-            .forEach { lineWrapper -> writer.write(lineWrapper.toText()) }
-      }
-    }
-    log.debug("First parsing of raw Silmarillion text complete")
+  private fun cleanupWhiteSpace(tempDirectory: Path) {
+    log.debug("Cleaning up whitespace in Silmarillion text")
+    File(rawSourcesProperties.silmarillion)
+        .bufferedReader()
+        .readText()
+        .split("\n")
+        .scan<String, LineWrapper?>(null) { previousLineWrapper, currentLine ->
+          lineToLineWrapper(previousLineWrapper?.line, currentLine)
+        }
+        .filterNotNull()
+        .filter { it !is DeleteLine }
+        .joinToString("\n") { it.toText() }
+    log.debug("Silmarillion text whitespace cleaned up")
   }
 
   private fun prepareTempDirectory(): Path {
