@@ -18,6 +18,18 @@ class SegmentTest {
     fun createOrUpdateSegmentArgs(): Stream<CreateOrUpdateSegmentArg> {
       val baseSegment = Segment("TITLE", "Body", null)
 
+      // If the line is a title, and the previous line is a title, append to the previous title
+      // If the line is a NewLine or a DeleteLine, it's an error
+      // If the line is a title, and the previous line is not, start a new Segment with the title
+      // If the line is a paragraph, and there is no previous segment, it's an error
+      // If the line is a paragraph, and the previous segment has no title, it's an error
+      // If the line is a paragraph, and the previous segment has a title and content, start a new
+      // Segment with the previous title and new content
+      // If the line is a paragraph, and the previous segment has no content but has a title, append
+      // to the previous Segment
+      // If the line is a paragraph, and the previous segment has content & a title, but the content
+      // doesn't have an "ending", append to previous content
+
       return Stream.of(
           CreateOrUpdateSegmentArg(
               null, "HELLO", Result.success(Segment("HELLO", "", TitleLine("HELLO")))),
