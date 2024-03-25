@@ -60,9 +60,7 @@ fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segme
     SegmentType.COMPLETE ->
         when (lineWrapper) {
           is TitleLine -> Segment(lineWrapper.line, "")
-          else ->
-              throw InvalidSegmentException(
-                  "Previous segment is complete, cannot append more content. Line: ${lineWrapper.line}")
+          else -> Segment(previousSegment.title, lineWrapper.line)
         }
   }
 }

@@ -45,7 +45,7 @@ class SegmentTest {
               "Universe",
               Result.failure(
                   InvalidSegmentException(
-                      "Previous segment is complete, cannot append more content. Line: Universe")),
+                      "No previous segment with a title to append content to. Line: Universe")),
           ),
           CreateOrUpdateSegmentArg(
               Segment("HELLO", "World"),
@@ -69,9 +69,7 @@ class SegmentTest {
   fun `creates or updates segment correctly`(arg: CreateOrUpdateSegmentArg) {
     val actualSegment = runCatching { createOrUpdateSegment(arg.previousSegment, arg.currentLine) }
     if (arg.expectedSegment.isSuccess) {
-      actualSegment.shouldBeSuccess { actual ->
-        actual.shouldBe(arg.expectedSegment.getOrThrow().copy(id = actual.id))
-      }
+      actualSegment.shouldBeSuccess { actual -> actual.shouldBe(arg.expectedSegment.getOrThrow()) }
     } else {
       actualSegment
           .shouldBeFailure<InvalidSegmentException>()
