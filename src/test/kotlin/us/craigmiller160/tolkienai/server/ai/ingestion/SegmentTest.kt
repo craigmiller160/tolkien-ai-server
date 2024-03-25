@@ -28,7 +28,9 @@ class SegmentTest {
       // doesn't have an "ending", append to previous content
 
       return Stream.of(
-          CreateOrUpdateSegmentArg(null, "HELLO", Result.success(Segment("HELLO", ""))))
+          CreateOrUpdateSegmentArg(null, "HELLO", Result.success(Segment("HELLO", ""))),
+          CreateOrUpdateSegmentArg(
+              Segment("HELLO", ""), "WORLD", Result.success(Segment("HELLO WORLD", ""))))
 
       //      return Stream.of(
       //          CreateOrUpdateSegmentArg(
