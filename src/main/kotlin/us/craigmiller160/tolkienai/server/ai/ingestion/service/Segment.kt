@@ -36,7 +36,25 @@ fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segme
     throw InvalidSegmentException(
         "Invalid line wrapper: ${lineWrapper.javaClass.simpleName}. Line: $currentLine")
   }
-  //
+
+  when (previousSegment?.type) {
+    null,
+    SegmentType.BLANK ->
+        when (lineWrapper) {
+          is TitleLine -> Segment(lineWrapper.line, "")
+          else ->
+              throw InvalidSegmentException(
+                  "No previous segment with a title to append content to. Line: $currentLine")
+        }
+    else -> TODO()
+  }
+
+  if (lineWrapper is TitleLine && previousSegment?.type == SegmentType.TITLE_ONLY) {
+    return previousSegment.copy(title = "${previousSegment.title} ${lineWrapper.line}")
+  }
+
+  if (lineWrapper is TitleLine && previousSegment?.type == SegmentType.BLANK) {}
+
   //  if (lineWrapper is TitleLine && previousSegment?.previousLineWrapper is TitleLine) {
   //    return previousSegment.copy(
   //        title = "${previousSegment.title} ${lineWrapper.line}", previousLineWrapper =
@@ -48,8 +66,8 @@ fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segme
   //  }
   //
   //  if (lineWrapper is ParagraphLine && previousSegment == null) {
-  //    throw InvalidSegmentException(
-  //        "No previous segment with a title to append content to. Line: $currentLine")
+  throw InvalidSegmentException(
+      "No previous segment with a title to append content to. Line: $currentLine")
   //  }
   //
   //  if (lineWrapper is ParagraphLine && previousSegment?.title.isNullOrBlank()) {
