@@ -33,7 +33,7 @@ class SegmentTest {
           CreateOrUpdateSegmentArg(
               Segment("HELLO", "World"),
               "",
-              Result.failure(InvalidSegmentException("Invalid line wrapper: DeleteLine"))),
+              Result.failure(InvalidSegmentException("Invalid line wrapper: DeleteLine. Line: "))),
           CreateOrUpdateSegmentArg(
               null,
               "Universe",
