@@ -2,12 +2,28 @@ package us.craigmiller160.tolkienai.server.ai.ingestion.service
 
 import java.util.UUID
 
+enum class SegmentType {
+  BLANK,
+  TITLE_ONLY,
+  TITLE_AND_PARTIAL_CONTENT,
+  COMPLETE
+}
+
+private val CONTENT_END_REGEX = Regex("\\.\\p{Punct}*$")
+
 data class Segment(
     val title: String,
     val content: String,
-    val previousLineWrapper: LineWrapper?,
-    val id: UUID = UUID.randomUUID()
+    val id: UUID = UUID.randomUUID() // TODO try and eliminate ID by filtering by COMPLETE
 ) {
+  val type: SegmentType
+    get() =
+        when {
+          title.isNotBlank() && content.isNotBlank() && CONTENT_END_REGEX.matches(content) ->
+              SegmentType.COMPLETE
+          title.isNotBlank() && content.isNotBlank() -> SegmentType.TITLE_AND_PARTIAL_CONTENT
+          else -> SegmentType.BLANK
+        }
   fun toText(): String = "$title\n$content"
 }
 
