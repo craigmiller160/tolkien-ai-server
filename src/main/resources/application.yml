@@ -27,7 +27,7 @@ spring:
     keycloak:
       oauth2:
         resourceserver:
-          host: https://auh.craigmiller160.us
+          host: https://auth.craigmiller160.us
           realm: apps-dev
           client-id: tolkien-ai-server
 
