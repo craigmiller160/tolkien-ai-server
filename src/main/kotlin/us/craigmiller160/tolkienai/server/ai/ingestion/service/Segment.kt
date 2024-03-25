@@ -31,7 +31,7 @@ data class Segment(val title: String, val content: String, val id: SegmentId = S
 }
 
 fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segment {
-  val lineWrapper = lineToLineWrapper(null, currentLine)
+  val lineWrapper = lineToLineWrapper(null, currentLine.trim())
   if (lineWrapper is NewLine || lineWrapper is DeleteLine) {
     throw InvalidSegmentException(
         "Invalid line wrapper: ${lineWrapper.javaClass.simpleName}. Line: $currentLine")
