@@ -22,6 +22,7 @@ data class Segment(
           title.isNotBlank() && content.isNotBlank() && CONTENT_END_REGEX.matches(content) ->
               SegmentType.COMPLETE
           title.isNotBlank() && content.isNotBlank() -> SegmentType.TITLE_AND_PARTIAL_CONTENT
+          title.isNotBlank() && content.isBlank() -> SegmentType.TITLE_ONLY
           else -> SegmentType.BLANK
         }
   fun toText(): String = "$title\n$content"
