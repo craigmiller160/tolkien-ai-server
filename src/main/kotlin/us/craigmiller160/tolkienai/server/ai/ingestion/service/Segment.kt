@@ -1,5 +1,6 @@
 package us.craigmiller160.tolkienai.server.ai.ingestion.service
 
+import java.util.UUID
 import us.craigmiller160.tolkienai.server.ai.ingestion.exception.InvalidSegmentException
 
 enum class SegmentType {
@@ -11,7 +12,7 @@ enum class SegmentType {
 
 private val CONTENT_END_REGEX = Regex("\\.\\p{Punct}*$")
 
-data class Segment(val title: String, val content: String) {
+data class Segment(val title: String, val content: String, val id: UUID = UUID.randomUUID()) {
   val type: SegmentType
     get() =
         when {
