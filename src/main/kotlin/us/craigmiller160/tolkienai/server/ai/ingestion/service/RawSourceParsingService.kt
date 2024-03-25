@@ -64,7 +64,6 @@ class RawSourceParsingService(
           createOrUpdateSegment(previousSegment, currentLine)
         }
         .filterNotNull()
-        .filter { it.type == SegmentType.COMPLETE }
         // This will filter out duplicates because the most up-to-date record will win
         .associateBy { it.id }
         .values
