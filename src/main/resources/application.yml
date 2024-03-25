@@ -23,6 +23,14 @@ spring:
       uri: mongodb://${spring.data.mongodb.username}:${spring.data.mongodb.password}@craigpc:30021/${spring.data.mongodb.database}?ssl=true&authSource=admin
       database: tolkienai_dev
 
+  security:
+    keycloak:
+      oauth2:
+        resourceserver:
+          host: https://auh.craigmiller160.us
+          realm: apps-dev
+          client-id: tolkien-ai-server
+
 logging:
   level:
     us.craigmiller160.tolkienai.server: DEBUG
