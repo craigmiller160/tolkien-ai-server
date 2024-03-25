@@ -15,7 +15,7 @@ import us.craigmiller160.tolkienai.server.web.type.IngestDataRequest
 class DataIngestionController(private val dataIngestionService: DataIngestionService) {
   @PostMapping
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  @PreAuthorize("hasAuthority('ADMIN')")
+  @PreAuthorize("hasAuthority('ROLE_admin')")
   fun ingestData(@RequestBody request: IngestDataRequest) {
     dataIngestionService.ingestSilmarillion(request.dryRun)
   }
