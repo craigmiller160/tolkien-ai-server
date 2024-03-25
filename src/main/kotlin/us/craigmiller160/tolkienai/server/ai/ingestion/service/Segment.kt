@@ -57,6 +57,7 @@ fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segme
           is TitleLine ->
               throw InvalidSegmentException(
                   "Previous segment does not have completed content, new title is not allowed. Line: ${lineWrapper.line}")
+          else -> previousSegment.copy(content = "${previousSegment.content} ${lineWrapper.line}")
         }
     else -> TODO()
   }
