@@ -52,9 +52,7 @@ fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segme
         }
     SegmentType.TITLE_AND_PARTIAL_CONTENT ->
         when (lineWrapper) {
-          is TitleLine ->
-              throw InvalidSegmentException(
-                  "Previous segment does not have completed content, new title is not allowed. Line: ${lineWrapper.line}")
+          is TitleLine -> Segment(lineWrapper.line, "")
           else -> previousSegment.copy(content = "${previousSegment.content} ${lineWrapper.line}")
         }
     SegmentType.COMPLETE ->
