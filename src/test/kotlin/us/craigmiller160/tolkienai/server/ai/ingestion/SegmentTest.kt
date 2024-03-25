@@ -65,7 +65,9 @@ class SegmentTest {
   fun `creates or updates segment correctly`(arg: CreateOrUpdateSegmentArg) {
     val actualSegment = runCatching { createOrUpdateSegment(arg.previousSegment, arg.currentLine) }
     if (arg.expectedSegment.isSuccess) {
-      actualSegment.shouldBeSuccess { actual -> actual.shouldBe(arg.expectedSegment.getOrThrow()) }
+      actualSegment.shouldBeSuccess { actual ->
+        actual.shouldBe(arg.expectedSegment.getOrThrow().copy(id = actual.id))
+      }
     } else {
       actualSegment
           .shouldBeFailure<InvalidSegmentException>()

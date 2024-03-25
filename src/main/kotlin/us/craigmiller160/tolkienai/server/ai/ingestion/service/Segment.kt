@@ -12,7 +12,11 @@ enum class SegmentType {
 
 private val CONTENT_END_REGEX = Regex("\\.\\p{Punct}*$")
 
-data class Segment(val title: String, val content: String, val id: UUID = UUID.randomUUID()) {
+data class SegmentId(val value: UUID = UUID.randomUUID()) {
+  override fun toString(): String = ""
+}
+
+data class Segment(val title: String, val content: String, val id: SegmentId = SegmentId()) {
   val type: SegmentType
     get() =
         when {
