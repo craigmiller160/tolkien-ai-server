@@ -15,8 +15,6 @@ class SegmentTest {
   companion object {
     @JvmStatic
     fun createOrUpdateSegmentArgs(): Stream<CreateOrUpdateSegmentArg> {
-      //      val baseSegment = Segment("TITLE", "Body", null)
-
       // If the line is a title, and the previous line is a title, append to the previous title
       // If the line is a NewLine or a DeleteLine, it's an error
       // If the line is a title, and the previous line is not, start a new Segment with the title
@@ -28,6 +26,9 @@ class SegmentTest {
       // to the previous Segment
       // If the line is a paragraph, and the previous segment has content & a title, but the content
       // doesn't have an "ending", append to previous content
+
+      return Stream.of(
+          CreateOrUpdateSegmentArg(null, "HELLO", Result.success(Segment("HELLO", ""))))
 
       //      return Stream.of(
       //          CreateOrUpdateSegmentArg(
@@ -75,8 +76,6 @@ class SegmentTest {
       //              Result.success(
       //                  baseSegment.copy(
       //                      content = "World", previousLineWrapper = ParagraphLine("World")))))
-
-      return Stream.of()
     }
 
     @JvmStatic
