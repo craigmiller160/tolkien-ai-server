@@ -64,9 +64,7 @@ class RawSourceParsingService(
           createOrUpdateSegment(previousSegment, currentLine)
         }
         .filterNotNull()
-        // The last occurring record with the id will win
-        .associateBy { it.id }
-        .values
+        .filter { it.type == SegmentType.COMPLETE }
         .map { it.toText() }
         .also { segments ->
           if (debugOutputEnabled()) {
