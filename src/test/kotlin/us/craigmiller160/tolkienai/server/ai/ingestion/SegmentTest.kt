@@ -29,8 +29,6 @@ class SegmentTest {
       // If the line is a paragraph, and the previous segment has content & a title, but the content
       // doesn't have an "ending", append to previous content
 
-      TODO()
-
       //      return Stream.of(
       //          CreateOrUpdateSegmentArg(
       //              null, "HELLO", Result.success(Segment("HELLO", "", TitleLine("HELLO")))),
@@ -77,6 +75,8 @@ class SegmentTest {
       //              Result.success(
       //                  baseSegment.copy(
       //                      content = "World", previousLineWrapper = ParagraphLine("World")))))
+
+      return Stream.of()
     }
 
     @JvmStatic
