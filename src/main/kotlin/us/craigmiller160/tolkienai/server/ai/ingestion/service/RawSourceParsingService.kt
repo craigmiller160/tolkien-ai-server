@@ -26,14 +26,14 @@ class RawSourceParsingService(
 
   private val log = LoggerFactory.getLogger(javaClass)
 
-  fun parseSilmarillion() {
+  fun parseSilmarillion(dryRun: Boolean) {
     log.info("Parsing raw Silmarillion text")
     prepareDebugDirectory()
     Paths.get(rawSourcesProperties.silmarillion.path)
         .readText()
         .let { excludeLines(it) }
-        .let { cleanupWhiteSpace(it) }
-        .let { createSegments(it) }
+        .let { cleanupWhiteSpace(it, dryRun) }
+        .let { createSegments(it, dryRun) }
         .also { log.info("Raw Silmarillion text is parsed") }
   }
 
@@ -56,7 +56,7 @@ class RawSourceParsingService(
         .also { log.debug("Lines from raw Silmarillion text excluded") }
   }
 
-  private fun createSegments(text: String): List<String> {
+  private fun createSegments(text: String, dryRun: Boolean): List<String> {
     log.debug("Converting Silmarillion text into segments")
     return text
         .lines()
@@ -69,7 +69,7 @@ class RawSourceParsingService(
         .values
         .map { it.toText() }
         .also { segments ->
-          if (debugOutputEnabled()) {
+          if (dryRun) {
             runBlocking {
               segments
                   .mapIndexed { index, segment ->
@@ -87,7 +87,7 @@ class RawSourceParsingService(
         }
   }
 
-  private fun cleanupWhiteSpace(text: String): String {
+  private fun cleanupWhiteSpace(text: String, dryRun: Boolean): String {
     log.debug("Cleaning up whitespace in Silmarillion text")
     return text
         .lines()
@@ -98,14 +98,12 @@ class RawSourceParsingService(
         .filter { it !is DeleteLine }
         .joinToString("") { it.toText() }
         .also {
-          if (debugOutputEnabled()) {
+          if (dryRun) {
             Files.writeString(WHITESPACE_CLEANED_UP_FILE, it)
           }
           log.debug("Silmarillion text whitespace cleaned up")
         }
   }
-
-  private fun debugOutputEnabled(): Boolean = environment.matchesProfiles("dev")
 
   private fun prepareDebugDirectory() {
     if (Files.exists(DEBUG_DIRECTORY)) {
