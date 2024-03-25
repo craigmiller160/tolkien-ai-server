@@ -46,7 +46,13 @@ class SegmentTest {
               Result.failure(
                   InvalidSegmentException(
                       "Previous segment has no title, cannot append content. Line: Universe")),
-          ))
+          ),
+          CreateOrUpdateSegmentArg(
+              Segment("HELLO", "World"),
+              "UNIVERSE",
+              Result.failure(
+                  InvalidSegmentException(
+                      "Previous segment does not have completed content, new title is not allowed. Line: UNIVERSE"))))
     }
 
     @JvmStatic

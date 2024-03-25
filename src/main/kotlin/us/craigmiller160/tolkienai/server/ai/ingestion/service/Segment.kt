@@ -52,6 +52,10 @@ fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segme
               previousSegment.copy(title = "${previousSegment.title} ${lineWrapper.line}")
           else -> previousSegment.copy(content = lineWrapper.line)
         }
+    SegmentType.TITLE_AND_PARTIAL_CONTENT ->
+        when (lineWrapper) {
+          is TitleLine -> TODO()
+        }
     else -> TODO()
   }
 
