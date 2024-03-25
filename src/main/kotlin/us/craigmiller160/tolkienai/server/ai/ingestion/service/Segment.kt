@@ -1,6 +1,7 @@
 package us.craigmiller160.tolkienai.server.ai.ingestion.service
 
 import java.util.UUID
+import us.craigmiller160.tolkienai.server.ai.ingestion.exception.InvalidSegmentException
 
 enum class SegmentType {
   BLANK,
@@ -30,11 +31,11 @@ data class Segment(
 }
 
 fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segment {
-  //  val lineWrapper = lineToLineWrapper(previousSegment?.previousLineWrapper?.line, currentLine)
-  //  if (lineWrapper is NewLine || lineWrapper is DeleteLine) {
-  //    throw InvalidSegmentException(
-  //        "Invalid line wrapper: ${lineWrapper.javaClass.simpleName}. Line: $currentLine")
-  //  }
+  val lineWrapper = lineToLineWrapper(null, currentLine)
+  if (lineWrapper is NewLine || lineWrapper is DeleteLine) {
+    throw InvalidSegmentException(
+        "Invalid line wrapper: ${lineWrapper.javaClass.simpleName}. Line: $currentLine")
+  }
   //
   //  if (lineWrapper is TitleLine && previousSegment?.previousLineWrapper is TitleLine) {
   //    return previousSegment.copy(
