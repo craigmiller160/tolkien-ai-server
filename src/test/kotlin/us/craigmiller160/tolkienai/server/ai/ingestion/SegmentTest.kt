@@ -45,7 +45,7 @@ class SegmentTest {
               "Universe",
               Result.failure(
                   InvalidSegmentException(
-                      "Previous segment has no title, cannot append content. Line: Universe")),
+                      "Previous segment is complete, cannot append more content. Line: Universe")),
           ),
           CreateOrUpdateSegmentArg(
               Segment("HELLO", "World"),

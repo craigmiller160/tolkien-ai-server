@@ -37,7 +37,7 @@ fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segme
         "Invalid line wrapper: ${lineWrapper.javaClass.simpleName}. Line: $currentLine")
   }
 
-  when (previousSegment?.type) {
+  return when (previousSegment?.type) {
     null,
     SegmentType.BLANK ->
         when (lineWrapper) {
@@ -59,49 +59,12 @@ fun createOrUpdateSegment(previousSegment: Segment?, currentLine: String): Segme
                   "Previous segment does not have completed content, new title is not allowed. Line: ${lineWrapper.line}")
           else -> previousSegment.copy(content = "${previousSegment.content} ${lineWrapper.line}")
         }
-    else -> TODO()
+    SegmentType.COMPLETE ->
+        when (lineWrapper) {
+          is TitleLine -> Segment(lineWrapper.line, "")
+          else ->
+              throw InvalidSegmentException(
+                  "Previous segment is complete, cannot append more content. Line: ${lineWrapper.line}")
+        }
   }
-
-  if (lineWrapper is TitleLine && previousSegment?.type == SegmentType.TITLE_ONLY) {
-    return previousSegment.copy(title = "${previousSegment.title} ${lineWrapper.line}")
-  }
-
-  if (lineWrapper is TitleLine && previousSegment?.type == SegmentType.BLANK) {}
-
-  //  if (lineWrapper is TitleLine && previousSegment?.previousLineWrapper is TitleLine) {
-  //    return previousSegment.copy(
-  //        title = "${previousSegment.title} ${lineWrapper.line}", previousLineWrapper =
-  // lineWrapper)
-  //  }
-  //
-  //  if (lineWrapper is TitleLine) {
-  //    return Segment(title = lineWrapper.line, content = "", previousLineWrapper = lineWrapper)
-  //  }
-  //
-  //  if (lineWrapper is ParagraphLine && previousSegment == null) {
-  throw InvalidSegmentException(
-      "No previous segment with a title to append content to. Line: $currentLine")
-  //  }
-  //
-  //  if (lineWrapper is ParagraphLine && previousSegment?.title.isNullOrBlank()) {
-  //    throw InvalidSegmentException(
-  //        "Previous segment has no title, cannot append content. Line: $currentLine")
-  //  }
-  //
-  //  if (lineWrapper is ParagraphLine &&
-  //      previousSegment != null &&
-  //      previousSegment.content.isNotBlank()) {
-  //    return Segment(
-  //        title = previousSegment.title,
-  //        content = lineWrapper.line,
-  //        previousLineWrapper = lineWrapper)
-  //  }
-  //
-  //  if (lineWrapper is ParagraphLine && previousSegment != null) {
-  //    return previousSegment.copy(content = currentLine, previousLineWrapper = lineWrapper)
-  //  }
-  //
-  //  throw InvalidSegmentException(
-  //      "Unknown set of conditions, unable to create or update segment. Line: $currentLine")
-  TODO()
 }
