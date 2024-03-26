@@ -9,7 +9,7 @@ tolkienai:
       request-seconds: 120
   raw-sources:
     silmarillion:
-      path: /Users/craigmiller/Documents/silmarillion_raw.txt
+      path: ${user.dir}/silmarillion.txt
       exclude-lines:
         - 1-238
         - 16016-16410
