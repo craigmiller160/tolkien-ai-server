@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.ai.ingestion
+package us.craigmiller160.tolkienai.server.ai.ingestion.service.parsing
 
 import io.kotest.matchers.result.shouldBeFailure
 import io.kotest.matchers.result.shouldBeSuccess
@@ -7,9 +7,6 @@ import java.util.stream.Stream
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import us.craigmiller160.tolkienai.server.ai.ingestion.exception.InvalidSegmentException
-import us.craigmiller160.tolkienai.server.ai.ingestion.service.Segment
-import us.craigmiller160.tolkienai.server.ai.ingestion.service.SegmentType
-import us.craigmiller160.tolkienai.server.ai.ingestion.service.createOrUpdateSegment
 
 class SegmentTest {
   companion object {

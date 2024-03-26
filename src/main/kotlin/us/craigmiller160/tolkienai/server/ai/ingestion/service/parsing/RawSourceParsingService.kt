@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.ai.ingestion.service
+package us.craigmiller160.tolkienai.server.ai.ingestion.service.parsing
 
 import java.nio.file.Files
 import java.nio.file.Paths

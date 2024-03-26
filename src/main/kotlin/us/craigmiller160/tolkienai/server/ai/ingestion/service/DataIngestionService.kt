@@ -2,6 +2,7 @@ package us.craigmiller160.tolkienai.server.ai.ingestion.service
 
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
+import us.craigmiller160.tolkienai.server.ai.ingestion.service.parsing.RawSourceParsingService
 
 @Service
 class DataIngestionService(

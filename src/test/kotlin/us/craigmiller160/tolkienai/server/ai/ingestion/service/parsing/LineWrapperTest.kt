@@ -1,15 +1,9 @@
-package us.craigmiller160.tolkienai.server.ai.ingestion
+package us.craigmiller160.tolkienai.server.ai.ingestion.service.parsing
 
 import io.kotest.matchers.shouldBe
 import java.util.stream.Stream
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import us.craigmiller160.tolkienai.server.ai.ingestion.service.DeleteLine
-import us.craigmiller160.tolkienai.server.ai.ingestion.service.LineWrapper
-import us.craigmiller160.tolkienai.server.ai.ingestion.service.NewLine
-import us.craigmiller160.tolkienai.server.ai.ingestion.service.ParagraphLine
-import us.craigmiller160.tolkienai.server.ai.ingestion.service.TitleLine
-import us.craigmiller160.tolkienai.server.ai.ingestion.service.lineToLineWrapper
 
 class LineWrapperTest {
   companion object {
