@@ -26,10 +26,10 @@ class RawSourceParsingService(
 
   private val log = LoggerFactory.getLogger(javaClass)
 
-  fun parseSilmarillion(dryRun: Boolean) {
+  fun parseSilmarillion(dryRun: Boolean): List<String> {
     log.info("Parsing raw Silmarillion text")
     prepareDebugDirectory()
-    Paths.get(rawSourcesProperties.silmarillion.path)
+    return Paths.get(rawSourcesProperties.silmarillion.path)
         .readText()
         .let { excludeLines(it) }
         .let { cleanupWhiteSpace(it, dryRun) }

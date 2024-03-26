@@ -7,6 +7,10 @@ tolkienai:
       connect-seconds: 10
       socket-seconds: 30
       request-seconds: 120
+    models:
+      embedding:
+        name: text-embedding-3-large
+        dimensions: 3072
   raw-sources:
     silmarillion:
       path: ${user.dir}/silmarillion.txt
