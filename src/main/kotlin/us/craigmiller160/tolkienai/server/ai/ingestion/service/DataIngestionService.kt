@@ -8,7 +8,7 @@ class DataIngestionService(
     private val rawSourceParsingService: RawSourceParsingService,
     private val environment: Environment
 ) {
-  fun ingestSilmarillion(dryRun: Boolean) {
+  fun ingest(dryRun: Boolean) {
     if (dryRun && !dryRunAllowed()) {
       throw IllegalArgumentException("Dry runs are only allowed in the dev environment")
     }

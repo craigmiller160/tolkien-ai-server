@@ -17,6 +17,6 @@ class DataIngestionController(private val dataIngestionService: DataIngestionSer
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasAuthority('ROLE_admin')")
   fun ingestData(@RequestBody request: IngestDataRequest) {
-    dataIngestionService.ingestSilmarillion(request.dryRun)
+    dataIngestionService.ingest(request.dryRun)
   }
 }
