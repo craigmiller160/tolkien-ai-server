@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 import us.craigmiller160.tolkienai.server.ai.utils.getOrThrow
 
 @Service
-class WeviateService(private val weaviateClient: WeaviateClient) {
+class WeaviateService(private val weaviateClient: WeaviateClient) {
   companion object {
     private const val SILMARILLION_CLASS = "silmarillion"
     private const val TEXT_FIELD = "text"
