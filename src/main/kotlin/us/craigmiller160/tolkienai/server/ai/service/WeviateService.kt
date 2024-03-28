@@ -15,6 +15,9 @@ class WeviateService(private val weaviateClient: WeaviateClient) {
   }
 
   fun createSilmarillionClass() {
+    weaviateClient.schema().classDeleter().withClassName(SILMARILLION_CLASS).run().getOrThrow()
+    //      val schema = weaviateClient.schema().getter().run().getOrThrow()
+
     WeaviateClass.builder()
         .className(SILMARILLION_CLASS)
         .properties(
