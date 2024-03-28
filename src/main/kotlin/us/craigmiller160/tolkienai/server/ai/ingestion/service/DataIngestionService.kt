@@ -1,12 +1,10 @@
 package us.craigmiller160.tolkienai.server.ai.ingestion.service
 
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
-import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingContainer
 import us.craigmiller160.tolkienai.server.ai.ingestion.service.parsing.RawSourceParsingService
 import us.craigmiller160.tolkienai.server.ai.service.OpenAiService
 
@@ -22,14 +20,10 @@ class DataIngestionService(
     }
 
     runBlocking {
-      rawSourceParsingService.parseSilmarillion(dryRun).let { createAllEmbeddings(it) }
+      rawSourceParsingService.parseSilmarillion(dryRun).map { segment ->
+        async { openAiService.createEmbedding(segment) }
+      }
     }
-  }
-
-  private suspend fun createAllEmbeddings(
-      segments: List<String>
-  ): List<Deferred<EmbeddingContainer>> = coroutineScope {
-    segments.map { text -> async { openAiService.createEmbedding(text) } }
   }
 
   private fun dryRunAllowed(): Boolean = environment.matchesProfiles("dev")
