@@ -34,7 +34,7 @@ class WeaviateService(private val weaviateClient: WeaviateClient) {
             .getOrThrow()
       }
 
-  fun insertEmbedding(text: String, embedding: List<Float>) =
+  suspend fun insertEmbedding(text: String, embedding: List<Float>) =
       withContext(Dispatchers.IO) {
         log.debug("Inserting embedding")
         weaviateClient
