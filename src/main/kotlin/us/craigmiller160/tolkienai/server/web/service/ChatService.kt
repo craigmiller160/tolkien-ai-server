@@ -15,7 +15,8 @@ class ChatService(
 
   private val log = LoggerFactory.getLogger(javaClass)
   suspend fun chat(request: ChatRequest): ChatResponse {
-
+    log.info("Preparing chat for query: ${request.query}")
+    val queryEmbedding = openAiService.createEmbedding(request.query)
     TODO()
   }
 }
