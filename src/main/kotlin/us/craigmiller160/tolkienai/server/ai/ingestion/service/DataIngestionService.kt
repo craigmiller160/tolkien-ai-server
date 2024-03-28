@@ -23,6 +23,8 @@ class DataIngestionService(
     }
 
     runBlocking {
+      weaviateService.createSilmarillionClass()
+
       rawSourceParsingService
           .parseSilmarillion(dryRun)
           .map { segment ->
