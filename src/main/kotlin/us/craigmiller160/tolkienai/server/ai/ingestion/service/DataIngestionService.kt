@@ -23,7 +23,10 @@ class DataIngestionService(
 
     runBlocking {
       rawSourceParsingService.parseSilmarillion(dryRun).map { segment ->
-        async { openAiService.createEmbedding(segment) }
+        async {
+          val embedding = openAiService.createEmbedding(segment)
+          weaviateService.insertEmbedding(text, embedding)
+        }
       }
     }
   }
