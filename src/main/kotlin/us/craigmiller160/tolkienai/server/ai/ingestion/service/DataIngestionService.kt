@@ -1,6 +1,7 @@
 package us.craigmiller160.tolkienai.server.ai.ingestion.service
 
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import org.springframework.core.env.Environment
@@ -22,14 +23,17 @@ class DataIngestionService(
     }
 
     runBlocking {
-      rawSourceParsingService.parseSilmarillion(dryRun).map { segment ->
-        async {
-          openAiService.createEmbedding(segment).let { embedding ->
-            weaviateService.insertEmbedding(
-                embedding.text, embedding.embedding.map { it.toFloat() })
+      rawSourceParsingService
+          .parseSilmarillion(dryRun)
+          .map { segment ->
+            async {
+              openAiService.createEmbedding(segment).let { embedding ->
+                weaviateService.insertEmbedding(
+                    embedding.text, embedding.embedding.map { it.toFloat() })
+              }
+            }
           }
-        }
-      }
+          .awaitAll()
     }
   }
 
