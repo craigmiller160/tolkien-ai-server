@@ -1,6 +1,8 @@
 package us.craigmiller160.tolkienai.server.config
 
 import com.aallam.openai.api.http.Timeout
+import com.aallam.openai.api.logging.LogLevel
+import com.aallam.openai.client.LoggingConfig
 import com.aallam.openai.client.OpenAI
 import io.weaviate.client.Config
 import io.weaviate.client.WeaviateAuthClient
@@ -18,7 +20,11 @@ class ClientConfig {
 
   @Bean
   fun openaiClient(props: OpenaiProperties): OpenAI =
-      OpenAI(token = props.key, timeout = props.timeouts.toTimeout())
+      OpenAI(
+          token = props.key,
+          timeout = props.timeouts.toTimeout(),
+          logging = LoggingConfig(logLevel = LogLevel.None),
+      )
 }
 
 private fun OpenaiTimeoutProperties.toTimeout(): Timeout =
