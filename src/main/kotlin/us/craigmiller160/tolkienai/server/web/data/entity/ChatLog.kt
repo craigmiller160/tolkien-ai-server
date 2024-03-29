@@ -4,4 +4,5 @@ import java.util.UUID
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
-@Document(collection = "chat_log") data class ChatLog(@field:Id val id: String, val chatId: UUID)
+@Document(collection = "chat_log")
+data class ChatLog(@field:Id val id: String?, val chatId: UUID, val response: String)
