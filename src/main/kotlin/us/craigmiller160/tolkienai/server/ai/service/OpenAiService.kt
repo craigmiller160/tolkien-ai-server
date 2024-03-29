@@ -9,6 +9,7 @@ import com.aallam.openai.client.OpenAI
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import us.craigmiller160.tolkienai.server.ai.dto.ChatContainer
+import us.craigmiller160.tolkienai.server.ai.dto.ChatMessageContainer
 import us.craigmiller160.tolkienai.server.ai.dto.ChatMessageRole
 import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingContainer
 import us.craigmiller160.tolkienai.server.config.OpenaiProperties
@@ -36,7 +37,7 @@ class OpenAiService(
                 dimensions = openaiProperties.models.embedding.dimensions)
           }
 
-  suspend fun createChat(vararg messages: Pair<ChatMessageRole, String>): ChatContainer =
+  suspend fun createChat(messages: List<ChatMessageContainer>): ChatContainer =
       ChatCompletionRequest(
               model = ModelId(openaiProperties.models.chat.name),
               messages =
