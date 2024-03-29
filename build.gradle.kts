@@ -24,16 +24,19 @@ java {
 
 dependencies {
     val kotestVersion = "5.8.1"
+    val kotlinCoroutinesVersion = "1.8.0"
 
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("io.weaviate:client:4.6.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlinCoroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:$kotlinCoroutinesVersion")
     implementation("io.craigmiller160:spring-keycloak-oauth2-resource-server:1.0.0")
 
     implementation(platform("com.aallam.openai:openai-client-bom:3.7.0"))
