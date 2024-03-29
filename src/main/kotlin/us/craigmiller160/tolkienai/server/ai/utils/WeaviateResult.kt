@@ -1,6 +1,7 @@
 package us.craigmiller160.tolkienai.server.ai.utils
 
 import io.weaviate.client.base.Result
+import io.weaviate.client.v1.graphql.model.GraphQLResponse
 import us.craigmiller160.tolkienai.server.ai.exception.toException
 
 fun <T> Result<T>.toKotlinResult(): kotlin.Result<T> = runCatching { getOrThrow() }
@@ -10,4 +11,18 @@ fun <T> Result<T>.getOrThrow(): T {
     throw error.toException()
   }
   return result
+}
+
+fun Result<GraphQLResponse>.toKotlinResult(): kotlin.Result<Any> =
+    kotlin.runCatching { getOrThrow() }
+
+fun Result<GraphQLResponse>.getOrThrow(): Map<String, Any?> {
+  if (hasErrors()) {
+    throw error.toException()
+  }
+
+  if ((result.errors?.size ?: 0) > 0) {
+    throw result.errors.toException()
+  }
+  return result.data
 }

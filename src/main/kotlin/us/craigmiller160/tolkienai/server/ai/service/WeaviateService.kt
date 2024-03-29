@@ -17,7 +17,7 @@ import us.craigmiller160.tolkienai.server.ai.utils.getOrThrow
 @Service
 class WeaviateService(private val weaviateClient: WeaviateClient) {
   companion object {
-    private const val SILMARILLION_CLASS = "silmarillion"
+    private const val SILMARILLION_CLASS = "Silmarillion"
     private const val TEXT_FIELD = "text"
   }
 
@@ -46,13 +46,14 @@ class WeaviateService(private val weaviateClient: WeaviateClient) {
             weaviateClient
                 .graphQL()
                 .get()
+                .withClassName(SILMARILLION_CLASS)
                 .withFields(Field.builder().name(TEXT_FIELD).build())
                 .withNearVector(
                     NearVectorArgument.builder().vector(queryEmbedding.toTypedArray()).build())
                 .withLimit(limit)
                 .run()
                 .getOrThrow()
-        println(graphqlResult.data as Map<String, Any?>) // TODO delete this
+        println(graphqlResult) // TODO delete this
         return@withContext listOf()
       }
 
