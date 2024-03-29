@@ -10,6 +10,7 @@ import us.craigmiller160.tolkienai.server.ai.dto.floatEmbedding
 import us.craigmiller160.tolkienai.server.ai.service.OpenAiService
 import us.craigmiller160.tolkienai.server.ai.service.WeaviateService
 import us.craigmiller160.tolkienai.server.config.ChatProperties
+import us.craigmiller160.tolkienai.server.web.data.repository.ChatLogRepository
 import us.craigmiller160.tolkienai.server.web.type.ChatExplanation
 import us.craigmiller160.tolkienai.server.web.type.ChatRequest
 import us.craigmiller160.tolkienai.server.web.type.ChatResponse
@@ -18,7 +19,8 @@ import us.craigmiller160.tolkienai.server.web.type.ChatResponse
 class ChatService(
     private val weaviateService: WeaviateService,
     private val openAiService: OpenAiService,
-    private val chatProperties: ChatProperties
+    private val chatProperties: ChatProperties,
+    private val chatLogRepository: ChatLogRepository
 ) {
   companion object {
     private const val SYSTEM_MESSAGE =
@@ -53,9 +55,10 @@ class ChatService(
                           ChatMessageRole.USER, "List of data: \n$textMatchesString")))
 
       ChatResponse(
-          chatId = id,
-          response = chatResult.response,
-          explanation = ChatExplanation(query = baseMessages, embeddingMatches = textMatches))
+              chatId = id,
+              response = chatResult.response,
+              explanation = ChatExplanation(query = baseMessages, embeddingMatches = textMatches))
+          .also { chatLogRepository.insertChatLog(it) }
     }
   }
 }
