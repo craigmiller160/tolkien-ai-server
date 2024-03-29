@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingSearchResult
+import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingTextMatch
 import us.craigmiller160.tolkienai.server.ai.utils.getOrThrow
 
 @Service
@@ -40,7 +40,7 @@ class WeaviateService(private val weaviateClient: WeaviateClient) {
   suspend fun searchForEmbeddings(
       queryEmbedding: List<Float>,
       limit: Int
-  ): List<EmbeddingSearchResult> =
+  ): List<EmbeddingTextMatch> =
       withContext(Dispatchers.IO) {
         val graphqlResult =
             weaviateClient
