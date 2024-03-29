@@ -23,11 +23,15 @@ class DataIngestionService(
       throw IllegalArgumentException("Dry runs are only allowed in the dev environment")
     }
 
+    val segments = rawSourceParsingService.parseSilmarillion(dryRun)
+    if (dryRun) {
+      return
+    }
+
     runBlocking {
       weaviateService.createSilmarillionClass()
 
-      rawSourceParsingService
-          .parseSilmarillion(dryRun)
+      segments
           .map { segment ->
             async {
               openAiService.createEmbedding(segment).let { embedding ->
