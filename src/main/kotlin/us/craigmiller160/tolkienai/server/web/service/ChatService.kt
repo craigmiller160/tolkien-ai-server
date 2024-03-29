@@ -1,5 +1,6 @@
 package us.craigmiller160.tolkienai.server.web.service
 
+import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import us.craigmiller160.tolkienai.server.ai.dto.floatEmbedding
@@ -17,11 +18,13 @@ class ChatService(
 ) {
 
   private val log = LoggerFactory.getLogger(javaClass)
-  suspend fun chat(request: ChatRequest): ChatResponse {
+  fun chat(request: ChatRequest): ChatResponse {
     log.info("Preparing chat for query: ${request.query}")
-    openAiService.createEmbedding(request.query).let { queryEmbedding ->
-      weaviateService.searchForEmbeddings(
-          queryEmbedding.floatEmbedding, chatProperties.query.recordLimit)
+    runBlocking {
+      openAiService.createEmbedding(request.query).let { queryEmbedding ->
+        weaviateService.searchForEmbeddings(
+            queryEmbedding.floatEmbedding, chatProperties.query.recordLimit)
+      }
     }
     TODO()
   }

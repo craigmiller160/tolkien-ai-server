@@ -11,6 +11,5 @@ import us.craigmiller160.tolkienai.server.web.type.ChatResponse
 @RestController
 @RequestMapping("/chat")
 class ChatController(private val chatService: ChatService) {
-  @PostMapping
-  suspend fun chat(@RequestBody request: ChatRequest): ChatResponse = chatService.chat(request)
+  @PostMapping fun chat(@RequestBody request: ChatRequest): ChatResponse = chatService.chat(request)
 }
