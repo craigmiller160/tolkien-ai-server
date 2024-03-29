@@ -13,10 +13,13 @@ fun <T> Result<T>.getOrThrow(): T {
   return result
 }
 
-fun Result<GraphQLResponse>.toKotlinResult(): kotlin.Result<Any> =
+val GraphQLResponse.dataAsMap
+  get() = data as Map<String, Any?>
+
+fun Result<GraphQLResponse>.toDataAsMapKotlinResult(): kotlin.Result<GraphQLResponse> =
     kotlin.runCatching { getOrThrow() }
 
-fun Result<GraphQLResponse>.getOrThrow(): Map<String, Any?> {
+fun Result<GraphQLResponse>.getOrThrow(): GraphQLResponse {
   if (hasErrors()) {
     throw error.toException()
   }
@@ -24,5 +27,5 @@ fun Result<GraphQLResponse>.getOrThrow(): Map<String, Any?> {
   if ((result.errors?.size ?: 0) > 0) {
     throw result.errors.toException()
   }
-  return result.data
+  return result
 }
