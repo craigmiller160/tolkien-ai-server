@@ -61,7 +61,7 @@ class WeaviateService(
                 .getOrThrow()
         return@withContext objectMapper
             .convertValue(graphqlResult.dataAsMap, EmbeddingSearchGraphqlResult::class.java)
-            .Get[SILMARILLION_CLASS]
+            .get[SILMARILLION_CLASS]
             ?: listOf()
       }
 
