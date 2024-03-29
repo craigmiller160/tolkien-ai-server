@@ -45,4 +45,4 @@ spring:
 
 logging:
   level:
-    us.craigmiller160.tolkienai.server: DEBUG
+    us.craigmiller160.tolkienai.server: TRACE

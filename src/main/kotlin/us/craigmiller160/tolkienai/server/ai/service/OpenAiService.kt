@@ -3,6 +3,7 @@ package us.craigmiller160.tolkienai.server.ai.service
 import com.aallam.openai.api.embedding.EmbeddingRequest
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingContainer
 import us.craigmiller160.tolkienai.server.config.OpenaiProperties
@@ -12,10 +13,16 @@ class OpenAiService(
     private val openAiClient: OpenAI,
     private val openaiProperties: OpenaiProperties
 ) {
+  private val log = LoggerFactory.getLogger(javaClass)
   suspend fun createEmbedding(text: String): EmbeddingContainer =
       ModelId(openaiProperties.models.embedding.name)
           .let { EmbeddingRequest(model = it, input = listOf(text)) }
           .let { openAiClient.embeddings(it) }
+          .also { res ->
+            val promptTokens = res.usage.promptTokens ?: 0
+            val totalTokens = res.usage.totalTokens ?: 0
+            log.trace("Embedding token usage: Prompt: $promptTokens Total: $totalTokens")
+          }
           .let { res -> res.embeddings.flatMap { it.embedding } }
           .let {
             EmbeddingContainer(
@@ -23,4 +30,6 @@ class OpenAiService(
                 text = text,
                 dimensions = openaiProperties.models.embedding.dimensions)
           }
+
+  suspend fun createChat() {}
 }
