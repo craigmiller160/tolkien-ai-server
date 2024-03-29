@@ -4,6 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class EmbeddingTextMatch(val text: String)
 
-data class EmbeddingSearchGraphqlResult(
+data class EmbeddingSearchResult(
     @field:JsonProperty("Get") val get: Map<String, List<EmbeddingTextMatch>>
 )

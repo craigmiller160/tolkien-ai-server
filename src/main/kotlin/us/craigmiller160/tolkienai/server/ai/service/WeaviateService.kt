@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingSearchGraphqlResult
+import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingSearchResult
 import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingTextMatch
 import us.craigmiller160.tolkienai.server.ai.utils.dataAsMap
 import us.craigmiller160.tolkienai.server.ai.utils.getOrThrow
@@ -60,7 +60,7 @@ class WeaviateService(
                 .run()
                 .getOrThrow()
         return@withContext objectMapper
-            .convertValue(graphqlResult.dataAsMap, EmbeddingSearchGraphqlResult::class.java)
+            .convertValue(graphqlResult.dataAsMap, EmbeddingSearchResult::class.java)
             .get[SILMARILLION_CLASS]
             ?: listOf()
       }
