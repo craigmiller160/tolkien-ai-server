@@ -26,25 +26,25 @@ class ChatService(
     log.info("Preparing chat. Chat ID: $id Query: ${request.query}")
     return runBlocking {
       val textMatches =
-          openAiService
-              .createEmbedding(request.query)
-              .let { queryEmbedding ->
-                weaviateService.searchForEmbeddings(
-                    queryEmbedding.floatEmbedding, chatProperties.query.recordLimit)
-              }
-              .joinToString("\n") { it.text }
+          openAiService.createEmbedding(request.query).let { queryEmbedding ->
+            weaviateService.searchForEmbeddings(
+                queryEmbedding.floatEmbedding, chatProperties.query.recordLimit)
+          }
+      val textMatchesString = textMatches.joinToString("\n") { it.text }
 
-      openAiService.createChat(
-          ChatMessageRole.USER to request.query,
-          ChatMessageRole.SYSTEM to
-              "You are an expert on the works of JRR Tolkien and passionate about educating others on it. You will answer relying only on the provided list of data.",
-          ChatMessageRole.USER to "List of data: \n$textMatches")
+      val chatResult =
+          openAiService.createChat(
+              ChatMessageRole.USER to request.query,
+              ChatMessageRole.SYSTEM to
+                  "You are an expert on the works of JRR Tolkien and passionate about educating others on it. You will answer relying only on the provided list of data.",
+              ChatMessageRole.USER to "List of data: \n$textMatchesString")
 
       ChatResponse(
           chatId = id,
-          response = "",
+          response = chatResult.response,
           explanation =
-              ChatExplanation(query = request.query, embeddingMatches = results.map { it.text }))
+              ChatExplanation(
+                  query = request.query, embeddingMatches = textMatches.map { it.text }))
     }
   }
 }
