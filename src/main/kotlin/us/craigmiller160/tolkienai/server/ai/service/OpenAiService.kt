@@ -52,7 +52,7 @@ class OpenAiService(
                 "Chat token usage. Prompt: $promptTokens Completion: $completionTokens Total: $totalTokens")
           }
           .choices
-          .mapNotNull { choice -> choice.message.messageContent }
+          .mapNotNull { choice -> choice.message.content }
           .joinToString("\n")
           .let { ChatContainer(it) }
 
