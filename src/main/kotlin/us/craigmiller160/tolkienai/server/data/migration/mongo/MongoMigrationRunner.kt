@@ -10,8 +10,8 @@ import us.craigmiller160.tolkienai.server.data.migration.mongo.migrations.V001_I
 
 @Component
 class MongoMigrationRunner(
-    private val client: MongoClient,
-    private val mongoTemplate: MongoTemplate,
+    client: MongoClient,
+    mongoTemplate: MongoTemplate,
     @Value("\${spring.data.mongodb.database}") private val database: String
 ) : AbstractMigrationImplementationRunner(mongoTemplate) {
   private val db = client.getDatabase(database)
