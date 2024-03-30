@@ -40,7 +40,7 @@ class MongoMigrationRunner(
   }
 }
 
-private fun generateHash(migration: Migration<T>): String {
+private fun generateHash(migration: Migration<*>): String {
   val name = "${migration.javaClass.name.replace('.', '/')}.class"
   val uri = migration.javaClass.classLoader.getResource(name).toURI()
   val digest = MessageDigest.getInstance("SHA-256")
