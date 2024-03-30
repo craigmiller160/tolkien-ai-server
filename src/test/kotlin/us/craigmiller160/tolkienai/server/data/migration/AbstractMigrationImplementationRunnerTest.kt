@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.find
 import org.springframework.data.mongodb.core.query.Query
+import us.craigmiller160.tolkienai.server.data.migration.other.MockMigration
 
 class AbstractMigrationImplementationRunnerTest {
   companion object {
@@ -21,16 +22,22 @@ class AbstractMigrationImplementationRunnerTest {
 
   @Test
   fun `performs migration`() {
-    val baseHistoryRecord =
-        MigrationHistoryRecord(index = 0, name = MockMigration::class.java.name, hash = "123")
-    //    val historyRecords = listOf()
+    val migrations = listOf(MockMigration(), MockMigration(), MockMigration())
+
+    val historyRecords =
+        migrations.slice(1).mapIndexed { index, migration ->
+          MigrationHistoryRecord(
+              index = index + 1,
+              name = migration.javaClass.name,
+              hash = generateMigrationHash(migration))
+        }
 
     val mongoTemplate = mockk<MongoTemplate>()
     val querySlot = slot<Query>()
     every {
       mongoTemplate.find(
           capture(querySlot), MigrationHistoryRecord::class.java, HISTORY_COLLECTION_NAME)
-    } returns listOf()
+    } returns historyRecords
   }
 }
 
@@ -39,10 +46,3 @@ class TestMigrationImplementationRunner(
     override val registeredMigrations: List<RegisteredMigration<*>>,
     override val collectionName: String
 ) : AbstractMigrationImplementationRunner(mongoTemplate)
-
-class MockMigration : Migration<String> {
-  var didMigrate: Boolean = false
-  override fun migrate(helper: String) {
-    didMigrate = true
-  }
-}
