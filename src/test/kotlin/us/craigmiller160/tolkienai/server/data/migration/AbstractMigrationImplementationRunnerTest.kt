@@ -26,7 +26,7 @@ class AbstractMigrationImplementationRunnerTest {
     val migrations = listOf(MockMigration(), MockMigration(), MockMigration())
 
     val historyRecords =
-        migrations.drop(1).mapIndexed { index, migration ->
+        migrations.take(1).mapIndexed { index, migration ->
           MigrationHistoryRecord(
               index = index + 1,
               name = migration.javaClass.name,
