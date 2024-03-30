@@ -1,5 +1,7 @@
 package us.craigmiller160.tolkienai.server.data.migration
 
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
@@ -26,13 +28,7 @@ class AbstractMigrationImplementationRunnerTest {
   fun `performs migration`() {
     val migrations = listOf(MockMigration(), MockMigration(), MockMigration())
 
-    val historyRecords =
-        migrations.take(1).mapIndexed { index, migration ->
-          MigrationHistoryRecord(
-              index = index + 1,
-              name = migration.javaClass.name,
-              hash = generateMigrationHash(migration))
-        }
+    val historyRecords = migrations.take(1).mapIndexed(::migrationToHistoryRecord)
     val registeredMigrations =
         migrations.map { migration -> RegisteredMigration(migration = migration, helper = "Hello") }
 
@@ -59,14 +55,19 @@ class AbstractMigrationImplementationRunnerTest {
     val expectedQuery = Query().with(Sort.by(Sort.Direction.ASC, "index"))
     querySlot.captured.shouldBe(expectedQuery)
 
-    val migrationHistoryRecords = mutableListOf<MigrationHistoryRecord>()
+    val actualInsertedHistoryRecords = mutableListOf<MigrationHistoryRecord>()
     verify(exactly = 2) {
-      mongoTemplate.insert(capture(migrationHistoryRecords), HISTORY_COLLECTION_NAME)
+      mongoTemplate.insert(capture(actualInsertedHistoryRecords), HISTORY_COLLECTION_NAME)
     }
 
-    // TODO need to verify the inserts
+    val expectedInsertedHistoryRecords = migrations.drop(1).mapIndexed(::migrationToHistoryRecord)
+    actualInsertedHistoryRecords.shouldHaveSize(2).shouldContain(expectedInsertedHistoryRecords)
   }
 }
+
+private fun migrationToHistoryRecord(index: Int, migration: Migration<*>): MigrationHistoryRecord =
+    MigrationHistoryRecord(
+        index = index + 1, name = migration.javaClass.name, hash = generateMigrationHash(migration))
 
 class TestMigrationImplementationRunner(
     mongoTemplate: MongoTemplate,
