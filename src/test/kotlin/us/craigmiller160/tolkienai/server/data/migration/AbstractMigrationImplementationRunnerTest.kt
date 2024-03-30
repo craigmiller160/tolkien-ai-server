@@ -27,7 +27,11 @@ class AbstractMigrationImplementationRunnerTest {
           MigrationArg(
               migrations = migrations,
               history = migrations.take(1).mapIndexed(migrationToHistoryRecord()),
-              migrationCount = Result.success(2)))
+              migrationCount = Result.success(2)),
+          MigrationArg(
+              migrations = migrations,
+              history = migrations.mapIndexed(migrationToHistoryRecord()),
+              migrationCount = Result.success(0)))
     }
   }
   /*
