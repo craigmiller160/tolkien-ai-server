@@ -32,12 +32,12 @@ abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: 
 
       if (historyRecord.name != registeredMigration.migration.javaClass.name) {
         throw MigrationException(
-            "MongoDB Migration at index $actualIndex has incorrect name. Expected: ${historyRecord.name} Actual: ${registeredMigration.migration.javaClass.name}")
+            "Migration at index $actualIndex has incorrect name. Expected: ${historyRecord.name} Actual: ${registeredMigration.migration.javaClass.name}")
       }
 
       if (historyRecord.hash != registeredMigration.generateHash()) {
         throw MigrationException(
-            "MongoDB Migration at index $actualIndex has invalid hash. Changes are not allowed after migration is applied.")
+            "Migration at index $actualIndex has invalid hash. Changes are not allowed after migration is applied.")
       }
     }
     log.debug("All migrations completed")

@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
+import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
 import us.craigmiller160.tolkienai.server.data.migration.other.MockMigration
 
 class AbstractMigrationImplementationRunnerTest {
@@ -31,7 +32,35 @@ class AbstractMigrationImplementationRunnerTest {
           MigrationArg(
               migrations = listOf(MockMigration(), MockMigration(), MockMigration()),
               historyCreator = { migrations -> migrations.mapIndexed(migrationToHistoryRecord()) },
-              migrationCount = Result.success(0)))
+              migrationCount = Result.success(0)),
+          MigrationArg(
+              migrations = listOf(MockMigration(), MockMigration(), MockMigration()),
+              historyCreator = { migrations ->
+                migrations.mapIndexed(migrationToHistoryRecord()).mapIndexed { index, record ->
+                  if (index == 1) {
+                    return@mapIndexed record.copy(name = "abc")
+                  }
+                  return@mapIndexed record
+                }
+              },
+              migrationCount =
+                  Result.failure(
+                      MigrationException(
+                          "Migration at index 2 has incorrect name. Expected: abc Actual: ${MockMigration::class.java.name}"))),
+          MigrationArg(
+              migrations = listOf(MockMigration(), MockMigration(), MockMigration()),
+              historyCreator = { migrations ->
+                migrations.mapIndexed(migrationToHistoryRecord()).mapIndexed { index, record ->
+                  if (index == 1) {
+                    return@mapIndexed record.copy(hash = "abc")
+                  }
+                  return@mapIndexed record
+                }
+              },
+              migrationCount =
+                  Result.failure(
+                      MigrationException(
+                          "Migration at index 2 has invalid hash. Changes are not allowed after migration is applied."))))
     }
   }
   /*
