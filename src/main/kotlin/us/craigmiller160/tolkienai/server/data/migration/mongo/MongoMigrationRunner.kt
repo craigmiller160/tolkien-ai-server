@@ -32,6 +32,7 @@ class MongoMigrationRunner(
       listOf(RegisteredMigration(migration = V001_InitialSchema(), helper = db))
 
   fun run() {
+    log.debug("Finding and running MongoDB migrations")
     val historyRecords =
         Query().with(Sort.by(Sort.Direction.ASC, "index")).let { query ->
           mongoTemplate.find(
@@ -40,6 +41,7 @@ class MongoMigrationRunner(
     registeredMigrations.forEachIndexed { index, registeredMigration ->
       val historyRecord = historyRecords[index]
       if (historyRecord == null) {
+        log.debug("Running MongoDB migration: ${registeredMigration.migration.javaClass.name}")
         registeredMigration.run()
         insertHistoryRecord(index, registeredMigration)
         return@forEachIndexed
