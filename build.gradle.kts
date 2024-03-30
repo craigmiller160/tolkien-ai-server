@@ -44,6 +44,7 @@ dependencies {
     runtimeOnly("io.ktor:ktor-client-okhttp")
 
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
+    testImplementation("io.mockk:mockk:1.13.10")
 }
 
 kotlin {
