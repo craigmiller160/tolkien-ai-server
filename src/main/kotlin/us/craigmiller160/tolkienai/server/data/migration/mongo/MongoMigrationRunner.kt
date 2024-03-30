@@ -9,11 +9,10 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.find
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Component
 import us.craigmiller160.tolkienai.server.data.migration.Migration
-import us.craigmiller160.tolkienai.server.data.migration.MigrationRecord
+import us.craigmiller160.tolkienai.server.data.migration.MigrationHistoryRecord
 import us.craigmiller160.tolkienai.server.data.migration.mongo.migrations.V001_InitialSchema
 
 @Component
@@ -35,28 +34,34 @@ class MongoMigrationRunner(
   fun run() {
     val historyRecords =
         Query().with(Sort.by(Sort.Direction.ASC, "index")).let { query ->
-          mongoTemplate.find(query, MigrationRecord::class.java, MONGO_MIGRATION_HISTORY_COLLECTION)
+          mongoTemplate.find(
+              query, MigrationHistoryRecord::class.java, MONGO_MIGRATION_HISTORY_COLLECTION)
         }
     registeredMigrations.forEachIndexed { index, registeredMigration ->
       val historyRecord = historyRecords[index]
-      if (!historyRecord) {
+      if (historyRecord == null) {
         registeredMigration.run()
+        insertHistoryRecord(index, registeredMigration)
+        return@forEachIndexed
       }
     }
   }
 
-  private fun <T> runMigration(migration: Migration<T>, helper: T) {
-    //    migration.migrate(helper)
-  }
-}
-
-private fun generateHash(migration: Migration<*>): String {
-  val name = "${migration.javaClass.name.replace('.', '/')}.class"
-  val uri = migration.javaClass.classLoader.getResource(name).toURI()
-  val digest = MessageDigest.getInstance("SHA-256")
-  return Paths.get(uri).readBytes().let { digest.digest(it) }.let { Hex.encodeHexString(it) }
+  private fun insertHistoryRecord(index: Int, registeredMigration: RegisteredMigration<*>) =
+      MigrationHistoryRecord(
+              index = index + 1,
+              name = registeredMigration.migration.javaClass.name,
+              hash = registeredMigration.generateHash())
+          .let { mongoTemplate.insert(it, MONGO_MIGRATION_HISTORY_COLLECTION) }
 }
 
 data class RegisteredMigration<T>(val migration: Migration<T>, val helper: T)
 
 fun <T> RegisteredMigration<T>.run() = migration.migrate(helper)
+
+fun <T> RegisteredMigration<T>.generateHash(): String {
+  val name = "${migration.javaClass.name.replace('.', '/')}.class"
+  val uri = migration.javaClass.classLoader.getResource(name).toURI()
+  val digest = MessageDigest.getInstance("SHA-256")
+  return Paths.get(uri).readBytes().let { digest.digest(it) }.let { Hex.encodeHexString(it) }
+}

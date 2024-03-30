@@ -3,10 +3,10 @@ package us.craigmiller160.tolkienai.server.data.migration
 import java.time.ZonedDateTime
 import org.springframework.data.annotation.Id
 
-data class MigrationRecord(
-    @Id val id: String,
+data class MigrationHistoryRecord(
     val index: Int,
     val name: String,
     val hash: String,
-    val timestamp: ZonedDateTime
+    val timestamp: ZonedDateTime = ZonedDateTime.now(),
+    @Id val id: String? = null,
 )
