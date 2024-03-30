@@ -55,7 +55,7 @@ class OpenAiService(
           .choices
           .mapNotNull { choice -> choice.message.content }
           .joinToString("\n")
-          .let { ChatContainer(it) }
+          .let { ChatContainer(it, openaiProperties.models.chat.name) }
 
   private fun ChatMessageRole.toChatRole(): ChatRole =
       when (this) {
