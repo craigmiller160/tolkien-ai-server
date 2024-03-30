@@ -1,6 +1,5 @@
 package us.craigmiller160.tolkienai.server.data.migration
 
-import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -61,7 +60,10 @@ class AbstractMigrationImplementationRunnerTest {
     }
 
     val expectedInsertedHistoryRecords = migrations.drop(1).mapIndexed(migrationToHistoryRecord(1))
-    actualInsertedHistoryRecords.shouldHaveSize(2).shouldContain(expectedInsertedHistoryRecords)
+    actualInsertedHistoryRecords.shouldHaveSize(2).mapIndexed { index, actualRecord ->
+      val expectedRecord = expectedInsertedHistoryRecords[index]
+      expectedRecord.copy(timestamp = actualRecord.timestamp).let { actualRecord.shouldBe(it) }
+    }
   }
 }
 
