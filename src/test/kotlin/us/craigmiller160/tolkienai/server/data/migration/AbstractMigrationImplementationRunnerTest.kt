@@ -63,16 +63,17 @@ class AbstractMigrationImplementationRunnerTest {
     }
 
     val expectedInsertedHistoryRecords =
-        migrations.drop(1).mapIndexed(migrationToHistoryRecord(timestamp))
+        migrations.drop(1).mapIndexed(migrationToHistoryRecord(timestamp, 1))
     actualInsertedHistoryRecords.shouldHaveSize(2).shouldContain(expectedInsertedHistoryRecords)
   }
 }
 
 private fun migrationToHistoryRecord(
-    timestamp: ZonedDateTime
+    timestamp: ZonedDateTime,
+    previousIndex: Int = 0
 ): (Int, Migration<*>) -> MigrationHistoryRecord = { index, migration ->
   MigrationHistoryRecord(
-      index = index + 1,
+      index = index + previousIndex + 1,
       name = migration.javaClass.name,
       hash = generateMigrationHash(migration),
       timestamp = timestamp)
