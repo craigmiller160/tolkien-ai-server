@@ -31,6 +31,8 @@ class AbstractMigrationImplementationRunnerTest {
               name = migration.javaClass.name,
               hash = generateMigrationHash(migration))
         }
+    val registeredMigrations =
+        migrations.map { migration -> RegisteredMigration(migration = migration, helper = "Hello") }
 
     val mongoTemplate = mockk<MongoTemplate>()
     val querySlot = slot<Query>()
@@ -38,6 +40,11 @@ class AbstractMigrationImplementationRunnerTest {
       mongoTemplate.find(
           capture(querySlot), MigrationHistoryRecord::class.java, HISTORY_COLLECTION_NAME)
     } returns historyRecords
+
+    val runner =
+        TestMigrationImplementationRunner(
+                mongoTemplate, registeredMigrations, HISTORY_COLLECTION_NAME)
+            .also { it.run() }
   }
 }
 
