@@ -5,6 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.find
 import org.springframework.data.mongodb.core.query.Query
@@ -55,8 +56,10 @@ class AbstractMigrationImplementationRunnerTest {
     migrations[1].didMigrate.shouldBe(true)
     migrations[2].didMigrate.shouldBe(true)
 
+    val expectedQuery = Query().with(Sort.by(Sort.Direction.ASC, "index"))
+    querySlot.captured.shouldBe(expectedQuery)
+
     // TODO need to verify the inserts
-    // TODO need to verify the query
   }
 }
 
