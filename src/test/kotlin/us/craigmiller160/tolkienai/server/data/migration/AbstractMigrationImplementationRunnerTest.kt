@@ -22,15 +22,16 @@ class AbstractMigrationImplementationRunnerTest {
 
     @JvmStatic
     fun migrationArgs(): Stream<MigrationArg> {
-      val migrations = listOf(MockMigration(), MockMigration(), MockMigration())
       return Stream.of(
           MigrationArg(
-              migrations = migrations,
-              history = migrations.take(1).mapIndexed(migrationToHistoryRecord()),
+              migrations = listOf(MockMigration(), MockMigration(), MockMigration()),
+              historyCreator = { migrations ->
+                migrations.take(1).mapIndexed(migrationToHistoryRecord())
+              },
               migrationCount = Result.success(2)),
           MigrationArg(
-              migrations = migrations,
-              history = migrations.mapIndexed(migrationToHistoryRecord()),
+              migrations = listOf(MockMigration(), MockMigration(), MockMigration()),
+              historyCreator = { migrations -> migrations.mapIndexed(migrationToHistoryRecord()) },
               migrationCount = Result.success(0)))
     }
   }
@@ -153,9 +154,11 @@ private fun migrationToHistoryRecord(
 
 data class MigrationArg(
     val migrations: List<MockMigration>,
-    val history: List<MigrationHistoryRecord>,
+    val historyCreator: (List<MockMigration>) -> List<MigrationHistoryRecord>,
     val migrationCount: Result<Int>
-)
+) {
+  val history: List<MigrationHistoryRecord> = historyCreator(migrations)
+}
 
 class TestMigrationImplementationRunner(
     mongoTemplate: MongoTemplate,
