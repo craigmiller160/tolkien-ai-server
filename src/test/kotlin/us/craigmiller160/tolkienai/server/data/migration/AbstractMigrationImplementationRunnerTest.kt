@@ -63,12 +63,6 @@ class AbstractMigrationImplementationRunnerTest {
                           "Migration at index 2 has invalid hash. Changes are not allowed after migration is applied."))))
     }
   }
-  /*
-   * 1) Successful new migrations
-   * 2) No new migrations to perform
-   * 3) Migration at index with invalid name
-   * 4) Migration at index with invalid hash
-   */
 
   @ParameterizedTest
   @MethodSource("migrationArgs")
@@ -94,7 +88,10 @@ class AbstractMigrationImplementationRunnerTest {
             mongoTemplate, registeredMigrations, HISTORY_COLLECTION_NAME)
     val runResult = runCatching { runner.run() }
     if (arg.migrationCount.isFailure) {
-      runResult.shouldBeFailure(arg.migrationCount.exceptionOrNull()!!)
+      runResult
+          .shouldBeFailure<MigrationException>()
+          .message
+          .shouldBe(arg.migrationCount.exceptionOrNull()!!.message)
       return
     }
 
