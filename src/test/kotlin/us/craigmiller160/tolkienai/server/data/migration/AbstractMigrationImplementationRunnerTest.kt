@@ -39,11 +39,10 @@ class AbstractMigrationImplementationRunnerTest {
   @ParameterizedTest
   @MethodSource("migrationArgs")
   fun `performs migration`(arg: MigrationArg) {
-    val migrations = listOf(MockMigration(), MockMigration(), MockMigration())
-
-    val historyRecords = migrations.take(1).mapIndexed(migrationToHistoryRecord())
     val registeredMigrations =
-        migrations.map { migration -> RegisteredMigration(migration = migration, helper = "Hello") }
+        arg.migrations.map { migration ->
+          RegisteredMigration(migration = migration, helper = "Hello")
+        }
 
     val mongoTemplate = mockk<MongoTemplate>(relaxUnitFun = true)
     val querySlot = slot<Query>()
@@ -58,12 +57,12 @@ class AbstractMigrationImplementationRunnerTest {
 
     val runner =
         TestMigrationImplementationRunner(
-                mongoTemplate, registeredMigrations, HISTORY_COLLECTION_NAME)
-            .also { it.run() }
+            mongoTemplate, registeredMigrations, HISTORY_COLLECTION_NAME)
+    val runResult = runCatching { runner.run() }
 
-    migrations[0].didMigrate.shouldBe(false)
-    migrations[1].didMigrate.shouldBe(true)
-    migrations[2].didMigrate.shouldBe(true)
+    arg.migrations[0].didMigrate.shouldBe(false)
+    arg.migrations[1].didMigrate.shouldBe(true)
+    arg.migrations[2].didMigrate.shouldBe(true)
 
     val expectedQuery = Query().with(Sort.by(Sort.Direction.ASC, "index"))
     querySlot.captured.shouldBe(expectedQuery)
@@ -134,7 +133,7 @@ private fun migrationToHistoryRecord(
 }
 
 data class MigrationArg(
-    val migrations: List<Migration<*>>,
+    val migrations: List<MockMigration>,
     val history: List<MigrationHistoryRecord>,
     val migrationCount: Result<Int>
 )
