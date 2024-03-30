@@ -1,5 +1,6 @@
 package us.craigmiller160.tolkienai.server.data.migration
 
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -45,6 +46,10 @@ class AbstractMigrationImplementationRunnerTest {
         TestMigrationImplementationRunner(
                 mongoTemplate, registeredMigrations, HISTORY_COLLECTION_NAME)
             .also { it.run() }
+
+    migrations[0].didMigrate.shouldBe(false)
+    migrations[1].didMigrate.shouldBe(true)
+    migrations[2].didMigrate.shouldBe(true)
   }
 }
 
