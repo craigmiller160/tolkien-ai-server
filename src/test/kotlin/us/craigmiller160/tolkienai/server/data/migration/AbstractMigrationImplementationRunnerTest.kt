@@ -4,10 +4,10 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.find
 import org.springframework.data.mongodb.core.query.Query
 import us.craigmiller160.tolkienai.server.data.migration.other.MockMigration
 
@@ -58,6 +58,11 @@ class AbstractMigrationImplementationRunnerTest {
 
     val expectedQuery = Query().with(Sort.by(Sort.Direction.ASC, "index"))
     querySlot.captured.shouldBe(expectedQuery)
+
+    val migrationHistoryRecords = mutableListOf<MigrationHistoryRecord>()
+    verify(exactly = 2) {
+      mongoTemplate.insert(capture(migrationHistoryRecords), HISTORY_COLLECTION_NAME)
+    }
 
     // TODO need to verify the inserts
   }
