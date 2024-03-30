@@ -21,7 +21,7 @@ abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: 
         }
 
     registeredMigrations.forEachIndexed { index, registeredMigration ->
-      val historyRecord = historyRecords[index]
+      val historyRecord = getHistoryRecord(historyRecords, index)
       val actualIndex = index + 1
       if (historyRecord == null) {
         log.debug("Running MongoDB migration: ${registeredMigration.migration.javaClass.name}")
@@ -41,6 +41,16 @@ abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: 
       }
     }
     log.debug("All migrations completed")
+  }
+
+  private fun getHistoryRecord(
+      historyRecords: List<MigrationHistoryRecord>,
+      index: Int
+  ): MigrationHistoryRecord? {
+    if (historyRecords.size > index) {
+      return historyRecords[index]
+    }
+    return null
   }
 
   private fun insertHistoryRecord(index: Int, registeredMigration: RegisteredMigration<*>) =
