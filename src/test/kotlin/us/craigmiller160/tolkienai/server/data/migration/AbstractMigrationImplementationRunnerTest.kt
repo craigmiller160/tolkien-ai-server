@@ -50,7 +50,7 @@ class AbstractMigrationImplementationRunnerTest {
     every {
       mongoTemplate.find(
           capture(querySlot), MigrationHistoryRecord::class.java, HISTORY_COLLECTION_NAME)
-    } returns historyRecords
+    } returns arg.history
 
     every {
       mongoTemplate.insert(any(MigrationHistoryRecord::class), HISTORY_COLLECTION_NAME)
@@ -84,7 +84,7 @@ class AbstractMigrationImplementationRunnerTest {
     }
 
     val expectedInsertedHistoryRecords =
-        migrations
+        arg.migrations
             .drop(arg.migrations.size - migrationCount)
             .mapIndexed(migrationToHistoryRecord(arg.migrations.size - migrationCount))
     actualInsertedHistoryRecords.shouldHaveSize(migrationCount).forEachIndexed { index, actualRecord
