@@ -21,6 +21,10 @@ class AbstractMigrationImplementationRunnerTest {
 
   @Test
   fun `performs migration`() {
+    val baseHistoryRecord =
+        MigrationHistoryRecord(index = 0, name = MockMigration::class.java.name, hash = "123")
+    val historyRecords = listOf()
+
     val mongoTemplate = mockk<MongoTemplate>()
     val querySlot = slot<Query>()
     every {
@@ -35,3 +39,10 @@ class TestMigrationImplementationRunner(
     override val registeredMigrations: List<RegisteredMigration<*>>,
     override val collectionName: String
 ) : AbstractMigrationImplementationRunner(mongoTemplate)
+
+class MockMigration : Migration<String> {
+  var didMigrate: Boolean = false
+  override fun migrate(helper: String) {
+    didMigrate = true
+  }
+}
