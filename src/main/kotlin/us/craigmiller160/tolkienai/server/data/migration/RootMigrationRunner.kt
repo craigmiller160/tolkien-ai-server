@@ -11,7 +11,8 @@ class RootMigrationRunner(private val mongoMigrationRunner: MongoMigrationRunner
   private val log = LoggerFactory.getLogger(javaClass)
   @PostConstruct
   override fun run() {
-    log.info("Finding and running database migrations")
+    log.info("Finding and running migrations")
     mongoMigrationRunner.run()
+    log.info("All migrations completed")
   }
 }

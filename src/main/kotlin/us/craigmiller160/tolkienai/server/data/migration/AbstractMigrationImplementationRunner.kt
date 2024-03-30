@@ -40,6 +40,7 @@ abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: 
             "MongoDB Migration at index $actualIndex has invalid hash. Changes are not allowed after migration is applied.")
       }
     }
+    log.debug("All migrations completed")
   }
 
   private fun insertHistoryRecord(index: Int, registeredMigration: RegisteredMigration<*>) =
