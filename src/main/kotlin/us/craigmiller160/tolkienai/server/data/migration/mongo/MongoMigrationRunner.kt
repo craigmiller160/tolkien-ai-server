@@ -10,6 +10,7 @@ class MongoMigrationRunner(
     private val mongoTemplate: MongoTemplate
 ) {
   fun run() {
+
     TODO()
   }
 }
