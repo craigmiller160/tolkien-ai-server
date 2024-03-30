@@ -35,12 +35,16 @@ class AbstractMigrationImplementationRunnerTest {
     val registeredMigrations =
         migrations.map { migration -> RegisteredMigration(migration = migration, helper = "Hello") }
 
-    val mongoTemplate = mockk<MongoTemplate>()
+    val mongoTemplate = mockk<MongoTemplate>(relaxUnitFun = true)
     val querySlot = slot<Query>()
     every {
       mongoTemplate.find(
           capture(querySlot), MigrationHistoryRecord::class.java, HISTORY_COLLECTION_NAME)
     } returns historyRecords
+
+    every {
+      mongoTemplate.insert(any(MigrationHistoryRecord::class), HISTORY_COLLECTION_NAME)
+    } answers { arg(0) }
 
     val runner =
         TestMigrationImplementationRunner(
@@ -50,6 +54,9 @@ class AbstractMigrationImplementationRunnerTest {
     migrations[0].didMigrate.shouldBe(false)
     migrations[1].didMigrate.shouldBe(true)
     migrations[2].didMigrate.shouldBe(true)
+
+    // TODO need to verify the inserts
+    // TODO need to verify the query
   }
 }
 
