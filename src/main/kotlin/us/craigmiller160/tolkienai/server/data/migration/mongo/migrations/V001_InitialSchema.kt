@@ -9,5 +9,6 @@ class V001_InitialSchema : MongoCoreMigration {
     helper.createCollection("chatLog")
     val collection = helper.getCollection("chatLog")
     collection.createIndex(Indexes.ascending("chat.chatId"))
+    collection.createIndex(Indexes.ascending("timestamp"))
   }
 }
