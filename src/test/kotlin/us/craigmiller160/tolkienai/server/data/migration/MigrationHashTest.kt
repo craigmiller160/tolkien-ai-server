@@ -15,7 +15,7 @@ class MigrationHashTest {
     val expected =
         Paths.get(
                 System.getProperty("user.dir"),
-                "build/classes/kotlin/test/kotlin/us/craigmiller160/tolkienai/server/data/migration/other/DummyMigration.class")
+                "build/classes/kotlin/test/us/craigmiller160/tolkienai/server/data/migration/other/DummyMigration.class")
             .readBytes()
             .let { digest.digest(it) }
             .let { Hex.encodeHexString(it) }
