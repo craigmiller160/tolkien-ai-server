@@ -23,9 +23,7 @@ class MongoMigrationRunner(
   }
 
   private fun <T> runMigration(index: Int, migration: Migration<T>, helper: T) {
-    val name = "${migration.javaClass.name.replace('.', '/')}.class"
-    val uri = javaClass.classLoader.getResource(name).toURI()
-    println(Paths.get(uri))
+    val hash = generateHash(migration)
     //    migration.migrate(helper)
   }
 }
