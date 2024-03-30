@@ -33,6 +33,7 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration/mongo
+    url: ${spring.data.mongodb.uri}
 
   data:
     mongodb:
