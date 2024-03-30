@@ -1,19 +1,17 @@
 package us.craigmiller160.tolkienai.server.data.migration.mongo
 
 import com.mongodb.client.MongoClient
-import java.nio.file.Paths
-import java.security.MessageDigest
-import kotlin.io.path.readBytes
-import org.apache.commons.codec.binary.Hex
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Component
-import us.craigmiller160.tolkienai.server.data.migration.Migration
 import us.craigmiller160.tolkienai.server.data.migration.MigrationHistoryRecord
+import us.craigmiller160.tolkienai.server.data.migration.RegisteredMigration
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
+import us.craigmiller160.tolkienai.server.data.migration.generateHash
+import us.craigmiller160.tolkienai.server.data.migration.migrate
 import us.craigmiller160.tolkienai.server.data.migration.mongo.migrations.V001_InitialSchema
 
 @Component
@@ -44,7 +42,7 @@ class MongoMigrationRunner(
       val actualIndex = index + 1
       if (historyRecord == null) {
         log.debug("Running MongoDB migration: ${registeredMigration.migration.javaClass.name}")
-        registeredMigration.run()
+        registeredMigration.migrate()
         insertHistoryRecord(actualIndex, registeredMigration)
         return@forEachIndexed
       }
@@ -67,15 +65,4 @@ class MongoMigrationRunner(
               name = registeredMigration.migration.javaClass.name,
               hash = registeredMigration.generateHash())
           .let { mongoTemplate.insert(it, MONGO_MIGRATION_HISTORY_COLLECTION) }
-}
-
-data class RegisteredMigration<T>(val migration: Migration<T>, val helper: T)
-
-fun <T> RegisteredMigration<T>.run() = migration.migrate(helper)
-
-fun <T> RegisteredMigration<T>.generateHash(): String {
-  val name = "${migration.javaClass.name.replace('.', '/')}.class"
-  val uri = migration.javaClass.classLoader.getResource(name).toURI()
-  val digest = MessageDigest.getInstance("SHA-256")
-  return Paths.get(uri).readBytes().let { digest.digest(it) }.let { Hex.encodeHexString(it) }
 }
