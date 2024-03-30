@@ -57,6 +57,7 @@ class ChatService(
       ChatResponse(
               chatId = id,
               response = chatResult.response,
+              model = chatResult.model,
               explanation = ChatExplanation(query = baseMessages, embeddingMatches = textMatches))
           .also { chatLogRepository.insertChatLog(it) }
     }

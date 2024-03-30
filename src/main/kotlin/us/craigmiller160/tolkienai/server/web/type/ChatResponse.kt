@@ -8,4 +8,9 @@ data class ChatExplanation(
     val embeddingMatches: List<String>
 )
 
-data class ChatResponse(val chatId: UUID, val response: String, val explanation: ChatExplanation)
+data class ChatResponse(
+    val chatId: UUID,
+    val model: String,
+    val response: String,
+    val explanation: ChatExplanation
+)
