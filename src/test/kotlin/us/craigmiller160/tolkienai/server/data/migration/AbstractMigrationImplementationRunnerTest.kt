@@ -7,6 +7,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.time.ZonedDateTime
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -27,8 +28,9 @@ class AbstractMigrationImplementationRunnerTest {
   @Test
   fun `performs migration`() {
     val migrations = listOf(MockMigration(), MockMigration(), MockMigration())
+    val timestamp = ZonedDateTime.now()
 
-    val historyRecords = migrations.take(1).mapIndexed(::migrationToHistoryRecord)
+    val historyRecords = migrations.take(1).mapIndexed(migrationToHistoryRecord(timestamp))
     val registeredMigrations =
         migrations.map { migration -> RegisteredMigration(migration = migration, helper = "Hello") }
 
@@ -60,14 +62,21 @@ class AbstractMigrationImplementationRunnerTest {
       mongoTemplate.insert(capture(actualInsertedHistoryRecords), HISTORY_COLLECTION_NAME)
     }
 
-    val expectedInsertedHistoryRecords = migrations.drop(1).mapIndexed(::migrationToHistoryRecord)
+    val expectedInsertedHistoryRecords =
+        migrations.drop(1).mapIndexed(migrationToHistoryRecord(timestamp))
     actualInsertedHistoryRecords.shouldHaveSize(2).shouldContain(expectedInsertedHistoryRecords)
   }
 }
 
-private fun migrationToHistoryRecord(index: Int, migration: Migration<*>): MigrationHistoryRecord =
-    MigrationHistoryRecord(
-        index = index + 1, name = migration.javaClass.name, hash = generateMigrationHash(migration))
+private fun migrationToHistoryRecord(
+    timestamp: ZonedDateTime
+): (Int, Migration<*>) -> MigrationHistoryRecord = { index, migration ->
+  MigrationHistoryRecord(
+      index = index + 1,
+      name = migration.javaClass.name,
+      hash = generateMigrationHash(migration),
+      timestamp = timestamp)
+}
 
 class TestMigrationImplementationRunner(
     mongoTemplate: MongoTemplate,
