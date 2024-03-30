@@ -23,7 +23,7 @@ class AbstractMigrationImplementationRunnerTest {
   fun `performs migration`() {
     val baseHistoryRecord =
         MigrationHistoryRecord(index = 0, name = MockMigration::class.java.name, hash = "123")
-    val historyRecords = listOf()
+    //    val historyRecords = listOf()
 
     val mongoTemplate = mockk<MongoTemplate>()
     val querySlot = slot<Query>()
