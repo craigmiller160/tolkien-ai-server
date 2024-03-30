@@ -27,6 +27,7 @@ dependencies {
     val kotlinCoroutinesVersion = "1.8.0"
 
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+    implementation("org.flywaydb:flyway-core:10.10.0")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-actuator")

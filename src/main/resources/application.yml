@@ -30,6 +30,10 @@ spring:
   profiles:
     active: dev
 
+  flyway:
+    enabled: true
+    locations: classpath:db/migration/mongo
+
   data:
     mongodb:
       uri: mongodb://${spring.data.mongodb.username}:${spring.data.mongodb.password}@craigpc:30021/${spring.data.mongodb.database}?ssl=true&authSource=admin
