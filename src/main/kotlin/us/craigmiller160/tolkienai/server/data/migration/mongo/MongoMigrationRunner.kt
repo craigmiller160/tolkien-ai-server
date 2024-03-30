@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Component
 import us.craigmiller160.tolkienai.server.data.migration.Migration
 import us.craigmiller160.tolkienai.server.data.migration.MigrationHistoryRecord
+import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
 import us.craigmiller160.tolkienai.server.data.migration.mongo.migrations.V001_InitialSchema
 
 @Component
@@ -40,18 +41,29 @@ class MongoMigrationRunner(
         }
     registeredMigrations.forEachIndexed { index, registeredMigration ->
       val historyRecord = historyRecords[index]
+      val actualIndex = index + 1
       if (historyRecord == null) {
         log.debug("Running MongoDB migration: ${registeredMigration.migration.javaClass.name}")
         registeredMigration.run()
-        insertHistoryRecord(index, registeredMigration)
+        insertHistoryRecord(actualIndex, registeredMigration)
         return@forEachIndexed
+      }
+
+      if (historyRecord.name != registeredMigration.migration.javaClass.name) {
+        throw MigrationException(
+            "MongoDB Migration at index $actualIndex has incorrect name. Expected: ${historyRecord.name} Actual: ${registeredMigration.migration.javaClass.name}")
+      }
+
+      if (historyRecord.hash != registeredMigration.generateHash()) {
+        throw MigrationException(
+            "MongoDB Migration at index $actualIndex has invalid hash. Changes are not allowed after migration is applied.")
       }
     }
   }
 
   private fun insertHistoryRecord(index: Int, registeredMigration: RegisteredMigration<*>) =
       MigrationHistoryRecord(
-              index = index + 1,
+              index = index,
               name = registeredMigration.migration.javaClass.name,
               hash = registeredMigration.generateHash())
           .let { mongoTemplate.insert(it, MONGO_MIGRATION_HISTORY_COLLECTION) }
