@@ -10,7 +10,7 @@ import us.craigmiller160.tolkienai.server.ai.dto.floatEmbedding
 import us.craigmiller160.tolkienai.server.ai.service.OpenAiService
 import us.craigmiller160.tolkienai.server.ai.service.WeaviateService
 import us.craigmiller160.tolkienai.server.config.ChatProperties
-import us.craigmiller160.tolkienai.server.web.data.repository.ChatLogRepository
+import us.craigmiller160.tolkienai.server.data.repository.ChatLogRepository
 import us.craigmiller160.tolkienai.server.web.type.ChatExplanation
 import us.craigmiller160.tolkienai.server.web.type.ChatRequest
 import us.craigmiller160.tolkienai.server.web.type.ChatResponse

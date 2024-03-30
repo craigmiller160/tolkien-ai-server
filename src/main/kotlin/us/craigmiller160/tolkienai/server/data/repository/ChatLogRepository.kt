@@ -1,10 +1,10 @@
-package us.craigmiller160.tolkienai.server.web.data.repository
+package us.craigmiller160.tolkienai.server.data.repository
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Repository
-import us.craigmiller160.tolkienai.server.web.data.entity.ChatLog
+import us.craigmiller160.tolkienai.server.data.entity.ChatLog
 import us.craigmiller160.tolkienai.server.web.type.ChatResponse
 
 @Repository
