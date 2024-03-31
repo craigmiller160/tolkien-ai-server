@@ -11,9 +11,6 @@ import org.springframework.data.mongodb.core.query.Query
 import us.craigmiller160.tolkienai.server.config.MigrationImplementationProperties
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
 import us.craigmiller160.tolkienai.server.data.migration.other.AbstractMockMigration
-import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240330__InitialMigration
-import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240331__MigrationTwo
-import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240401__MigrationThree
 import us.craigmiller160.tolkienai.server.data.migration.test_migrations.bad.BadMockMigration
 
 class AbstractMigrationImplementationRunnerTest {
@@ -27,15 +24,15 @@ class AbstractMigrationImplementationRunnerTest {
     fun migrationArgs(): Stream<MigrationArg> {
       return Stream.of(
           MigrationArg(
-              migrations = defaultMigrationList(),
+              migrationPaths = listOf(DEFAULT_MIGRATION_LOCATION),
               historyCreator = newHistoryCreator { it.take(1) },
               migrationCount = Result.success(2)),
           MigrationArg(
-              migrations = defaultMigrationList(),
+              migrationPaths = listOf(DEFAULT_MIGRATION_LOCATION),
               historyCreator = newHistoryCreator(),
               migrationCount = Result.success(0)),
           MigrationArg(
-              migrations = defaultMigrationList(),
+              migrationPaths = listOf(DEFAULT_MIGRATION_LOCATION),
               historyCreator =
                   newHistoryCreator { history ->
                     history.mapIndexed { index, record ->
@@ -50,7 +47,7 @@ class AbstractMigrationImplementationRunnerTest {
                       MigrationException(
                           "Migration at index 2 has incorrect version. Expected: abc Actual: 20240331"))),
           MigrationArg(
-              migrations = defaultMigrationList(),
+              migrationPaths = listOf(DEFAULT_MIGRATION_LOCATION),
               historyCreator =
                   newHistoryCreator { history ->
                     history.mapIndexed { index, record ->
@@ -65,7 +62,7 @@ class AbstractMigrationImplementationRunnerTest {
                       MigrationException(
                           "Migration at index 2 has incorrect name. Expected: abc Actual: MigrationTwo"))),
           MigrationArg(
-              migrations = defaultMigrationList(),
+              migrationPaths = listOf(DEFAULT_MIGRATION_LOCATION),
               historyCreator =
                   newHistoryCreator { history ->
                     history.mapIndexed { index, record ->
@@ -80,7 +77,7 @@ class AbstractMigrationImplementationRunnerTest {
                       MigrationException(
                           "Migration at index 2 has invalid hash. Changes are not allowed after migration is applied."))),
           MigrationArg(
-              migrations = defaultMigrationList().let { it.take(2) + listOf(BadMockMigration()) },
+              migrationPaths = listOf(DEFAULT_MIGRATION_LOCATION, BAD_MIGRATION_LOCATION),
               historyCreator = newHistoryCreator(),
               migrationCount =
                   Result.failure(
@@ -168,9 +165,6 @@ private fun migrationToHistoryRecord(
       version = migrationName.version,
       hash = generateMigrationHash(migration))
 }
-
-private fun defaultMigrationList(): List<AbstractMockMigration> =
-    listOf(V20240330__InitialMigration(), V20240331__MigrationTwo(), V20240401__MigrationThree())
 
 private fun newHistoryCreator(
     modifier: (List<MigrationHistoryRecord>) -> (List<MigrationHistoryRecord>) = { it }
