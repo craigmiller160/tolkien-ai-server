@@ -24,18 +24,24 @@ abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: 
 
     registeredMigrations.forEachIndexed { index, registeredMigration ->
       val actualIndex = index + 1
-      getMigrationName(actualIndex, registeredMigration.migration)
+      val migrationName = getMigrationName(actualIndex, registeredMigration.migration)
       val historyRecord = getHistoryRecord(historyRecords, index)
       if (historyRecord == null) {
         log.debug("Running MongoDB migration: ${registeredMigration.migration.javaClass.name}")
         registeredMigration.migrate()
-        insertHistoryRecord(actualIndex, registeredMigration)
+        insertHistoryRecord(actualIndex, registeredMigration, migrationName)
         return@forEachIndexed
       }
 
-      if (historyRecord.name != registeredMigration.migration.javaClass.name) {
+      // TODO add test for this
+      if (historyRecord.version != migrationName.version) {
         throw MigrationException(
-            "Migration at index $actualIndex has incorrect name. Expected: ${historyRecord.name} Actual: ${registeredMigration.migration.javaClass.name}")
+            "Migration at index $actualIndex has incorrect version. Expected: ${historyRecord.version} Actual: ${migrationName.version}")
+      }
+
+      if (historyRecord.name != migrationName.name) {
+        throw MigrationException(
+            "Migration at index $actualIndex has incorrect name. Expected: ${historyRecord.name} Actual: ${migrationName.name}")
       }
 
       if (historyRecord.hash != registeredMigration.generateHash()) {
@@ -56,10 +62,15 @@ abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: 
     return null
   }
 
-  private fun insertHistoryRecord(index: Int, registeredMigration: RegisteredMigration<*>) =
+  private fun insertHistoryRecord(
+      index: Int,
+      registeredMigration: RegisteredMigration<*>,
+      migrationName: MigrationName
+  ) =
       MigrationHistoryRecord(
               index = index,
-              name = registeredMigration.migration.javaClass.name,
+              version = migrationName.version,
+              name = migrationName.name,
               hash = registeredMigration.generateHash())
           .let { mongoTemplate.insert(it, collectionName) }
 }
