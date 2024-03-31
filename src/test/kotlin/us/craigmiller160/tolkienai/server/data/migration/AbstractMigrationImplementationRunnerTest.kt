@@ -15,7 +15,6 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
 import us.craigmiller160.tolkienai.server.data.migration.other.AbstractMockMigration
-import us.craigmiller160.tolkienai.server.data.migration.other.MockMigration
 import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V1_20240331__MigrationTwo
 import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V1_20240401__MigrationThree
 import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V1__InitialMigration
@@ -62,7 +61,7 @@ class AbstractMigrationImplementationRunnerTest {
               migrationCount =
                   Result.failure(
                       MigrationException(
-                          "Migration at index 2 has incorrect name. Expected: abc Actual: ${MockMigration::class.java.name}"))),
+                          "Migration at index 2 has incorrect name. Expected: abc Actual: ${V1_20240331__MigrationTwo::class.java.name}"))),
           MigrationArg(
               migrations =
                   listOf(
