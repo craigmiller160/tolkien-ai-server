@@ -28,29 +28,17 @@ class AbstractMigrationImplementationRunnerTest {
     fun migrationArgs(): Stream<MigrationArg> {
       return Stream.of(
           MigrationArg(
-              migrations =
-                  listOf(
-                      V20240330__InitialMigration(),
-                      V20240331__MigrationTwo(),
-                      V20240401__MigrationThree()),
+              migrations = defaultMigrationList(),
               historyCreator = { migrations ->
                 migrations.take(1).mapIndexed(migrationToHistoryRecord())
               },
               migrationCount = Result.success(2)),
           MigrationArg(
-              migrations =
-                  listOf(
-                      V20240330__InitialMigration(),
-                      V20240331__MigrationTwo(),
-                      V20240401__MigrationThree()),
+              migrations = defaultMigrationList(),
               historyCreator = { migrations -> migrations.mapIndexed(migrationToHistoryRecord()) },
               migrationCount = Result.success(0)),
           MigrationArg(
-              migrations =
-                  listOf(
-                      V20240330__InitialMigration(),
-                      V20240331__MigrationTwo(),
-                      V20240401__MigrationThree()),
+              migrations = defaultMigrationList(),
               historyCreator = { migrations ->
                 migrations.mapIndexed(migrationToHistoryRecord()).mapIndexed { index, record ->
                   if (index == 1) {
@@ -64,11 +52,7 @@ class AbstractMigrationImplementationRunnerTest {
                       MigrationException(
                           "Migration at index 2 has incorrect name. Expected: abc Actual: ${V20240331__MigrationTwo::class.java.name}"))),
           MigrationArg(
-              migrations =
-                  listOf(
-                      V20240330__InitialMigration(),
-                      V20240331__MigrationTwo(),
-                      V20240401__MigrationThree()),
+              migrations = defaultMigrationList(),
               historyCreator = { migrations ->
                 migrations.mapIndexed(migrationToHistoryRecord()).mapIndexed { index, record ->
                   if (index == 1) {
@@ -82,9 +66,7 @@ class AbstractMigrationImplementationRunnerTest {
                       MigrationException(
                           "Migration at index 2 has invalid hash. Changes are not allowed after migration is applied."))),
           MigrationArg(
-              migrations =
-                  listOf(
-                      V20240330__InitialMigration(), V20240331__MigrationTwo(), BadMockMigration()),
+              migrations = defaultMigrationList().let { it.take(2) + listOf(BadMockMigration()) },
               historyCreator = { migrations -> migrations.mapIndexed(migrationToHistoryRecord()) },
               migrationCount =
                   Result.failure(
@@ -162,6 +144,9 @@ private fun migrationToHistoryRecord(
       name = migration.javaClass.name,
       hash = generateMigrationHash(migration))
 }
+
+private fun defaultMigrationList(): List<AbstractMockMigration> =
+    listOf(V20240330__InitialMigration(), V20240331__MigrationTwo(), V20240401__MigrationThree())
 
 data class MigrationArg(
     val migrations: List<AbstractMockMigration>,
