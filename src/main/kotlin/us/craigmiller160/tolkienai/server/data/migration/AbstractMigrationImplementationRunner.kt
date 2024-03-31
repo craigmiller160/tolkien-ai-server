@@ -18,6 +18,7 @@ abstract class AbstractMigrationImplementationRunner<Helper>(
   abstract val collectionName: String
 
   abstract val helper: Helper
+
   override fun run() {
     log.debug("Finding and running migrations")
     val historyRecords =
