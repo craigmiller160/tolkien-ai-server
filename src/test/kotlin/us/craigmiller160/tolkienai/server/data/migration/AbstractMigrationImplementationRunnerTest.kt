@@ -1,17 +1,11 @@
 package us.craigmiller160.tolkienai.server.data.migration
 
-import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.result.shouldBeFailure
-import io.kotest.matchers.result.shouldBeSuccess
-import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import io.mockk.verify
 import java.util.stream.Stream
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import us.craigmiller160.tolkienai.server.config.MigrationImplementationProperties
@@ -114,46 +108,50 @@ class AbstractMigrationImplementationRunnerTest {
       mongoTemplate.insert(any(MigrationHistoryRecord::class), HISTORY_COLLECTION_NAME)
     } answers { arg(0) }
 
-    val runner =
-        TestMigrationImplementationRunner(
-            mongoTemplate, registeredMigrations, HISTORY_COLLECTION_NAME)
-    val runResult = runCatching { runner.run() }
-    if (arg.migrationCount.isFailure) {
-      runResult
-          .shouldBeFailure<MigrationException>()
-          .message
-          .shouldBe(arg.migrationCount.exceptionOrNull()!!.message)
-      return
-    }
+    TODO()
 
-    val migrationCount = arg.migrationCount.getOrThrow()
-    runResult.shouldBeSuccess()
-
-    arg.migrations.take(arg.migrations.size - migrationCount).forEach { migration ->
-      migration.didMigrate.shouldBe(false)
-    }
-
-    arg.migrations.drop(arg.migrations.size - migrationCount).forEach { migration ->
-      migration.didMigrate.shouldBe(true)
-    }
-
-    val expectedQuery = Query().with(Sort.by(Sort.Direction.ASC, "index"))
-    querySlot.captured.shouldBe(expectedQuery)
-
-    val actualInsertedHistoryRecords = mutableListOf<MigrationHistoryRecord>()
-    verify(exactly = migrationCount) {
-      mongoTemplate.insert(capture(actualInsertedHistoryRecords), HISTORY_COLLECTION_NAME)
-    }
-
-    val expectedInsertedHistoryRecords =
-        arg.migrations
-            .drop(arg.migrations.size - migrationCount)
-            .mapIndexed(migrationToHistoryRecord(arg.migrations.size - migrationCount))
-    actualInsertedHistoryRecords.shouldHaveSize(migrationCount).forEachIndexed { index, actualRecord
-      ->
-      val expectedRecord = expectedInsertedHistoryRecords[index]
-      expectedRecord.copy(timestamp = actualRecord.timestamp).let { actualRecord.shouldBe(it) }
-    }
+    //    val runner =
+    //        TestMigrationImplementationRunner(
+    //            mongoTemplate, registeredMigrations, HISTORY_COLLECTION_NAME)
+    //    val runResult = runCatching { runner.run() }
+    //    if (arg.migrationCount.isFailure) {
+    //      runResult
+    //          .shouldBeFailure<MigrationException>()
+    //          .message
+    //          .shouldBe(arg.migrationCount.exceptionOrNull()!!.message)
+    //      return
+    //    }
+    //
+    //    val migrationCount = arg.migrationCount.getOrThrow()
+    //    runResult.shouldBeSuccess()
+    //
+    //    arg.migrations.take(arg.migrations.size - migrationCount).forEach { migration ->
+    //      migration.didMigrate.shouldBe(false)
+    //    }
+    //
+    //    arg.migrations.drop(arg.migrations.size - migrationCount).forEach { migration ->
+    //      migration.didMigrate.shouldBe(true)
+    //    }
+    //
+    //    val expectedQuery = Query().with(Sort.by(Sort.Direction.ASC, "index"))
+    //    querySlot.captured.shouldBe(expectedQuery)
+    //
+    //    val actualInsertedHistoryRecords = mutableListOf<MigrationHistoryRecord>()
+    //    verify(exactly = migrationCount) {
+    //      mongoTemplate.insert(capture(actualInsertedHistoryRecords), HISTORY_COLLECTION_NAME)
+    //    }
+    //
+    //    val expectedInsertedHistoryRecords =
+    //        arg.migrations
+    //            .drop(arg.migrations.size - migrationCount)
+    //            .mapIndexed(migrationToHistoryRecord(arg.migrations.size - migrationCount))
+    //    actualInsertedHistoryRecords.shouldHaveSize(migrationCount).forEachIndexed { index,
+    // actualRecord
+    //      ->
+    //      val expectedRecord = expectedInsertedHistoryRecords[index]
+    //      expectedRecord.copy(timestamp = actualRecord.timestamp).let { actualRecord.shouldBe(it)
+    // }
+    //    }
   }
 }
 
