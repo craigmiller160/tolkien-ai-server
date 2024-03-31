@@ -11,4 +11,5 @@ fun getMigrationName(index: Int, migration: Migration<*>): MigrationName {
     throw MigrationException(
         "Migration at index $index has invalid name: ${migration.javaClass.simpleName}")
   }
+  return MigrationName(version = "", name = "")
 }
