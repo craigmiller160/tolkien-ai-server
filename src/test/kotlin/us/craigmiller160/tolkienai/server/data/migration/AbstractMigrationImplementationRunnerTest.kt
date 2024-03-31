@@ -50,7 +50,7 @@ class AbstractMigrationImplementationRunnerTest {
               migrationCount =
                   Result.failure(
                       MigrationException(
-                          "Migration at index 2 has incorrect name. Expected: abc Actual: ${V20240331__MigrationTwo::class.java.name}"))),
+                          "Migration at index 2 has incorrect name. Expected: abc Actual: MigrationTwo"))),
           MigrationArg(
               migrations = defaultMigrationList(),
               historyCreator =
