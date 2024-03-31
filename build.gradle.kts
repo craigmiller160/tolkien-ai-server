@@ -34,7 +34,9 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    implementation("io.weaviate:client:4.6.0")
+    implementation("io.weaviate:client:4.6.0") {
+        exclude("commons-logging", "commons-logging")
+    }
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlinCoroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:$kotlinCoroutinesVersion")
     implementation("io.craigmiller160:spring-keycloak-oauth2-resource-server:1.0.0")
