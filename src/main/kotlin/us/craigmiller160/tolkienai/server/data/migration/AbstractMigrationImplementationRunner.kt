@@ -19,42 +19,45 @@ abstract class AbstractMigrationImplementationRunner<Helper>(
 
   abstract val helper: Helper
 
-  override fun run() {
+  override fun run(): List<MigrationReport> {
     log.debug("Finding and running migrations")
     val historyRecords =
         Query().with(Sort.by(Sort.Direction.ASC, "index")).let { query ->
           mongoTemplate.find(query, MigrationHistoryRecord::class.java, collectionName)
         }
 
-    val migrations = loadMigrations<Helper>(*properties.migrationPaths.toTypedArray())
+    return loadMigrations<Helper>(*properties.migrationPaths.toTypedArray())
+        .mapIndexed { index, migration ->
+          val actualIndex = index + 1
+          val migrationName = getMigrationName(actualIndex, migration)
+          val historyRecord = getHistoryRecord(historyRecords, index)
+          if (historyRecord == null) {
+            log.debug("Running MongoDB migration: ${migration.javaClass.name}")
+            migration.migrate(helper)
+            insertHistoryRecord(actualIndex, migration, migrationName)
+            return@mapIndexed MigrationReport(
+                migrationName = migration.javaClass.simpleName, executed = true)
+          }
 
-    migrations.forEachIndexed { index, migration ->
-      val actualIndex = index + 1
-      val migrationName = getMigrationName(actualIndex, migration)
-      val historyRecord = getHistoryRecord(historyRecords, index)
-      if (historyRecord == null) {
-        log.debug("Running MongoDB migration: ${migration.javaClass.name}")
-        migration.migrate(helper)
-        insertHistoryRecord(actualIndex, migration, migrationName)
-        return@forEachIndexed
-      }
+          if (historyRecord.version != migrationName.version) {
+            throw MigrationException(
+                "Migration at index $actualIndex has incorrect version. Expected: ${historyRecord.version} Actual: ${migrationName.version}")
+          }
 
-      if (historyRecord.version != migrationName.version) {
-        throw MigrationException(
-            "Migration at index $actualIndex has incorrect version. Expected: ${historyRecord.version} Actual: ${migrationName.version}")
-      }
+          if (historyRecord.name != migrationName.name) {
+            throw MigrationException(
+                "Migration at index $actualIndex has incorrect name. Expected: ${historyRecord.name} Actual: ${migrationName.name}")
+          }
 
-      if (historyRecord.name != migrationName.name) {
-        throw MigrationException(
-            "Migration at index $actualIndex has incorrect name. Expected: ${historyRecord.name} Actual: ${migrationName.name}")
-      }
+          if (historyRecord.hash != generateMigrationHash(migration)) {
+            throw MigrationException(
+                "Migration at index $actualIndex has invalid hash. Changes are not allowed after migration is applied.")
+          }
 
-      if (historyRecord.hash != generateMigrationHash(migration)) {
-        throw MigrationException(
-            "Migration at index $actualIndex has invalid hash. Changes are not allowed after migration is applied.")
-      }
-    }
-    log.debug("All migrations completed")
+          return@mapIndexed MigrationReport(
+              migrationName = migration.javaClass.simpleName, executed = false)
+        }
+        .also { log.debug("All migrations completed") }
   }
 
   private fun getHistoryRecord(
