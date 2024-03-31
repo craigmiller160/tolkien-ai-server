@@ -4,10 +4,13 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
+import us.craigmiller160.tolkienai.server.config.MigrationImplementationProperties
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
 
-abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: MongoTemplate) :
-    MigrationRunner {
+abstract class AbstractMigrationImplementationRunner(
+    private val mongoTemplate: MongoTemplate,
+    private val properties: MigrationImplementationProperties
+) : MigrationRunner {
   companion object {}
 
   private val log = LoggerFactory.getLogger(javaClass)
