@@ -39,6 +39,9 @@ spring:
       mongo:
         migration-paths:
           - classpath:us/craigmiller160/tolkienai/server/data/migration/mongo/migrations
+      weaviate:
+        migration-paths:
+          - classpath:us/craigmiller160/tolkienai/server/data/migration/weaviate/migrations
 
   security:
     keycloak:
