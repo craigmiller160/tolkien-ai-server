@@ -143,9 +143,12 @@ typealias HistoryCreator = (List<AbstractMockMigration>) -> List<MigrationHistor
 private fun migrationToHistoryRecord(
     previousIndex: Int = 0
 ): (Int, Migration<*>) -> MigrationHistoryRecord = { index, migration ->
+  val migrationName =
+      runCatching { getMigrationName(index, migration) }.getOrElse { MigrationName("", "") }
   MigrationHistoryRecord(
       index = index + previousIndex + 1,
-      name = migration.javaClass.name,
+      name = migrationName.name,
+      version = migrationName.version,
       hash = generateMigrationHash(migration))
 }
 
