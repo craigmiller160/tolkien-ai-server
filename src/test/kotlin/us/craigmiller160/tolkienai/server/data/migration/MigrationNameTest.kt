@@ -7,8 +7,8 @@ import java.util.stream.Stream
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
-import us.craigmiller160.tolkienai.server.data.migration.other.BadMockMigration
 import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240330__InitialMigration
+import us.craigmiller160.tolkienai.server.data.migration.test_migrations.bad.BadMockMigration
 
 class MigrationNameTest {
   companion object {

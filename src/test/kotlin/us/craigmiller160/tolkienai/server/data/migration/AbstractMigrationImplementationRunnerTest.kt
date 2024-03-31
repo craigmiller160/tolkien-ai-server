@@ -17,16 +17,17 @@ import org.springframework.data.mongodb.core.query.Query
 import us.craigmiller160.tolkienai.server.config.MigrationImplementationProperties
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
 import us.craigmiller160.tolkienai.server.data.migration.other.AbstractMockMigration
-import us.craigmiller160.tolkienai.server.data.migration.other.BadMockMigration
 import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240330__InitialMigration
 import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240331__MigrationTwo
 import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240401__MigrationThree
+import us.craigmiller160.tolkienai.server.data.migration.test_migrations.bad.BadMockMigration
 
 class AbstractMigrationImplementationRunnerTest {
   companion object {
     private const val HISTORY_COLLECTION_NAME = "history_collection"
     private const val DEFAULT_MIGRATION_LOCATION =
         "classpath:us/craigmiller160/tolkienai/server/data/migration/test_migrations"
+    private const val BAD_MIGRATION_LOCATION = "$DEFAULT_MIGRATION_LOCATION/bad"
 
     @JvmStatic
     fun migrationArgs(): Stream<MigrationArg> {
