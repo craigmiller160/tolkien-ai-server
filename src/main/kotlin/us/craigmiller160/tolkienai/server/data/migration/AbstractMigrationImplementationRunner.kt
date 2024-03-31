@@ -8,9 +8,7 @@ import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationExce
 
 abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: MongoTemplate) :
     MigrationRunner {
-  companion object {
-    private val MIGRATION_NAME_REGEX = Regex("^V(?<version>.+)__(?<name>.+)\$")
-  }
+  companion object {}
 
   private val log = LoggerFactory.getLogger(javaClass)
 
@@ -26,22 +24,23 @@ abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: 
 
     registeredMigrations.forEachIndexed { index, registeredMigration ->
       val actualIndex = index + 1
-      if (!MIGRATION_NAME_REGEX.matches(registeredMigration.migration.javaClass.simpleName)) {
-        throw MigrationException(
-            "Migration at index $actualIndex has invalid name: ${registeredMigration.migration.javaClass.name}")
-      }
-
+      val migrationName = getMigrationName(actualIndex, registeredMigration.migration)
       val historyRecord = getHistoryRecord(historyRecords, index)
       if (historyRecord == null) {
         log.debug("Running MongoDB migration: ${registeredMigration.migration.javaClass.name}")
         registeredMigration.migrate()
-        insertHistoryRecord(actualIndex, registeredMigration)
+        insertHistoryRecord(actualIndex, registeredMigration, migrationName)
         return@forEachIndexed
       }
 
-      if (historyRecord.name != registeredMigration.migration.javaClass.name) {
+      if (historyRecord.version != migrationName.version) {
         throw MigrationException(
-            "Migration at index $actualIndex has incorrect name. Expected: ${historyRecord.name} Actual: ${registeredMigration.migration.javaClass.name}")
+            "Migration at index $actualIndex has incorrect version. Expected: ${historyRecord.version} Actual: ${migrationName.version}")
+      }
+
+      if (historyRecord.name != migrationName.name) {
+        throw MigrationException(
+            "Migration at index $actualIndex has incorrect name. Expected: ${historyRecord.name} Actual: ${migrationName.name}")
       }
 
       if (historyRecord.hash != registeredMigration.generateHash()) {
@@ -62,10 +61,15 @@ abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: 
     return null
   }
 
-  private fun insertHistoryRecord(index: Int, registeredMigration: RegisteredMigration<*>) =
+  private fun insertHistoryRecord(
+      index: Int,
+      registeredMigration: RegisteredMigration<*>,
+      migrationName: MigrationName
+  ) =
       MigrationHistoryRecord(
               index = index,
-              name = registeredMigration.migration.javaClass.name,
+              version = migrationName.version,
+              name = migrationName.name,
               hash = registeredMigration.generateHash())
           .let { mongoTemplate.insert(it, collectionName) }
 }

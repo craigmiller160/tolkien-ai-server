@@ -42,6 +42,21 @@ class AbstractMigrationImplementationRunnerTest {
                   newHistoryCreator { history ->
                     history.mapIndexed { index, record ->
                       if (index == 1) {
+                        return@mapIndexed record.copy(version = "abc")
+                      }
+                      return@mapIndexed record
+                    }
+                  },
+              migrationCount =
+                  Result.failure(
+                      MigrationException(
+                          "Migration at index 2 has incorrect version. Expected: abc Actual: 20240331"))),
+          MigrationArg(
+              migrations = defaultMigrationList(),
+              historyCreator =
+                  newHistoryCreator { history ->
+                    history.mapIndexed { index, record ->
+                      if (index == 1) {
                         return@mapIndexed record.copy(name = "abc")
                       }
                       return@mapIndexed record
@@ -50,7 +65,7 @@ class AbstractMigrationImplementationRunnerTest {
               migrationCount =
                   Result.failure(
                       MigrationException(
-                          "Migration at index 2 has incorrect name. Expected: abc Actual: ${V20240331__MigrationTwo::class.java.name}"))),
+                          "Migration at index 2 has incorrect name. Expected: abc Actual: MigrationTwo"))),
           MigrationArg(
               migrations = defaultMigrationList(),
               historyCreator =
@@ -72,7 +87,7 @@ class AbstractMigrationImplementationRunnerTest {
               migrationCount =
                   Result.failure(
                       MigrationException(
-                          "Migration at index 3 has invalid name: ${BadMockMigration::class.java.name}"))))
+                          "Migration at index 3 has invalid name: ${BadMockMigration::class.java.simpleName}"))))
     }
   }
 
@@ -143,9 +158,12 @@ typealias HistoryCreator = (List<AbstractMockMigration>) -> List<MigrationHistor
 private fun migrationToHistoryRecord(
     previousIndex: Int = 0
 ): (Int, Migration<*>) -> MigrationHistoryRecord = { index, migration ->
+  val migrationName =
+      runCatching { getMigrationName(index, migration) }.getOrElse { MigrationName("", "") }
   MigrationHistoryRecord(
       index = index + previousIndex + 1,
-      name = migration.javaClass.name,
+      name = migrationName.name,
+      version = migrationName.version,
       hash = generateMigrationHash(migration))
 }
 
