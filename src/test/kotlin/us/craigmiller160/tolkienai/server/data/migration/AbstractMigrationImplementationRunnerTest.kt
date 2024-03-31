@@ -2,6 +2,7 @@ package us.craigmiller160.tolkienai.server.data.migration
 
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.result.shouldBeFailure
+import io.kotest.matchers.result.shouldBeSuccess
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
@@ -14,7 +15,11 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
-import us.craigmiller160.tolkienai.server.data.migration.other.MockMigration
+import us.craigmiller160.tolkienai.server.data.migration.other.AbstractMockMigration
+import us.craigmiller160.tolkienai.server.data.migration.other.BadMockMigration
+import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240330__InitialMigration
+import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240331__MigrationTwo
+import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240401__MigrationThree
 
 class AbstractMigrationImplementationRunnerTest {
   companion object {
@@ -24,43 +29,50 @@ class AbstractMigrationImplementationRunnerTest {
     fun migrationArgs(): Stream<MigrationArg> {
       return Stream.of(
           MigrationArg(
-              migrations = listOf(MockMigration(), MockMigration(), MockMigration()),
-              historyCreator = { migrations ->
-                migrations.take(1).mapIndexed(migrationToHistoryRecord())
-              },
+              migrations = defaultMigrationList(),
+              historyCreator = newHistoryCreator { it.take(1) },
               migrationCount = Result.success(2)),
           MigrationArg(
-              migrations = listOf(MockMigration(), MockMigration(), MockMigration()),
-              historyCreator = { migrations -> migrations.mapIndexed(migrationToHistoryRecord()) },
+              migrations = defaultMigrationList(),
+              historyCreator = newHistoryCreator(),
               migrationCount = Result.success(0)),
           MigrationArg(
-              migrations = listOf(MockMigration(), MockMigration(), MockMigration()),
-              historyCreator = { migrations ->
-                migrations.mapIndexed(migrationToHistoryRecord()).mapIndexed { index, record ->
-                  if (index == 1) {
-                    return@mapIndexed record.copy(name = "abc")
-                  }
-                  return@mapIndexed record
-                }
-              },
+              migrations = defaultMigrationList(),
+              historyCreator =
+                  newHistoryCreator { history ->
+                    history.mapIndexed { index, record ->
+                      if (index == 1) {
+                        return@mapIndexed record.copy(name = "abc")
+                      }
+                      return@mapIndexed record
+                    }
+                  },
               migrationCount =
                   Result.failure(
                       MigrationException(
-                          "Migration at index 2 has incorrect name. Expected: abc Actual: ${MockMigration::class.java.name}"))),
+                          "Migration at index 2 has incorrect name. Expected: abc Actual: ${V20240331__MigrationTwo::class.java.name}"))),
           MigrationArg(
-              migrations = listOf(MockMigration(), MockMigration(), MockMigration()),
-              historyCreator = { migrations ->
-                migrations.mapIndexed(migrationToHistoryRecord()).mapIndexed { index, record ->
-                  if (index == 1) {
-                    return@mapIndexed record.copy(hash = "abc")
-                  }
-                  return@mapIndexed record
-                }
-              },
+              migrations = defaultMigrationList(),
+              historyCreator =
+                  newHistoryCreator { history ->
+                    history.mapIndexed { index, record ->
+                      if (index == 1) {
+                        return@mapIndexed record.copy(hash = "abc")
+                      }
+                      return@mapIndexed record
+                    }
+                  },
               migrationCount =
                   Result.failure(
                       MigrationException(
-                          "Migration at index 2 has invalid hash. Changes are not allowed after migration is applied."))))
+                          "Migration at index 2 has invalid hash. Changes are not allowed after migration is applied."))),
+          MigrationArg(
+              migrations = defaultMigrationList().let { it.take(2) + listOf(BadMockMigration()) },
+              historyCreator = newHistoryCreator(),
+              migrationCount =
+                  Result.failure(
+                      MigrationException(
+                          "Migration at index 3 has invalid name: ${BadMockMigration::class.java.name}"))))
     }
   }
 
@@ -96,6 +108,7 @@ class AbstractMigrationImplementationRunnerTest {
     }
 
     val migrationCount = arg.migrationCount.getOrThrow()
+    runResult.shouldBeSuccess()
 
     arg.migrations.take(arg.migrations.size - migrationCount).forEach { migration ->
       migration.didMigrate.shouldBe(false)
@@ -125,6 +138,8 @@ class AbstractMigrationImplementationRunnerTest {
   }
 }
 
+typealias HistoryCreator = (List<AbstractMockMigration>) -> List<MigrationHistoryRecord>
+
 private fun migrationToHistoryRecord(
     previousIndex: Int = 0
 ): (Int, Migration<*>) -> MigrationHistoryRecord = { index, migration ->
@@ -134,9 +149,18 @@ private fun migrationToHistoryRecord(
       hash = generateMigrationHash(migration))
 }
 
+private fun defaultMigrationList(): List<AbstractMockMigration> =
+    listOf(V20240330__InitialMigration(), V20240331__MigrationTwo(), V20240401__MigrationThree())
+
+private fun newHistoryCreator(
+    modifier: (List<MigrationHistoryRecord>) -> (List<MigrationHistoryRecord>) = { it }
+): HistoryCreator = { migrations ->
+  migrations.mapIndexed(migrationToHistoryRecord()).let(modifier)
+}
+
 data class MigrationArg(
-    val migrations: List<MockMigration>,
-    val historyCreator: (List<MockMigration>) -> List<MigrationHistoryRecord>,
+    val migrations: List<AbstractMockMigration>,
+    val historyCreator: HistoryCreator,
     val migrationCount: Result<Int>
 ) {
   val history: List<MigrationHistoryRecord> = historyCreator(migrations)
