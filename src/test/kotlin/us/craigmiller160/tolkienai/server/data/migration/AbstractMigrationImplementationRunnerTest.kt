@@ -95,11 +95,6 @@ class AbstractMigrationImplementationRunnerTest {
   @ParameterizedTest
   @MethodSource("migrationArgs")
   fun `performs migration`(arg: MigrationArg) {
-    val registeredMigrations =
-        arg.migrations.map { migration ->
-          RegisteredMigration(migration = migration, helper = "Hello")
-        }
-
     val mongoTemplate = mockk<MongoTemplate>(relaxUnitFun = true)
     val querySlot = slot<Query>()
     every {
@@ -113,7 +108,7 @@ class AbstractMigrationImplementationRunnerTest {
 
     val runner =
         TestMigrationImplementationRunner(
-            mongoTemplate, arg.migrationPaths, registeredMigrations, HISTORY_COLLECTION_NAME)
+            mongoTemplate, arg.migrationPaths, HISTORY_COLLECTION_NAME)
     val runResult = runCatching { runner.run() }
     if (arg.migrationCount.isFailure) {
       runResult
