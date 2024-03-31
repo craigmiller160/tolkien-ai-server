@@ -2,6 +2,7 @@ package us.craigmiller160.tolkienai.server.data.migration
 
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.result.shouldBeFailure
+import io.kotest.matchers.result.shouldBeSuccess
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
@@ -107,6 +108,7 @@ class AbstractMigrationImplementationRunnerTest {
     }
 
     val migrationCount = arg.migrationCount.getOrThrow()
+    runResult.shouldBeSuccess(migrationCount)
 
     arg.migrations.take(arg.migrations.size - migrationCount).forEach { migration ->
       migration.didMigrate.shouldBe(false)
