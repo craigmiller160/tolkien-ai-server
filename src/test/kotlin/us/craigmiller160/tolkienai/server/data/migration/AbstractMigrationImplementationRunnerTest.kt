@@ -72,7 +72,7 @@ class AbstractMigrationImplementationRunnerTest {
               migrationCount =
                   Result.failure(
                       MigrationException(
-                          "Migration at index 3 has invalid name: ${BadMockMigration::class.java.name}"))))
+                          "Migration at index 3 has invalid name: ${BadMockMigration::class.java.simpleName}"))))
     }
   }
 
