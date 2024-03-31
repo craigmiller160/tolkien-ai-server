@@ -8,6 +8,10 @@ import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationExce
 
 abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: MongoTemplate) :
     MigrationRunner {
+  companion object {
+    private val MIGRATION_NAME_REGEX = Regex("^V(?<version>.+)__(?<name>.+)\$")
+  }
+
   private val log = LoggerFactory.getLogger(javaClass)
 
   abstract val registeredMigrations: List<RegisteredMigration<*>>

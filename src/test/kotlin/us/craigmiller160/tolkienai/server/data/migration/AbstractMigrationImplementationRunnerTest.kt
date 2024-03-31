@@ -16,9 +16,9 @@ import org.springframework.data.mongodb.core.query.Query
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
 import us.craigmiller160.tolkienai.server.data.migration.other.AbstractMockMigration
 import us.craigmiller160.tolkienai.server.data.migration.other.BadMockMigration
-import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V1_20240331__MigrationTwo
-import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V1_20240401__MigrationThree
-import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V1__InitialMigration
+import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240330__InitialMigration
+import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240331__MigrationTwo
+import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240401__MigrationThree
 
 class AbstractMigrationImplementationRunnerTest {
   companion object {
@@ -30,9 +30,9 @@ class AbstractMigrationImplementationRunnerTest {
           MigrationArg(
               migrations =
                   listOf(
-                      V1__InitialMigration(),
-                      V1_20240331__MigrationTwo(),
-                      V1_20240401__MigrationThree()),
+                      V20240330__InitialMigration(),
+                      V20240331__MigrationTwo(),
+                      V20240401__MigrationThree()),
               historyCreator = { migrations ->
                 migrations.take(1).mapIndexed(migrationToHistoryRecord())
               },
@@ -40,17 +40,17 @@ class AbstractMigrationImplementationRunnerTest {
           MigrationArg(
               migrations =
                   listOf(
-                      V1__InitialMigration(),
-                      V1_20240331__MigrationTwo(),
-                      V1_20240401__MigrationThree()),
+                      V20240330__InitialMigration(),
+                      V20240331__MigrationTwo(),
+                      V20240401__MigrationThree()),
               historyCreator = { migrations -> migrations.mapIndexed(migrationToHistoryRecord()) },
               migrationCount = Result.success(0)),
           MigrationArg(
               migrations =
                   listOf(
-                      V1__InitialMigration(),
-                      V1_20240331__MigrationTwo(),
-                      V1_20240401__MigrationThree()),
+                      V20240330__InitialMigration(),
+                      V20240331__MigrationTwo(),
+                      V20240401__MigrationThree()),
               historyCreator = { migrations ->
                 migrations.mapIndexed(migrationToHistoryRecord()).mapIndexed { index, record ->
                   if (index == 1) {
@@ -62,13 +62,13 @@ class AbstractMigrationImplementationRunnerTest {
               migrationCount =
                   Result.failure(
                       MigrationException(
-                          "Migration at index 2 has incorrect name. Expected: abc Actual: ${V1_20240331__MigrationTwo::class.java.name}"))),
+                          "Migration at index 2 has incorrect name. Expected: abc Actual: ${V20240331__MigrationTwo::class.java.name}"))),
           MigrationArg(
               migrations =
                   listOf(
-                      V1__InitialMigration(),
-                      V1_20240331__MigrationTwo(),
-                      V1_20240401__MigrationThree()),
+                      V20240330__InitialMigration(),
+                      V20240331__MigrationTwo(),
+                      V20240401__MigrationThree()),
               historyCreator = { migrations ->
                 migrations.mapIndexed(migrationToHistoryRecord()).mapIndexed { index, record ->
                   if (index == 1) {
@@ -83,7 +83,8 @@ class AbstractMigrationImplementationRunnerTest {
                           "Migration at index 2 has invalid hash. Changes are not allowed after migration is applied."))),
           MigrationArg(
               migrations =
-                  listOf(V1__InitialMigration(), V1_20240331__MigrationTwo(), BadMockMigration()),
+                  listOf(
+                      V20240330__InitialMigration(), V20240331__MigrationTwo(), BadMockMigration()),
               historyCreator = { migrations -> migrations.mapIndexed(migrationToHistoryRecord()) },
               migrationCount =
                   Result.failure(
