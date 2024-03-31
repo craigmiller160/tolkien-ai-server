@@ -5,10 +5,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import us.craigmiller160.tolkienai.server.config.MigrationProperties
 import us.craigmiller160.tolkienai.server.data.migration.mongo.MongoMigrationRunner
+import us.craigmiller160.tolkienai.server.data.migration.weaviate.WeaviateMigrationRunner
 
 @Component
 class RootMigrationRunner(
     private val mongoMigrationRunner: MongoMigrationRunner,
+    private val weaviateMigrationRunner: WeaviateMigrationRunner,
     private val migrationProperties: MigrationProperties,
 ) : MigrationRunner {
   private val log = LoggerFactory.getLogger(javaClass)
@@ -20,6 +22,10 @@ class RootMigrationRunner(
     }
 
     log.info("Finding and running migrations")
-    return mongoMigrationRunner.run().also { log.info("All migrations completed") }
+    val mongoReports = mongoMigrationRunner.run()
+    val weaviateReports = weaviateMigrationRunner.run()
+
+    log.info("All migrations completed")
+    return mongoReports + weaviateReports
   }
 }
