@@ -14,30 +14,31 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
+import us.craigmiller160.tolkienai.server.config.MigrationImplementationProperties
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
 import us.craigmiller160.tolkienai.server.data.migration.other.AbstractMockMigration
-import us.craigmiller160.tolkienai.server.data.migration.other.BadMockMigration
-import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240330__InitialMigration
-import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240331__MigrationTwo
-import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240401__MigrationThree
+import us.craigmiller160.tolkienai.server.data.migration.test_migrations.bad.BadMockMigration
 
 class AbstractMigrationImplementationRunnerTest {
   companion object {
     private const val HISTORY_COLLECTION_NAME = "history_collection"
+    private const val DEFAULT_MIGRATION_LOCATION =
+        "classpath:us/craigmiller160/tolkienai/server/data/migration/test_migrations"
+    private const val BAD_MIGRATION_LOCATION = "$DEFAULT_MIGRATION_LOCATION/bad"
 
     @JvmStatic
     fun migrationArgs(): Stream<MigrationArg> {
       return Stream.of(
           MigrationArg(
-              migrations = defaultMigrationList(),
+              migrationPaths = listOf(DEFAULT_MIGRATION_LOCATION),
               historyCreator = newHistoryCreator { it.take(1) },
               migrationCount = Result.success(2)),
           MigrationArg(
-              migrations = defaultMigrationList(),
+              migrationPaths = listOf(DEFAULT_MIGRATION_LOCATION),
               historyCreator = newHistoryCreator(),
               migrationCount = Result.success(0)),
           MigrationArg(
-              migrations = defaultMigrationList(),
+              migrationPaths = listOf(DEFAULT_MIGRATION_LOCATION),
               historyCreator =
                   newHistoryCreator { history ->
                     history.mapIndexed { index, record ->
@@ -52,7 +53,7 @@ class AbstractMigrationImplementationRunnerTest {
                       MigrationException(
                           "Migration at index 2 has incorrect version. Expected: abc Actual: 20240331"))),
           MigrationArg(
-              migrations = defaultMigrationList(),
+              migrationPaths = listOf(DEFAULT_MIGRATION_LOCATION),
               historyCreator =
                   newHistoryCreator { history ->
                     history.mapIndexed { index, record ->
@@ -67,7 +68,7 @@ class AbstractMigrationImplementationRunnerTest {
                       MigrationException(
                           "Migration at index 2 has incorrect name. Expected: abc Actual: MigrationTwo"))),
           MigrationArg(
-              migrations = defaultMigrationList(),
+              migrationPaths = listOf(DEFAULT_MIGRATION_LOCATION),
               historyCreator =
                   newHistoryCreator { history ->
                     history.mapIndexed { index, record ->
@@ -82,23 +83,18 @@ class AbstractMigrationImplementationRunnerTest {
                       MigrationException(
                           "Migration at index 2 has invalid hash. Changes are not allowed after migration is applied."))),
           MigrationArg(
-              migrations = defaultMigrationList().let { it.take(2) + listOf(BadMockMigration()) },
+              migrationPaths = listOf(DEFAULT_MIGRATION_LOCATION, BAD_MIGRATION_LOCATION),
               historyCreator = newHistoryCreator(),
               migrationCount =
                   Result.failure(
                       MigrationException(
-                          "Migration at index 3 has invalid name: ${BadMockMigration::class.java.simpleName}"))))
+                          "Migration at index 1 has invalid name: ${BadMockMigration::class.java.simpleName}"))))
     }
   }
 
   @ParameterizedTest
   @MethodSource("migrationArgs")
   fun `performs migration`(arg: MigrationArg) {
-    val registeredMigrations =
-        arg.migrations.map { migration ->
-          RegisteredMigration(migration = migration, helper = "Hello")
-        }
-
     val mongoTemplate = mockk<MongoTemplate>(relaxUnitFun = true)
     val querySlot = slot<Query>()
     every {
@@ -112,7 +108,7 @@ class AbstractMigrationImplementationRunnerTest {
 
     val runner =
         TestMigrationImplementationRunner(
-            mongoTemplate, registeredMigrations, HISTORY_COLLECTION_NAME)
+            mongoTemplate, arg.migrationPaths, HISTORY_COLLECTION_NAME)
     val runResult = runCatching { runner.run() }
     if (arg.migrationCount.isFailure) {
       runResult
@@ -123,14 +119,14 @@ class AbstractMigrationImplementationRunnerTest {
     }
 
     val migrationCount = arg.migrationCount.getOrThrow()
-    runResult.shouldBeSuccess()
+    val migrationReports = runResult.shouldBeSuccess()
 
-    arg.migrations.take(arg.migrations.size - migrationCount).forEach { migration ->
-      migration.didMigrate.shouldBe(false)
+    migrationReports.take(arg.migrations.size - migrationCount).forEach { report ->
+      report.executed.shouldBe(false)
     }
 
-    arg.migrations.drop(arg.migrations.size - migrationCount).forEach { migration ->
-      migration.didMigrate.shouldBe(true)
+    migrationReports.drop(arg.migrations.size - migrationCount).forEach { report ->
+      report.executed.shouldBe(true)
     }
 
     val expectedQuery = Query().with(Sort.by(Sort.Direction.ASC, "index"))
@@ -167,9 +163,6 @@ private fun migrationToHistoryRecord(
       hash = generateMigrationHash(migration))
 }
 
-private fun defaultMigrationList(): List<AbstractMockMigration> =
-    listOf(V20240330__InitialMigration(), V20240331__MigrationTwo(), V20240401__MigrationThree())
-
 private fun newHistoryCreator(
     modifier: (List<MigrationHistoryRecord>) -> (List<MigrationHistoryRecord>) = { it }
 ): HistoryCreator = { migrations ->
@@ -177,15 +170,21 @@ private fun newHistoryCreator(
 }
 
 data class MigrationArg(
-    val migrations: List<AbstractMockMigration>,
+    val migrationPaths: List<String>,
     val historyCreator: HistoryCreator,
     val migrationCount: Result<Int>
 ) {
+  val migrations =
+      loadMigrations<String>(*migrationPaths.toTypedArray()) as List<AbstractMockMigration>
   val history: List<MigrationHistoryRecord> = historyCreator(migrations)
 }
 
 class TestMigrationImplementationRunner(
     mongoTemplate: MongoTemplate,
-    override val registeredMigrations: List<RegisteredMigration<*>>,
+    paths: List<String>,
     override val collectionName: String
-) : AbstractMigrationImplementationRunner(mongoTemplate)
+) :
+    AbstractMigrationImplementationRunner<String>(
+        mongoTemplate, MigrationImplementationProperties(paths)) {
+  override val helper: String = ""
+}

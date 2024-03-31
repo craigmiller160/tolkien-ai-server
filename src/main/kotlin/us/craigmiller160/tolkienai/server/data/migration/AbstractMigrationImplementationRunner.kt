@@ -4,51 +4,60 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
+import us.craigmiller160.tolkienai.server.config.MigrationImplementationProperties
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
 
-abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: MongoTemplate) :
-    MigrationRunner {
+abstract class AbstractMigrationImplementationRunner<Helper>(
+    private val mongoTemplate: MongoTemplate,
+    private val properties: MigrationImplementationProperties
+) : MigrationRunner {
   companion object {}
 
   private val log = LoggerFactory.getLogger(javaClass)
 
-  abstract val registeredMigrations: List<RegisteredMigration<*>>
-
   abstract val collectionName: String
-  override fun run() {
+
+  abstract val helper: Helper
+
+  override fun run(): List<MigrationReport> {
     log.debug("Finding and running migrations")
     val historyRecords =
         Query().with(Sort.by(Sort.Direction.ASC, "index")).let { query ->
           mongoTemplate.find(query, MigrationHistoryRecord::class.java, collectionName)
         }
 
-    registeredMigrations.forEachIndexed { index, registeredMigration ->
-      val actualIndex = index + 1
-      val migrationName = getMigrationName(actualIndex, registeredMigration.migration)
-      val historyRecord = getHistoryRecord(historyRecords, index)
-      if (historyRecord == null) {
-        log.debug("Running MongoDB migration: ${registeredMigration.migration.javaClass.name}")
-        registeredMigration.migrate()
-        insertHistoryRecord(actualIndex, registeredMigration, migrationName)
-        return@forEachIndexed
-      }
+    return loadMigrations<Helper>(*properties.migrationPaths.toTypedArray())
+        .mapIndexed { index, migration ->
+          val actualIndex = index + 1
+          val migrationName = getMigrationName(actualIndex, migration)
+          val historyRecord = getHistoryRecord(historyRecords, index)
+          if (historyRecord == null) {
+            log.debug("Running MongoDB migration: ${migration.javaClass.name}")
+            migration.migrate(helper)
+            insertHistoryRecord(actualIndex, migration, migrationName)
+            return@mapIndexed MigrationReport(
+                migrationName = migration.javaClass.simpleName, executed = true)
+          }
 
-      if (historyRecord.version != migrationName.version) {
-        throw MigrationException(
-            "Migration at index $actualIndex has incorrect version. Expected: ${historyRecord.version} Actual: ${migrationName.version}")
-      }
+          if (historyRecord.version != migrationName.version) {
+            throw MigrationException(
+                "Migration at index $actualIndex has incorrect version. Expected: ${historyRecord.version} Actual: ${migrationName.version}")
+          }
 
-      if (historyRecord.name != migrationName.name) {
-        throw MigrationException(
-            "Migration at index $actualIndex has incorrect name. Expected: ${historyRecord.name} Actual: ${migrationName.name}")
-      }
+          if (historyRecord.name != migrationName.name) {
+            throw MigrationException(
+                "Migration at index $actualIndex has incorrect name. Expected: ${historyRecord.name} Actual: ${migrationName.name}")
+          }
 
-      if (historyRecord.hash != registeredMigration.generateHash()) {
-        throw MigrationException(
-            "Migration at index $actualIndex has invalid hash. Changes are not allowed after migration is applied.")
-      }
-    }
-    log.debug("All migrations completed")
+          if (historyRecord.hash != generateMigrationHash(migration)) {
+            throw MigrationException(
+                "Migration at index $actualIndex has invalid hash. Changes are not allowed after migration is applied.")
+          }
+
+          return@mapIndexed MigrationReport(
+              migrationName = migration.javaClass.simpleName, executed = false)
+        }
+        .also { log.debug("All migrations completed") }
   }
 
   private fun getHistoryRecord(
@@ -63,13 +72,13 @@ abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: 
 
   private fun insertHistoryRecord(
       index: Int,
-      registeredMigration: RegisteredMigration<*>,
+      migration: Migration<Helper>,
       migrationName: MigrationName
   ) =
       MigrationHistoryRecord(
               index = index,
               version = migrationName.version,
               name = migrationName.name,
-              hash = registeredMigration.generateHash())
+              hash = generateMigrationHash(migration))
           .let { mongoTemplate.insert(it, collectionName) }
 }
