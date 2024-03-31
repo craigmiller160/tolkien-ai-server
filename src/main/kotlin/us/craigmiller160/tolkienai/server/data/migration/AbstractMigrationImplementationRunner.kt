@@ -26,7 +26,7 @@ abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: 
 
     registeredMigrations.forEachIndexed { index, registeredMigration ->
       val actualIndex = index + 1
-      if (!MIGRATION_NAME_REGEX.matches(registeredMigration.migration.javaClass.name)) {
+      if (!MIGRATION_NAME_REGEX.matches(registeredMigration.migration.javaClass.simpleName)) {
         throw MigrationException(
             "Migration at index $actualIndex has invalid name: ${registeredMigration.migration.javaClass.name}")
       }

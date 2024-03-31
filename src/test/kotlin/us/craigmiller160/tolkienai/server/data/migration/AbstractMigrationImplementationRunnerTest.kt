@@ -108,7 +108,7 @@ class AbstractMigrationImplementationRunnerTest {
     }
 
     val migrationCount = arg.migrationCount.getOrThrow()
-    runResult.shouldBeSuccess(migrationCount)
+    runResult.shouldBeSuccess()
 
     arg.migrations.take(arg.migrations.size - migrationCount).forEach { migration ->
       migration.didMigrate.shouldBe(false)
