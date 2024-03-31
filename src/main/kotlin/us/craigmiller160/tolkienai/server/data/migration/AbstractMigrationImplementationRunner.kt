@@ -8,9 +8,7 @@ import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationExce
 
 abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: MongoTemplate) :
     MigrationRunner {
-  companion object {
-    private val MIGRATION_NAME_REGEX = Regex("^V(?<version>.+)__(?<name>.+)\$")
-  }
+  companion object {}
 
   private val log = LoggerFactory.getLogger(javaClass)
 
@@ -26,11 +24,7 @@ abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: 
 
     registeredMigrations.forEachIndexed { index, registeredMigration ->
       val actualIndex = index + 1
-      if (!MIGRATION_NAME_REGEX.matches(registeredMigration.migration.javaClass.simpleName)) {
-        throw MigrationException(
-            "Migration at index $actualIndex has invalid name: ${registeredMigration.migration.javaClass.name}")
-      }
-
+      getMigrationName(actualIndex, registeredMigration.migration)
       val historyRecord = getHistoryRecord(historyRecords, index)
       if (historyRecord == null) {
         log.debug("Running MongoDB migration: ${registeredMigration.migration.javaClass.name}")
