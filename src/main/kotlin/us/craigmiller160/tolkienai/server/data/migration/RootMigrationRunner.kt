@@ -13,14 +13,13 @@ class RootMigrationRunner(
 ) : MigrationRunner {
   private val log = LoggerFactory.getLogger(javaClass)
   @PostConstruct
-  override fun run() {
+  override fun run(): List<MigrationReport> {
     if (!migrationProperties.enabled) {
       log.info("Data migration is disabled, not running migrations")
-      return
+      return listOf()
     }
 
     log.info("Finding and running migrations")
-    mongoMigrationRunner.run()
-    log.info("All migrations completed")
+    return mongoMigrationRunner.run().also { log.info("All migrations completed") }
   }
 }
