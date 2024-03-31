@@ -190,6 +190,8 @@ data class MigrationArg(
 class TestMigrationImplementationRunner(
     mongoTemplate: MongoTemplate,
     paths: List<String>,
-    override val registeredMigrations: List<RegisteredMigration<*>>,
+    override val registeredMigrations: List<RegisteredMigration<String>>,
     override val collectionName: String
-) : AbstractMigrationImplementationRunner(mongoTemplate, MigrationImplementationProperties(paths))
+) :
+    AbstractMigrationImplementationRunner<String>(
+        mongoTemplate, MigrationImplementationProperties(paths))
