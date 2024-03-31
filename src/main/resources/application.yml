@@ -36,7 +36,8 @@ spring:
       database: tolkienai_dev
     migrations:
       mongo:
-        migration-paths: classpath:us/craigmiller160/tolkienai/server/data/migration/mongo/migrations
+        migration-paths:
+          - classpath:us/craigmiller160/tolkienai/server/data/migration/mongo/migrations
 
   security:
     keycloak:
