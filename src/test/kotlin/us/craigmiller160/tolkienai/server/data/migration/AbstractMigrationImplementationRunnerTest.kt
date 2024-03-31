@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
 import us.craigmiller160.tolkienai.server.data.migration.other.AbstractMockMigration
+import us.craigmiller160.tolkienai.server.data.migration.other.BadMockMigration
 import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V1_20240331__MigrationTwo
 import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V1_20240401__MigrationThree
 import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V1__InitialMigration
@@ -79,7 +80,15 @@ class AbstractMigrationImplementationRunnerTest {
               migrationCount =
                   Result.failure(
                       MigrationException(
-                          "Migration at index 2 has invalid hash. Changes are not allowed after migration is applied."))))
+                          "Migration at index 2 has invalid hash. Changes are not allowed after migration is applied."))),
+          MigrationArg(
+              migrations =
+                  listOf(V1__InitialMigration(), V1_20240331__MigrationTwo(), BadMockMigration()),
+              historyCreator = { migrations -> migrations.mapIndexed(migrationToHistoryRecord()) },
+              migrationCount =
+                  Result.failure(
+                      MigrationException(
+                          "Migration at index 3 has invalid name: ${BadMockMigration::class.java.name}"))))
     }
   }
 
