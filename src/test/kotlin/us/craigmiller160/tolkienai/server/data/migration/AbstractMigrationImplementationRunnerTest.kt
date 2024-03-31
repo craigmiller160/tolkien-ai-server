@@ -42,6 +42,21 @@ class AbstractMigrationImplementationRunnerTest {
                   newHistoryCreator { history ->
                     history.mapIndexed { index, record ->
                       if (index == 1) {
+                        return@mapIndexed record.copy(version = "abc")
+                      }
+                      return@mapIndexed record
+                    }
+                  },
+              migrationCount =
+                  Result.failure(
+                      MigrationException(
+                          "Migration at index 2 has incorrect version. Expected: abc Actual: 20240331"))),
+          MigrationArg(
+              migrations = defaultMigrationList(),
+              historyCreator =
+                  newHistoryCreator { history ->
+                    history.mapIndexed { index, record ->
+                      if (index == 1) {
                         return@mapIndexed record.copy(name = "abc")
                       }
                       return@mapIndexed record

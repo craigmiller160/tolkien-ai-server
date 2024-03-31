@@ -33,7 +33,6 @@ abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: 
         return@forEachIndexed
       }
 
-      // TODO add test for this
       if (historyRecord.version != migrationName.version) {
         throw MigrationException(
             "Migration at index $actualIndex has incorrect version. Expected: ${historyRecord.version} Actual: ${migrationName.version}")
