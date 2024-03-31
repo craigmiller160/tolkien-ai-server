@@ -29,8 +29,6 @@ class DataIngestionService(
     }
 
     runBlocking {
-      weaviateService.createSilmarillionClass()
-
       segments
           .map { segment ->
             async {

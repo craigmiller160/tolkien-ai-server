@@ -11,6 +11,7 @@ fun <T> loadMigrations(vararg packagePaths: String): List<Migration<T>> {
       .flatMap { path -> resolver.getResources("$path/*.class").toList() }
       .map { resource -> factory.getMetadataReader(resource).classMetadata.className }
       .map { Class.forName(it).getDeclaredConstructor().newInstance() }
+      .filter { obj -> obj is Migration<*> }
       .map { obj -> obj as Migration<T> }
       .sortedBy { it.javaClass.simpleName }
       .toList()

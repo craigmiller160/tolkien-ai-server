@@ -4,9 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.weaviate.client.WeaviateClient
 import io.weaviate.client.v1.graphql.query.argument.NearVectorArgument
 import io.weaviate.client.v1.graphql.query.fields.Field
-import io.weaviate.client.v1.schema.model.DataType
-import io.weaviate.client.v1.schema.model.Property
-import io.weaviate.client.v1.schema.model.WeaviateClass
 import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -28,29 +25,6 @@ class WeaviateService(
   }
 
   private val log = LoggerFactory.getLogger(javaClass)
-
-  suspend fun createSilmarillionClass() =
-      withContext(Dispatchers.IO) {
-        log.debug("Creating silmarillion class")
-        weaviateClient.schema().classDeleter().withClassName(SILMARILLION_CLASS).run().getOrThrow()
-
-        //        val indexConfig =
-        //            VectorIndexConfig.builder()
-        //                .ef(-1)
-        //                .dynamicEfFactor(10)
-        //                .dynamicEfMin(5)
-        //                .dynamicEfMax(50)
-        //                .build()
-
-        WeaviateClass.builder()
-            .className(SILMARILLION_CLASS)
-            .properties(
-                listOf(Property.builder().name(TEXT_FIELD).dataType(listOf(DataType.TEXT)).build()))
-            //            .vectorIndexConfig(indexConfig)
-            .build()
-            .let { weaviateClient.schema().classCreator().withClass(it).run() }
-            .getOrThrow()
-      }
 
   suspend fun searchForEmbeddings(
       queryEmbedding: List<Float>,
