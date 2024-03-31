@@ -29,13 +29,11 @@ class AbstractMigrationImplementationRunnerTest {
       return Stream.of(
           MigrationArg(
               migrations = defaultMigrationList(),
-              historyCreator = { migrations ->
-                migrations.take(1).mapIndexed(migrationToHistoryRecord())
-              },
+              historyCreator = simpleHistoryCreator { it.take(1) },
               migrationCount = Result.success(2)),
           MigrationArg(
               migrations = defaultMigrationList(),
-              historyCreator = { migrations -> migrations.mapIndexed(migrationToHistoryRecord()) },
+              historyCreator = simpleHistoryCreator(),
               migrationCount = Result.success(0)),
           MigrationArg(
               migrations = defaultMigrationList(),
@@ -67,7 +65,7 @@ class AbstractMigrationImplementationRunnerTest {
                           "Migration at index 2 has invalid hash. Changes are not allowed after migration is applied."))),
           MigrationArg(
               migrations = defaultMigrationList().let { it.take(2) + listOf(BadMockMigration()) },
-              historyCreator = { migrations -> migrations.mapIndexed(migrationToHistoryRecord()) },
+              historyCreator = simpleHistoryCreator(),
               migrationCount =
                   Result.failure(
                       MigrationException(
@@ -136,6 +134,8 @@ class AbstractMigrationImplementationRunnerTest {
   }
 }
 
+typealias HistoryCreator = (List<AbstractMockMigration>) -> List<MigrationHistoryRecord>
+
 private fun migrationToHistoryRecord(
     previousIndex: Int = 0
 ): (Int, Migration<*>) -> MigrationHistoryRecord = { index, migration ->
@@ -148,9 +148,15 @@ private fun migrationToHistoryRecord(
 private fun defaultMigrationList(): List<AbstractMockMigration> =
     listOf(V20240330__InitialMigration(), V20240331__MigrationTwo(), V20240401__MigrationThree())
 
+private fun simpleHistoryCreator(
+    modifier: (List<AbstractMockMigration>) -> (List<AbstractMockMigration>) = { it }
+): HistoryCreator = { migrations ->
+  migrations.let(modifier).mapIndexed(migrationToHistoryRecord())
+}
+
 data class MigrationArg(
     val migrations: List<AbstractMockMigration>,
-    val historyCreator: (List<AbstractMockMigration>) -> List<MigrationHistoryRecord>,
+    val historyCreator: HistoryCreator,
     val migrationCount: Result<Int>
 ) {
   val history: List<MigrationHistoryRecord> = historyCreator(migrations)
