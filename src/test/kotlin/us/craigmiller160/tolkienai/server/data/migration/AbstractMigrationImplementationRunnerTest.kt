@@ -29,11 +29,11 @@ class AbstractMigrationImplementationRunnerTest {
       return Stream.of(
           MigrationArg(
               migrations = defaultMigrationList(),
-              historyCreator = simpleHistoryCreator { it.take(1) },
+              historyCreator = newHistoryCreator { it.take(1) },
               migrationCount = Result.success(2)),
           MigrationArg(
               migrations = defaultMigrationList(),
-              historyCreator = simpleHistoryCreator(),
+              historyCreator = newHistoryCreator(),
               migrationCount = Result.success(0)),
           MigrationArg(
               migrations = defaultMigrationList(),
@@ -65,7 +65,7 @@ class AbstractMigrationImplementationRunnerTest {
                           "Migration at index 2 has invalid hash. Changes are not allowed after migration is applied."))),
           MigrationArg(
               migrations = defaultMigrationList().let { it.take(2) + listOf(BadMockMigration()) },
-              historyCreator = simpleHistoryCreator(),
+              historyCreator = newHistoryCreator(),
               migrationCount =
                   Result.failure(
                       MigrationException(
@@ -148,10 +148,10 @@ private fun migrationToHistoryRecord(
 private fun defaultMigrationList(): List<AbstractMockMigration> =
     listOf(V20240330__InitialMigration(), V20240331__MigrationTwo(), V20240401__MigrationThree())
 
-private fun simpleHistoryCreator(
-    modifier: (List<AbstractMockMigration>) -> (List<AbstractMockMigration>) = { it }
+private fun newHistoryCreator(
+    modifier: (List<MigrationHistoryRecord>) -> (List<MigrationHistoryRecord>) = { it }
 ): HistoryCreator = { migrations ->
-  migrations.let(modifier).mapIndexed(migrationToHistoryRecord())
+  migrations.mapIndexed(migrationToHistoryRecord()).let(modifier)
 }
 
 data class MigrationArg(
