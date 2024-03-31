@@ -14,7 +14,11 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
+import us.craigmiller160.tolkienai.server.data.migration.other.AbstractMockMigration
 import us.craigmiller160.tolkienai.server.data.migration.other.MockMigration
+import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V1_20240331__MigrationTwo
+import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V1_20240401__MigrationThree
+import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V1__InitialMigration
 
 class AbstractMigrationImplementationRunnerTest {
   companion object {
@@ -24,17 +28,29 @@ class AbstractMigrationImplementationRunnerTest {
     fun migrationArgs(): Stream<MigrationArg> {
       return Stream.of(
           MigrationArg(
-              migrations = listOf(MockMigration(), MockMigration(), MockMigration()),
+              migrations =
+                  listOf(
+                      V1__InitialMigration(),
+                      V1_20240331__MigrationTwo(),
+                      V1_20240401__MigrationThree()),
               historyCreator = { migrations ->
                 migrations.take(1).mapIndexed(migrationToHistoryRecord())
               },
               migrationCount = Result.success(2)),
           MigrationArg(
-              migrations = listOf(MockMigration(), MockMigration(), MockMigration()),
+              migrations =
+                  listOf(
+                      V1__InitialMigration(),
+                      V1_20240331__MigrationTwo(),
+                      V1_20240401__MigrationThree()),
               historyCreator = { migrations -> migrations.mapIndexed(migrationToHistoryRecord()) },
               migrationCount = Result.success(0)),
           MigrationArg(
-              migrations = listOf(MockMigration(), MockMigration(), MockMigration()),
+              migrations =
+                  listOf(
+                      V1__InitialMigration(),
+                      V1_20240331__MigrationTwo(),
+                      V1_20240401__MigrationThree()),
               historyCreator = { migrations ->
                 migrations.mapIndexed(migrationToHistoryRecord()).mapIndexed { index, record ->
                   if (index == 1) {
@@ -48,7 +64,11 @@ class AbstractMigrationImplementationRunnerTest {
                       MigrationException(
                           "Migration at index 2 has incorrect name. Expected: abc Actual: ${MockMigration::class.java.name}"))),
           MigrationArg(
-              migrations = listOf(MockMigration(), MockMigration(), MockMigration()),
+              migrations =
+                  listOf(
+                      V1__InitialMigration(),
+                      V1_20240331__MigrationTwo(),
+                      V1_20240401__MigrationThree()),
               historyCreator = { migrations ->
                 migrations.mapIndexed(migrationToHistoryRecord()).mapIndexed { index, record ->
                   if (index == 1) {
@@ -135,8 +155,8 @@ private fun migrationToHistoryRecord(
 }
 
 data class MigrationArg(
-    val migrations: List<MockMigration>,
-    val historyCreator: (List<MockMigration>) -> List<MigrationHistoryRecord>,
+    val migrations: List<AbstractMockMigration>,
+    val historyCreator: (List<AbstractMockMigration>) -> List<MigrationHistoryRecord>,
     val migrationCount: Result<Int>
 ) {
   val history: List<MigrationHistoryRecord> = historyCreator(migrations)
