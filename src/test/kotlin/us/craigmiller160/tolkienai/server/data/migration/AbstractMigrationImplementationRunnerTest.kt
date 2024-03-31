@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
+import us.craigmiller160.tolkienai.server.config.MigrationImplementationProperties
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
 import us.craigmiller160.tolkienai.server.data.migration.other.AbstractMockMigration
 import us.craigmiller160.tolkienai.server.data.migration.other.BadMockMigration
@@ -184,8 +185,13 @@ data class MigrationArg(
   val history: List<MigrationHistoryRecord> = historyCreator(migrations)
 }
 
+private val testMigrationImplementationProperties =
+    MigrationImplementationProperties(
+        migrationPaths =
+            listOf("classpath:us/craigmiller160/tolkienai/server/data/migration/test_migrations"))
+
 class TestMigrationImplementationRunner(
     mongoTemplate: MongoTemplate,
     override val registeredMigrations: List<RegisteredMigration<*>>,
     override val collectionName: String
-) : AbstractMigrationImplementationRunner(mongoTemplate)
+) : AbstractMigrationImplementationRunner(mongoTemplate, testMigrationImplementationProperties)
