@@ -25,6 +25,8 @@ import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V202404
 class AbstractMigrationImplementationRunnerTest {
   companion object {
     private const val HISTORY_COLLECTION_NAME = "history_collection"
+    private const val DEFAULT_MIGRATION_LOCATION =
+        "classpath:us/craigmiller160/tolkienai/server/data/migration/test_migrations"
 
     @JvmStatic
     fun migrationArgs(): Stream<MigrationArg> {
@@ -185,13 +187,9 @@ data class MigrationArg(
   val history: List<MigrationHistoryRecord> = historyCreator(migrations)
 }
 
-private val testMigrationImplementationProperties =
-    MigrationImplementationProperties(
-        migrationPaths =
-            listOf("classpath:us/craigmiller160/tolkienai/server/data/migration/test_migrations"))
-
 class TestMigrationImplementationRunner(
     mongoTemplate: MongoTemplate,
+    paths: List<String>,
     override val registeredMigrations: List<RegisteredMigration<*>>,
     override val collectionName: String
-) : AbstractMigrationImplementationRunner(mongoTemplate, testMigrationImplementationProperties)
+) : AbstractMigrationImplementationRunner(mongoTemplate, MigrationImplementationProperties(paths))
