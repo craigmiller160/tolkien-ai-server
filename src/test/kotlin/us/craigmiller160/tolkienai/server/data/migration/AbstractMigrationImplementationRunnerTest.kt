@@ -119,14 +119,14 @@ class AbstractMigrationImplementationRunnerTest {
     }
 
     val migrationCount = arg.migrationCount.getOrThrow()
-    runResult.shouldBeSuccess()
+    val migrationReports = runResult.shouldBeSuccess()
 
-    arg.migrations.take(arg.migrations.size - migrationCount).forEach { migration ->
-      migration.didMigrate.shouldBe(false)
+    migrationReports.take(arg.migrations.size - migrationCount).forEach { report ->
+      report.executed.shouldBe(false)
     }
 
-    arg.migrations.drop(arg.migrations.size - migrationCount).forEach { migration ->
-      migration.didMigrate.shouldBe(true)
+    migrationReports.drop(arg.migrations.size - migrationCount).forEach { report ->
+      report.executed.shouldBe(true)
     }
 
     val expectedQuery = Query().with(Sort.by(Sort.Direction.ASC, "index"))
