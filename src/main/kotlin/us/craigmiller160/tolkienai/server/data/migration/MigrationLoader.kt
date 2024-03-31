@@ -3,7 +3,6 @@ package us.craigmiller160.tolkienai.server.data.migration
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory
 
-// TODO what about exceptions?
 fun <T> loadMigrations(packagePaths: List<String>): List<Migration<T>> {
   val resolver = PathMatchingResourcePatternResolver()
   val factory = CachingMetadataReaderFactory(resolver)
