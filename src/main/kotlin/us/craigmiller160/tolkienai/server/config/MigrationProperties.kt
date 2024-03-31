@@ -5,4 +5,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class MigrationImplementationProperties(val migrationPaths: List<String>)
 
 @ConfigurationProperties(prefix = "spring.data.migrations")
-data class MigrationProperties(val mongo: MigrationImplementationProperties)
+data class MigrationProperties(val enabled: Boolean, val mongo: MigrationImplementationProperties)
