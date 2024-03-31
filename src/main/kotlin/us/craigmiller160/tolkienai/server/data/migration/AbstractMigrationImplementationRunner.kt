@@ -15,9 +15,9 @@ abstract class AbstractMigrationImplementationRunner<Helper>(
 
   private val log = LoggerFactory.getLogger(javaClass)
 
-  abstract val registeredMigrations: List<RegisteredMigration<Helper>>
-
   abstract val collectionName: String
+
+  abstract val helper: Helper
   override fun run() {
     log.debug("Finding and running migrations")
     val historyRecords =
@@ -25,14 +25,16 @@ abstract class AbstractMigrationImplementationRunner<Helper>(
           mongoTemplate.find(query, MigrationHistoryRecord::class.java, collectionName)
         }
 
-    registeredMigrations.forEachIndexed { index, registeredMigration ->
+    val migrations = loadMigrations<Helper>(*properties.migrationPaths.toTypedArray())
+
+    migrations.forEachIndexed { index, migration ->
       val actualIndex = index + 1
-      val migrationName = getMigrationName(actualIndex, registeredMigration.migration)
+      val migrationName = getMigrationName(actualIndex, migration)
       val historyRecord = getHistoryRecord(historyRecords, index)
       if (historyRecord == null) {
-        log.debug("Running MongoDB migration: ${registeredMigration.migration.javaClass.name}")
-        registeredMigration.migrate()
-        insertHistoryRecord(actualIndex, registeredMigration, migrationName)
+        log.debug("Running MongoDB migration: ${migration.javaClass.name}")
+        migration.migrate(helper)
+        insertHistoryRecord(actualIndex, migration, migrationName)
         return@forEachIndexed
       }
 
@@ -46,7 +48,7 @@ abstract class AbstractMigrationImplementationRunner<Helper>(
             "Migration at index $actualIndex has incorrect name. Expected: ${historyRecord.name} Actual: ${migrationName.name}")
       }
 
-      if (historyRecord.hash != registeredMigration.generateHash()) {
+      if (historyRecord.hash != generateMigrationHash(migration)) {
         throw MigrationException(
             "Migration at index $actualIndex has invalid hash. Changes are not allowed after migration is applied.")
       }
@@ -66,13 +68,13 @@ abstract class AbstractMigrationImplementationRunner<Helper>(
 
   private fun insertHistoryRecord(
       index: Int,
-      registeredMigration: RegisteredMigration<*>,
+      migration: Migration<Helper>,
       migrationName: MigrationName
   ) =
       MigrationHistoryRecord(
               index = index,
               version = migrationName.version,
               name = migrationName.name,
-              hash = registeredMigration.generateHash())
+              hash = generateMigrationHash(migration))
           .let { mongoTemplate.insert(it, collectionName) }
 }

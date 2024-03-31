@@ -6,8 +6,6 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Component
 import us.craigmiller160.tolkienai.server.config.MigrationProperties
 import us.craigmiller160.tolkienai.server.data.migration.AbstractMigrationImplementationRunner
-import us.craigmiller160.tolkienai.server.data.migration.RegisteredMigration
-import us.craigmiller160.tolkienai.server.data.migration.mongo.migrations.V001_InitialSchema
 
 @Component
 class MongoMigrationRunner(
@@ -18,10 +16,8 @@ class MongoMigrationRunner(
 ) :
     AbstractMigrationImplementationRunner<MongoMigrationHelper>(
         mongoTemplate, migrationProperties.mongo) {
-  private val helper =
+  override val helper =
       MongoMigrationHelper(database = client.getDatabase(database), template = mongoTemplate)
 
-  override val registeredMigrations: List<RegisteredMigration<MongoMigrationHelper>> =
-      listOf(RegisteredMigration(migration = V001_InitialSchema(), helper = helper))
   override val collectionName: String = "mongo_migration_history"
 }
