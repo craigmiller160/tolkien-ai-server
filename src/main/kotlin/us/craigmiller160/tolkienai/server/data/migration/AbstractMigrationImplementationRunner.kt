@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.query.Query
 import us.craigmiller160.tolkienai.server.config.MigrationImplementationProperties
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
 
-abstract class AbstractMigrationImplementationRunner(
+abstract class AbstractMigrationImplementationRunner<Helper>(
     private val mongoTemplate: MongoTemplate,
     private val properties: MigrationImplementationProperties
 ) : MigrationRunner {
@@ -15,7 +15,7 @@ abstract class AbstractMigrationImplementationRunner(
 
   private val log = LoggerFactory.getLogger(javaClass)
 
-  abstract val registeredMigrations: List<RegisteredMigration<*>>
+  abstract val registeredMigrations: List<RegisteredMigration<Helper>>
 
   abstract val collectionName: String
   override fun run() {

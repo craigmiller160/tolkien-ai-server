@@ -15,10 +15,13 @@ class MongoMigrationRunner(
     mongoTemplate: MongoTemplate,
     migrationProperties: MigrationProperties,
     @Value("\${spring.data.mongodb.database}") private val database: String
-) : AbstractMigrationImplementationRunner(mongoTemplate, migrationProperties.mongo) {
-  private val db = client.getDatabase(database)
+) :
+    AbstractMigrationImplementationRunner<MongoMigrationHelper>(
+        mongoTemplate, migrationProperties.mongo) {
+  private val helper =
+      MongoMigrationHelper(database = client.getDatabase(database), template = mongoTemplate)
 
-  override val registeredMigrations: List<RegisteredMigration<*>> =
-      listOf(RegisteredMigration(migration = V001_InitialSchema(), helper = db))
+  override val registeredMigrations: List<RegisteredMigration<MongoMigrationHelper>> =
+      listOf(RegisteredMigration(migration = V001_InitialSchema(), helper = helper))
   override val collectionName: String = "mongo_migration_history"
 }
