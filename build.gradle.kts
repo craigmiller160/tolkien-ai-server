@@ -19,7 +19,7 @@ group = "us.craigmiller160"
 version = "0.0.1-SNAPSHOT"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_20
 }
 
 dependencies {
@@ -51,7 +51,7 @@ kotlin {
     compilerOptions {
         apiVersion.set(KotlinVersion.KOTLIN_2_0)
         freeCompilerArgs.add("-Xjsr305=strict")
-        jvmTarget.set(JvmTarget.JVM_21)
+        jvmTarget.set(JvmTarget.JVM_20)
     }
 }
 
