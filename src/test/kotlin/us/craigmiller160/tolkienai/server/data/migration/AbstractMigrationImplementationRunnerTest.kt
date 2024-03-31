@@ -179,10 +179,12 @@ private fun newHistoryCreator(
 }
 
 data class MigrationArg(
-    val migrations: List<AbstractMockMigration>,
+    val migrationPaths: List<String>,
     val historyCreator: HistoryCreator,
     val migrationCount: Result<Int>
 ) {
+  val migrations =
+      loadMigrations<String>(*migrationPaths.toTypedArray()) as List<AbstractMockMigration>
   val history: List<MigrationHistoryRecord> = historyCreator(migrations)
 }
 
