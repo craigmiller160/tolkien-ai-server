@@ -11,7 +11,7 @@ fun <T> loadMigrations(vararg packagePaths: String): List<Migration<T>> {
       .flatMap { path -> resolver.getResources("$path/*.class").toList() }
       .map { resource -> factory.getMetadataReader(resource).classMetadata.className }
       .map { Class.forName(it) }
-      .filter { clazz -> clazz.isAssignableFrom(Migration::class.java) }
+      .filter { clazz -> Migration::class.java.isAssignableFrom(clazz) }
       .map { clazz -> clazz.getDeclaredConstructor().newInstance() }
       .map { obj -> obj as Migration<T> }
       .sortedBy { it.javaClass.simpleName }

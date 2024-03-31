@@ -32,7 +32,7 @@ abstract class AbstractMigrationImplementationRunner<Helper>(
           val migrationName = getMigrationName(actualIndex, migration)
           val historyRecord = getHistoryRecord(historyRecords, index)
           if (historyRecord == null) {
-            log.debug("Running MongoDB migration: ${migration.javaClass.name}")
+            log.debug("Running migration: ${migration.javaClass.name}")
             migration.migrate(helper)
             insertHistoryRecord(actualIndex, migration, migrationName)
             return@mapIndexed MigrationReport(
