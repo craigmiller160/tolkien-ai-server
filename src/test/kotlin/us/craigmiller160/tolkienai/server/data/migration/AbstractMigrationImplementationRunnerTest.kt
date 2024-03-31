@@ -37,28 +37,30 @@ class AbstractMigrationImplementationRunnerTest {
               migrationCount = Result.success(0)),
           MigrationArg(
               migrations = defaultMigrationList(),
-              historyCreator = { migrations ->
-                migrations.mapIndexed(migrationToHistoryRecord()).mapIndexed { index, record ->
-                  if (index == 1) {
-                    return@mapIndexed record.copy(name = "abc")
-                  }
-                  return@mapIndexed record
-                }
-              },
+              historyCreator =
+                  newHistoryCreator { history ->
+                    history.mapIndexed { index, record ->
+                      if (index == 1) {
+                        return@mapIndexed record.copy(name = "abc")
+                      }
+                      return@mapIndexed record
+                    }
+                  },
               migrationCount =
                   Result.failure(
                       MigrationException(
                           "Migration at index 2 has incorrect name. Expected: abc Actual: ${V20240331__MigrationTwo::class.java.name}"))),
           MigrationArg(
               migrations = defaultMigrationList(),
-              historyCreator = { migrations ->
-                migrations.mapIndexed(migrationToHistoryRecord()).mapIndexed { index, record ->
-                  if (index == 1) {
-                    return@mapIndexed record.copy(hash = "abc")
-                  }
-                  return@mapIndexed record
-                }
-              },
+              historyCreator =
+                  newHistoryCreator { history ->
+                    history.mapIndexed { index, record ->
+                      if (index == 1) {
+                        return@mapIndexed record.copy(hash = "abc")
+                      }
+                      return@mapIndexed record
+                    }
+                  },
               migrationCount =
                   Result.failure(
                       MigrationException(
