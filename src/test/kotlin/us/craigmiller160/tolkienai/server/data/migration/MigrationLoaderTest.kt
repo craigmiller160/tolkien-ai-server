@@ -20,10 +20,11 @@ class MigrationLoaderTest {
     val migrations = loadMigrations<String>(DEFAULT_MIGRATION_LOCATION, BAD_MIGRATION_LOCATION)
     migrations
         .shouldHaveSize(4)
+        .map { it.javaClass.simpleName }
         .shouldContainInOrder(
-            BadMockMigration(),
-            V20240330__InitialMigration(),
-            V20240331__MigrationTwo(),
-            V20240401__MigrationThree())
+            BadMockMigration::class.java.simpleName,
+            V20240330__InitialMigration::class.java.simpleName,
+            V20240331__MigrationTwo::class.java.simpleName,
+            V20240401__MigrationThree::class.java.simpleName)
   }
 }
