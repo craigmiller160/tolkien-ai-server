@@ -25,8 +25,13 @@ abstract class AbstractMigrationImplementationRunner(private val mongoTemplate: 
         }
 
     registeredMigrations.forEachIndexed { index, registeredMigration ->
-      val historyRecord = getHistoryRecord(historyRecords, index)
       val actualIndex = index + 1
+      if (!MIGRATION_NAME_REGEX.matches(registeredMigration.migration.javaClass.name)) {
+        throw MigrationException(
+            "Migration at index $actualIndex has invalid name: ${registeredMigration.migration.javaClass.name}")
+      }
+
+      val historyRecord = getHistoryRecord(historyRecords, index)
       if (historyRecord == null) {
         log.debug("Running MongoDB migration: ${registeredMigration.migration.javaClass.name}")
         registeredMigration.migrate()
