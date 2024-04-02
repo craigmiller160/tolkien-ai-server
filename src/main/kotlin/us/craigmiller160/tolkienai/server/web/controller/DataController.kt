@@ -9,12 +9,16 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import us.craigmiller160.tolkienai.server.ai.ingestion.service.DataIngestionService
+import us.craigmiller160.tolkienai.server.web.service.DataService
 import us.craigmiller160.tolkienai.server.web.type.IngestDataRequest
 import us.craigmiller160.tolkienai.server.web.type.RecordCountResponse
 
 @RestController
 @RequestMapping("/data")
-class DataController(private val dataIngestionService: DataIngestionService) {
+class DataController(
+    private val dataIngestionService: DataIngestionService,
+    private val dataService: DataService
+) {
   @PostMapping("/ingest")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasAuthority('ROLE_admin')")
@@ -22,8 +26,5 @@ class DataController(private val dataIngestionService: DataIngestionService) {
     dataIngestionService.ingest(request.dryRun)
   }
 
-  @GetMapping("/count")
-  fun getRecordCount(): RecordCountResponse {
-    TODO()
-  }
+  @GetMapping("/count") fun getRecordCount(): RecordCountResponse = dataService.getRecordCount()
 }
