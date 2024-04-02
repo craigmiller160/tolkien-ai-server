@@ -11,6 +11,10 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingSearchResult
 import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingTextMatch
+import us.craigmiller160.tolkienai.server.ai.utils.COUNT_FIELD_NAME
+import us.craigmiller160.tolkienai.server.ai.utils.META_FIELD_NAME
+import us.craigmiller160.tolkienai.server.ai.utils.TEXT_FIELD_NAME
+import us.craigmiller160.tolkienai.server.ai.utils.TOLKIEN_CLASS_NAME
 import us.craigmiller160.tolkienai.server.ai.utils.dataAsMap
 import us.craigmiller160.tolkienai.server.ai.utils.getOrThrow
 
@@ -19,10 +23,6 @@ class WeaviateService(
     private val weaviateClient: WeaviateClient,
     private val objectMapper: ObjectMapper
 ) {
-  companion object {
-    private const val TOLKIEN_CLASS = "Tolkien"
-    private const val TEXT_FIELD = "text"
-  }
 
   private val log = LoggerFactory.getLogger(javaClass)
 
@@ -35,8 +35,8 @@ class WeaviateService(
             weaviateClient
                 .graphQL()
                 .get()
-                .withClassName(TOLKIEN_CLASS)
-                .withFields(Field.builder().name(TEXT_FIELD).build())
+                .withClassName(TOLKIEN_CLASS_NAME)
+                .withFields(Field.builder().name(TEXT_FIELD_NAME).build())
                 .withNearVector(
                     NearVectorArgument.builder().vector(queryEmbedding.toTypedArray()).build())
                 .withLimit(limit)
@@ -44,7 +44,7 @@ class WeaviateService(
                 .getOrThrow()
         return@withContext objectMapper
             .convertValue(graphqlResult.dataAsMap, EmbeddingSearchResult::class.java)
-            .get[TOLKIEN_CLASS]
+            .get[TOLKIEN_CLASS_NAME]
             ?: listOf()
       }
 
@@ -54,13 +54,30 @@ class WeaviateService(
         weaviateClient
             .data()
             .creator()
-            .withClassName(TOLKIEN_CLASS)
+            .withClassName(TOLKIEN_CLASS_NAME)
             .withID(UUID.randomUUID().toString())
-            .withProperties(mapOf(TEXT_FIELD to text))
+            .withProperties(mapOf(TEXT_FIELD_NAME to text))
             .withVector(embedding.toTypedArray())
             .run()
             .getOrThrow()
       }
 
-  //    suspend fun get
+  suspend fun getRecordCount(): Int {
+    val metaField =
+        Field.builder()
+            .name(META_FIELD_NAME)
+            .fields(Field.builder().name(COUNT_FIELD_NAME).build())
+            .build()
+
+    val result =
+        weaviateClient
+            .graphQL()
+            .aggregate()
+            .withClassName(TOLKIEN_CLASS_NAME)
+            .withFields(metaField)
+            .run()
+            .getOrThrow()
+    println(result)
+    return 0
+  }
 }
