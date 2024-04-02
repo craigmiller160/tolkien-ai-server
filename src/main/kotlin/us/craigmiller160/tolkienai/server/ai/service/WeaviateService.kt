@@ -20,7 +20,7 @@ class WeaviateService(
     private val objectMapper: ObjectMapper
 ) {
   companion object {
-    private const val SILMARILLION_CLASS = "Silmarillion"
+    private const val TOLKIEN_CLASS = "Tolkien"
     private const val TEXT_FIELD = "text"
   }
 
@@ -35,7 +35,7 @@ class WeaviateService(
             weaviateClient
                 .graphQL()
                 .get()
-                .withClassName(SILMARILLION_CLASS)
+                .withClassName(TOLKIEN_CLASS)
                 .withFields(Field.builder().name(TEXT_FIELD).build())
                 .withNearVector(
                     NearVectorArgument.builder().vector(queryEmbedding.toTypedArray()).build())
@@ -44,7 +44,7 @@ class WeaviateService(
                 .getOrThrow()
         return@withContext objectMapper
             .convertValue(graphqlResult.dataAsMap, EmbeddingSearchResult::class.java)
-            .get[SILMARILLION_CLASS]
+            .get[TOLKIEN_CLASS]
             ?: listOf()
       }
 
@@ -54,11 +54,13 @@ class WeaviateService(
         weaviateClient
             .data()
             .creator()
-            .withClassName(SILMARILLION_CLASS)
+            .withClassName(TOLKIEN_CLASS)
             .withID(UUID.randomUUID().toString())
             .withProperties(mapOf(TEXT_FIELD to text))
             .withVector(embedding.toTypedArray())
             .run()
             .getOrThrow()
       }
+
+  //    suspend fun get
 }

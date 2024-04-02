@@ -5,6 +5,8 @@ import io.weaviate.client.v1.misc.model.VectorIndexConfig
 import io.weaviate.client.v1.schema.model.DataType
 import io.weaviate.client.v1.schema.model.Property
 import io.weaviate.client.v1.schema.model.WeaviateClass
+import us.craigmiller160.tolkienai.server.ai.utils.TEXT_FIELD_NAME
+import us.craigmiller160.tolkienai.server.ai.utils.TOLKIEN_CLASS_NAME
 import us.craigmiller160.tolkienai.server.ai.utils.getOrThrow
 import us.craigmiller160.tolkienai.server.data.migration.weaviate.WeaviateMigration
 
