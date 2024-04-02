@@ -9,4 +9,10 @@ class DataControllerTest {
   fun `validate that admin access is required to ingest data`() {
     TODO()
   }
+
+  @Test
+  @Disabled
+  fun `validate get record count`() {
+    TODO()
+  }
 }
