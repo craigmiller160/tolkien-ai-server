@@ -2,6 +2,7 @@ package us.craigmiller160.tolkienai.server.ai.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.weaviate.client.WeaviateClient
+import io.weaviate.client.v1.data.replication.model.ConsistencyLevel
 import io.weaviate.client.v1.graphql.query.argument.NearVectorArgument
 import io.weaviate.client.v1.graphql.query.fields.Field
 import java.util.UUID
@@ -62,22 +63,34 @@ class WeaviateService(
             .getOrThrow()
       }
 
-  suspend fun getRecordCount(): Int {
-    val metaField =
-        Field.builder()
-            .name(META_FIELD_NAME)
-            .fields(Field.builder().name(COUNT_FIELD_NAME).build())
-            .build()
+  suspend fun getRecordCount(): Int =
+      withContext(Dispatchers.IO) {
+        val metaField =
+            Field.builder()
+                .name(META_FIELD_NAME)
+                .fields(Field.builder().name(COUNT_FIELD_NAME).build())
+                .build()
 
-    val result =
+        val result =
+            weaviateClient
+                .graphQL()
+                .aggregate()
+                .withClassName(TOLKIEN_CLASS_NAME)
+                .withFields(metaField)
+                .run()
+                .getOrThrow()
+        println(result) // TODO delete this
+        0 // TODO return real result
+      }
+
+  suspend fun deleteData(): Boolean =
+      withContext(Dispatchers.IO) {
         weaviateClient
-            .graphQL()
-            .aggregate()
+            .data()
+            .deleter()
             .withClassName(TOLKIEN_CLASS_NAME)
-            .withFields(metaField)
+            .withConsistencyLevel(ConsistencyLevel.ALL)
             .run()
             .getOrThrow()
-    println(result)
-    return 0
-  }
+      }
 }
