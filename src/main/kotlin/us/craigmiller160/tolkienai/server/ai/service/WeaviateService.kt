@@ -3,6 +3,7 @@ package us.craigmiller160.tolkienai.server.ai.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.weaviate.client.WeaviateClient
 import io.weaviate.client.v1.data.replication.model.ConsistencyLevel
+import io.weaviate.client.v1.filters.Operator
 import io.weaviate.client.v1.filters.WhereFilter
 import io.weaviate.client.v1.graphql.query.argument.NearVectorArgument
 import io.weaviate.client.v1.graphql.query.fields.Field
@@ -108,12 +109,19 @@ class WeaviateService(
 
   private suspend fun doDeleteRecords(): Long =
       withContext(Dispatchers.IO) {
+        val where =
+            WhereFilter.builder()
+                .operator(Operator.GreaterThanEqual)
+                .path("_creationTimeUnix") // TODO make a constant
+                .valueText("1712000000000") // TODO make a constant
+                .build()
+
         weaviateClient
             .batch()
             .objectsBatchDeleter()
             .withClassName(TOLKIEN_CLASS_NAME)
             .withConsistencyLevel(ConsistencyLevel.ALL)
-            .withWhere(WhereFilter.builder().build())
+            .withWhere(where)
             .run()
             .getOrThrow()
             .results
