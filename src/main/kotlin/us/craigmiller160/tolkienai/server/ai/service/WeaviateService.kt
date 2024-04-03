@@ -3,6 +3,7 @@ package us.craigmiller160.tolkienai.server.ai.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.weaviate.client.WeaviateClient
 import io.weaviate.client.v1.data.replication.model.ConsistencyLevel
+import io.weaviate.client.v1.filters.WhereFilter
 import io.weaviate.client.v1.graphql.query.argument.NearVectorArgument
 import io.weaviate.client.v1.graphql.query.fields.Field
 import java.util.UUID
@@ -91,14 +92,31 @@ class WeaviateService(
             ?: 0
       }
 
-  suspend fun deleteAllRecords(): Unit =
+  suspend fun deleteAllRecords(): Unit {
+    val count = getRecordCount().toLong()
+    recursiveDeleteAllRecords(count.toLong())
+  }
+
+  private suspend fun recursiveDeleteAllRecords(recordsRemaining: Long) {
+    log.trace("Recursively deleting all records. Remaining: $recordsRemaining")
+    val recordsDeleted = doDeleteRecords()
+    val newRecordsRemaining = recordsRemaining - recordsDeleted
+    if (newRecordsRemaining > 0) {
+      recursiveDeleteAllRecords(newRecordsRemaining)
+    }
+  }
+
+  private suspend fun doDeleteRecords(): Long =
       withContext(Dispatchers.IO) {
         weaviateClient
             .batch()
             .objectsBatchDeleter()
             .withClassName(TOLKIEN_CLASS_NAME)
             .withConsistencyLevel(ConsistencyLevel.ALL)
+            .withWhere(WhereFilter.builder().build())
             .run()
             .getOrThrow()
+            .results
+            .successful
       }
 }
