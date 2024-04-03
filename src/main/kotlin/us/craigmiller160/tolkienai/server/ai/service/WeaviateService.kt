@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingSearchResult
 import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingTextMatch
+import us.craigmiller160.tolkienai.server.ai.dto.GetRecordCountResult
 import us.craigmiller160.tolkienai.server.ai.utils.COUNT_FIELD_NAME
 import us.craigmiller160.tolkienai.server.ai.utils.META_FIELD_NAME
 import us.craigmiller160.tolkienai.server.ai.utils.TEXT_FIELD_NAME
@@ -71,7 +72,7 @@ class WeaviateService(
                 .fields(Field.builder().name(COUNT_FIELD_NAME).build())
                 .build()
 
-        val result =
+        val graphqlResult =
             weaviateClient
                 .graphQL()
                 .aggregate()
@@ -79,15 +80,22 @@ class WeaviateService(
                 .withFields(metaField)
                 .run()
                 .getOrThrow()
-        println(result) // TODO delete this
-        0 // TODO return real result
+
+        return@withContext objectMapper
+            .convertValue(graphqlResult.dataAsMap, GetRecordCountResult::class.java)
+            .aggregate[TOLKIEN_CLASS_NAME]
+            ?.first()
+            ?.meta
+            ?.count
+            ?.toInt()
+            ?: 0
       }
 
-  suspend fun deleteAllRecords(): Boolean =
+  suspend fun deleteAllRecords(): Unit =
       withContext(Dispatchers.IO) {
         weaviateClient
-            .data()
-            .deleter()
+            .batch()
+            .objectsBatchDeleter()
             .withClassName(TOLKIEN_CLASS_NAME)
             .withConsistencyLevel(ConsistencyLevel.ALL)
             .run()
