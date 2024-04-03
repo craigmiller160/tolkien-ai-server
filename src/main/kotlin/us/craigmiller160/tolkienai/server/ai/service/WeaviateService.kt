@@ -83,7 +83,7 @@ class WeaviateService(
         0 // TODO return real result
       }
 
-  suspend fun deleteData(): Boolean =
+  suspend fun deleteAllRecords(): Boolean =
       withContext(Dispatchers.IO) {
         weaviateClient
             .data()

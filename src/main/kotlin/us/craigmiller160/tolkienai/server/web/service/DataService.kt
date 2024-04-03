@@ -10,4 +10,6 @@ class DataService(private val weaviateService: WeaviateService) {
   fun getRecordCount(): RecordCountResponse = runBlocking {
     weaviateService.getRecordCount().let { RecordCountResponse(it) }
   }
+
+  fun deleteAllRecords(): Unit = runBlocking { weaviateService.deleteAllRecords() }
 }
