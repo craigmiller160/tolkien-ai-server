@@ -15,4 +15,10 @@ class DataControllerTest {
   fun `validate get record count`() {
     TODO()
   }
+
+  @Test
+  @Disabled
+  fun `deletes data`() {
+    TODO()
+  }
 }
