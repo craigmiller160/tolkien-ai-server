@@ -13,6 +13,7 @@ import us.craigmiller160.tolkienai.server.ai.dto.ChatContainer
 import us.craigmiller160.tolkienai.server.ai.dto.ChatMessageContainer
 import us.craigmiller160.tolkienai.server.ai.dto.ChatMessageRole
 import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingContainer
+import us.craigmiller160.tolkienai.server.ai.dto.Tokens
 import us.craigmiller160.tolkienai.server.config.OpenaiProperties
 
 @Service
@@ -34,12 +35,17 @@ class OpenAiService(
           log.trace(
               "Embedding generated. Time: ${millis}ms. Prompt Tokens: $promptTokens. Total Tokens: $totalTokens")
         }
-        .let { res -> res.embeddings.flatMap { it.embedding } }
-        .let {
+        .let { res ->
+          val allEmbeddings = res.embeddings.flatMap { it.embedding }
           EmbeddingContainer(
-              embedding = it,
+              embedding = allEmbeddings,
               text = text,
-              dimensions = openaiProperties.models.embedding.dimensions)
+              dimensions = openaiProperties.models.embedding.dimensions,
+              tokens =
+                  Tokens(
+                      prompt = res.usage.promptTokens ?: 0,
+                      completion = res.usage.completionTokens ?: 0,
+                      total = res.usage.totalTokens ?: 0))
         }
   }
 

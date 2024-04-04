@@ -7,7 +7,7 @@ import us.craigmiller160.tolkienai.server.web.type.ChatResponse
 
 @Document(collection = "chatLog")
 data class ChatLog(
-    val chat: ChatResponse,
+    val details: ChatResponse,
     @field:Id val id: String? = null,
     val timestamp: ZonedDateTime = ZonedDateTime.now()
 )
