@@ -14,5 +14,6 @@ data class ChatResponse(
     val model: String,
     val response: String,
     val explanation: ChatExplanation,
-    val tokens: Tokens
+    val tokens: Tokens,
+    val executionTimeMillis: Long
 )

@@ -1,6 +1,7 @@
 package us.craigmiller160.tolkienai.server.web.service
 
 import java.util.UUID
+import kotlin.time.Duration.Companion.nanoseconds
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -32,6 +33,7 @@ class ChatService(
     val id = UUID.randomUUID()
     log.info("Preparing chat. Chat ID: $id Query: ${request.query}")
     return runBlocking {
+      val start = System.nanoTime()
       val textMatches =
           openAiService
               .createEmbedding(request.query)
@@ -54,12 +56,16 @@ class ChatService(
                       ChatMessageContainer(
                           ChatMessageRole.USER, "List of data: \n$textMatchesString")))
 
+      val end = System.nanoTime()
+      val millis = (end - start).nanoseconds.inWholeMilliseconds
+
       ChatResponse(
               chatId = id,
               response = chatResult.response,
               model = chatResult.model,
               explanation = ChatExplanation(query = baseMessages, embeddingMatches = textMatches),
-              tokens = chatResult.tokens)
+              tokens = chatResult.tokens,
+              executionTimeMillis = millis)
           .also { chatLogRepository.insertChatLog(it) }
     }
   }
