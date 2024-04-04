@@ -7,6 +7,7 @@ import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
+import us.craigmiller160.tolkienai.server.ai.dto.Tokens
 import us.craigmiller160.tolkienai.server.ai.dto.floatEmbedding
 import us.craigmiller160.tolkienai.server.ai.ingestion.service.parsing.RawSourceParsingService
 import us.craigmiller160.tolkienai.server.ai.service.OpenAiService
@@ -38,12 +39,13 @@ class DataIngestionService(
 
     val totalCharacters = segments.sumOf { it.length }
 
-    runBlocking {
+    val allTokens = runBlocking {
       segments
           .map { segment ->
             async {
               openAiService.createEmbedding(segment).let { embedding ->
                 weaviateService.insertEmbedding(embedding.text, embedding.floatEmbedding)
+                embedding.tokens
               }
             }
           }
@@ -52,6 +54,14 @@ class DataIngestionService(
     val end = System.nanoTime()
     val timeMillis = (end - start) / 1_000_000
 
+    val totalTotals =
+        allTokens.fold(Tokens(0, 0, 0)) { acc, elem ->
+          acc.copy(
+              prompt = acc.prompt + elem.prompt,
+              completion = acc.completion + elem.completion,
+              total = acc.total + elem.total)
+        }
+
     val ingestionLog =
         IngestionLog(
             details =
@@ -59,7 +69,7 @@ class DataIngestionService(
                     characters = totalCharacters,
                     segments = segments.size,
                     executionTimeMillis = timeMillis,
-                    tokens = TODO()))
+                    tokens = totalTotals))
 
     log.info("Data ingestion complete")
   }
