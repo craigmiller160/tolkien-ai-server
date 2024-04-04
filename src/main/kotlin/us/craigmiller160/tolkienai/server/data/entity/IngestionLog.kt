@@ -3,6 +3,7 @@ package us.craigmiller160.tolkienai.server.data.entity
 import java.time.ZonedDateTime
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import us.craigmiller160.tolkienai.server.ai.dto.Tokens
 
 data class IngestionDetails(
     val characters: Int,
