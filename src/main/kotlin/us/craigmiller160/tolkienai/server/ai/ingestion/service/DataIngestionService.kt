@@ -13,13 +13,15 @@ import us.craigmiller160.tolkienai.server.ai.ingestion.service.parsing.RawSource
 import us.craigmiller160.tolkienai.server.ai.service.OpenAiService
 import us.craigmiller160.tolkienai.server.ai.service.WeaviateService
 import us.craigmiller160.tolkienai.server.data.entity.IngestionDetails
+import us.craigmiller160.tolkienai.server.data.repository.IngestionLogRepository
 
 @Service
 class DataIngestionService(
     private val rawSourceParsingService: RawSourceParsingService,
     private val environment: Environment,
     private val openAiService: OpenAiService,
-    private val weaviateService: WeaviateService
+    private val weaviateService: WeaviateService,
+    private val ingestionLogRepository: IngestionLogRepository
 ) {
   private val log = LoggerFactory.getLogger(javaClass)
   fun ingest(dryRun: Boolean) {
@@ -67,6 +69,7 @@ class DataIngestionService(
             segments = segments.size,
             executionTimeMillis = timeMillis,
             tokens = totalTotals)
+    runBlocking { ingestionLogRepository.insertIngestionLog(ingestionDetails) }
 
     log.info("Data ingestion complete")
   }
