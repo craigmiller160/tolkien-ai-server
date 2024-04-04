@@ -40,6 +40,7 @@ class DataIngestionService(
 
     val totalCharacters = segments.sumOf { it.length }
 
+    log.debug("Creating and inserting embeddings from segments. This might take a while.")
     val allTokens = runBlocking {
       segments
           .map { segment ->
