@@ -57,18 +57,21 @@ class OpenAiService(
                     ChatMessage(role = role.toChatRole(), content = content)
                   })
           .let { openAiClient.chatCompletion(it) }
-          .also { res ->
+          .let { res ->
             val promptTokens = res.usage?.promptTokens ?: 0
             val completionTokens = res.usage?.completionTokens ?: 0
             val totalTokens = res.usage?.totalTokens ?: 0
             log.trace(
                 "Chat token usage. Prompt: $promptTokens Completion: $completionTokens Total: $totalTokens")
-          }
-          .choices
-          .mapNotNull { choice -> choice.message.content }
-          .joinToString("\n")
-          .let { response ->
-            ChatContainer(response = response, model = openaiProperties.models.chat.name)
+
+            val responseString =
+                res.choices.mapNotNull { choice -> choice.message.content }.joinToString("\n")
+            ChatContainer(
+                response = responseString,
+                model = openaiProperties.models.chat.name,
+                tokens =
+                    Tokens(
+                        total = totalTokens, prompt = promptTokens, completion = completionTokens))
           }
 
   private fun ChatMessageRole.toChatRole(): ChatRole =
