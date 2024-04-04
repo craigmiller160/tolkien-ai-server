@@ -58,7 +58,6 @@ class WeaviateService(
 
   suspend fun insertEmbedding(text: String, embedding: List<Float>) =
       withContext(Dispatchers.IO) {
-        log.debug("Inserting embedding")
         weaviateClient
             .data()
             .creator()
