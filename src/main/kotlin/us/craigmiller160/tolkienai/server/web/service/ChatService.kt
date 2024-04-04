@@ -12,6 +12,7 @@ import us.craigmiller160.tolkienai.server.ai.service.OpenAiService
 import us.craigmiller160.tolkienai.server.ai.service.WeaviateService
 import us.craigmiller160.tolkienai.server.config.ChatProperties
 import us.craigmiller160.tolkienai.server.data.repository.ChatLogRepository
+import us.craigmiller160.tolkienai.server.web.type.ChatExecutionTime
 import us.craigmiller160.tolkienai.server.web.type.ChatExplanation
 import us.craigmiller160.tolkienai.server.web.type.ChatRequest
 import us.craigmiller160.tolkienai.server.web.type.ChatResponse
@@ -33,15 +34,15 @@ class ChatService(
     val id = UUID.randomUUID()
     log.info("Preparing chat. Chat ID: $id Query: ${request.query}")
     return runBlocking {
-      val start = System.nanoTime()
+      val startTime = System.nanoTime()
+      val queryEmbedding = openAiService.createEmbedding(request.query)
+      val afterEmbeddingTime = System.nanoTime()
+
       val textMatches =
-          openAiService
-              .createEmbedding(request.query)
-              .let { queryEmbedding ->
-                weaviateService.searchForEmbeddings(
-                    queryEmbedding.floatEmbedding, chatProperties.query.recordLimit)
-              }
+          weaviateService
+              .searchForEmbeddings(queryEmbedding.floatEmbedding, chatProperties.query.recordLimit)
               .map { it.text }
+      val afterVectorSearchTime = System.nanoTime()
       val textMatchesString = textMatches.joinToString("\n")
 
       val baseMessages =
@@ -55,9 +56,9 @@ class ChatService(
                   listOf(
                       ChatMessageContainer(
                           ChatMessageRole.USER, "List of data: \n$textMatchesString")))
+      val afterChatTime = System.nanoTime()
 
-      val end = System.nanoTime()
-      val millis = (end - start).nanoseconds.inWholeMilliseconds
+      val endTime = System.nanoTime()
 
       ChatResponse(
               chatId = id,
@@ -65,7 +66,17 @@ class ChatService(
               model = chatResult.model,
               explanation = ChatExplanation(query = baseMessages, embeddingMatches = textMatches),
               tokens = chatResult.tokens,
-              executionTimeMillis = millis)
+              executionTime =
+                  ChatExecutionTime(
+                      createQueryEmbeddingMillis =
+                          (afterEmbeddingTime - startTime).nanoseconds.inWholeMilliseconds,
+                      vectorSearchMillis =
+                          (afterVectorSearchTime - afterEmbeddingTime)
+                              .nanoseconds
+                              .inWholeMilliseconds,
+                      chatMillis =
+                          (afterChatTime - afterVectorSearchTime).nanoseconds.inWholeMilliseconds,
+                      totalMillis = (endTime - startTime).nanoseconds.inWholeMilliseconds))
           .also { chatLogRepository.insertChatLog(it) }
     }
   }

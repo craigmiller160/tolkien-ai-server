@@ -9,11 +9,18 @@ data class ChatExplanation(
     val embeddingMatches: List<String>
 )
 
+data class ChatExecutionTime(
+    val createQueryEmbeddingMillis: Long,
+    val vectorSearchMillis: Long,
+    val chatMillis: Long,
+    val totalMillis: Long
+)
+
 data class ChatResponse(
     val chatId: UUID,
     val model: String,
     val response: String,
     val explanation: ChatExplanation,
     val tokens: Tokens,
-    val executionTimeMillis: Long
+    val executionTime: ChatExecutionTime
 )
