@@ -16,6 +16,7 @@ import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingSearchResult
 import us.craigmiller160.tolkienai.server.ai.dto.EmbeddingTextMatch
 import us.craigmiller160.tolkienai.server.ai.dto.GetRecordCountResult
 import us.craigmiller160.tolkienai.server.ai.utils.COUNT_FIELD_NAME
+import us.craigmiller160.tolkienai.server.ai.utils.CREATION_TIME_UNIX_FIELD_NAME
 import us.craigmiller160.tolkienai.server.ai.utils.META_FIELD_NAME
 import us.craigmiller160.tolkienai.server.ai.utils.TEXT_FIELD_NAME
 import us.craigmiller160.tolkienai.server.ai.utils.TOLKIEN_CLASS_NAME
@@ -27,6 +28,9 @@ class WeaviateService(
     private val weaviateClient: WeaviateClient,
     private val objectMapper: ObjectMapper
 ) {
+  companion object {
+    private const val MIN_AGE_FOR_DELETE_ALL = "1712000000000"
+  }
 
   private val log = LoggerFactory.getLogger(javaClass)
 
@@ -117,8 +121,8 @@ class WeaviateService(
         val where =
             WhereFilter.builder()
                 .operator(Operator.GreaterThanEqual)
-                .path("_creationTimeUnix") // TODO make a constant
-                .valueText("1712000000000") // TODO make a constant
+                .path(CREATION_TIME_UNIX_FIELD_NAME)
+                .valueText(MIN_AGE_FOR_DELETE_ALL)
                 .build()
 
         weaviateClient
