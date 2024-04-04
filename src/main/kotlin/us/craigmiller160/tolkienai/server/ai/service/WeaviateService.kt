@@ -95,6 +95,7 @@ class WeaviateService(
 
   suspend fun deleteAllRecords(): Unit {
     val count = getRecordCount().toLong()
+    log.debug("Deleting all records. Existing record count: $count")
     recursiveDeleteAllRecords(count.toLong())
   }
 
