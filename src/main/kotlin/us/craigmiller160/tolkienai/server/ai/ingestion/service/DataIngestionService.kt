@@ -13,7 +13,6 @@ import us.craigmiller160.tolkienai.server.ai.ingestion.service.parsing.RawSource
 import us.craigmiller160.tolkienai.server.ai.service.OpenAiService
 import us.craigmiller160.tolkienai.server.ai.service.WeaviateService
 import us.craigmiller160.tolkienai.server.data.entity.IngestionDetails
-import us.craigmiller160.tolkienai.server.data.entity.IngestionLog
 
 @Service
 class DataIngestionService(
@@ -62,14 +61,12 @@ class DataIngestionService(
               total = acc.total + elem.total)
         }
 
-    val ingestionLog =
-        IngestionLog(
-            details =
-                IngestionDetails(
-                    characters = totalCharacters,
-                    segments = segments.size,
-                    executionTimeMillis = timeMillis,
-                    tokens = totalTotals))
+    val ingestionDetails =
+        IngestionDetails(
+            characters = totalCharacters,
+            segments = segments.size,
+            executionTimeMillis = timeMillis,
+            tokens = totalTotals)
 
     log.info("Data ingestion complete")
   }
