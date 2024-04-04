@@ -28,6 +28,7 @@ class DataIngestionService(
     }
 
     log.info("Beginning data ingestion")
+    val start = System.nanoTime()
 
     val segments = rawSourceParsingService.parseSilmarillion(dryRun)
     if (dryRun) {
@@ -48,12 +49,17 @@ class DataIngestionService(
           }
           .awaitAll()
     }
+    val end = System.nanoTime()
+    val timeMillis = (end - start) / 1_000_000
 
     val ingestionLog =
         IngestionLog(
             details =
                 IngestionDetails(
-                    characters = totalCharacters, segments = segments.size, tokens = TODO()))
+                    characters = totalCharacters,
+                    segments = segments.size,
+                    executionTimeMillis = timeMillis,
+                    tokens = TODO()))
 
     log.info("Data ingestion complete")
   }
