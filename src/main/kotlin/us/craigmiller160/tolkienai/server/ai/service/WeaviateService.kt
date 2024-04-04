@@ -96,15 +96,19 @@ class WeaviateService(
   suspend fun deleteAllRecords(): Unit {
     val count = getRecordCount().toLong()
     log.debug("Deleting all records. Existing record count: $count")
-    recursiveDeleteAllRecords(count.toLong())
+    recursiveDeleteAllRecords(count)
   }
 
-  private suspend fun recursiveDeleteAllRecords(recordsRemaining: Long) {
-    log.trace("Recursively deleting all records. Remaining: $recordsRemaining")
+  private suspend fun recursiveDeleteAllRecords(recordsRemaining: Long, attemptNumber: Int = 0) {
+    if (attemptNumber >= 5) {
+      return
+    }
     val recordsDeleted = doDeleteRecords()
+    log.trace(
+        "Recursively deleting all records. Attempt: $attemptNumber Remaining Records: $recordsRemaining Records Deleted: $recordsDeleted")
     val newRecordsRemaining = recordsRemaining - recordsDeleted
     if (newRecordsRemaining > 0) {
-      recursiveDeleteAllRecords(newRecordsRemaining)
+      recursiveDeleteAllRecords(newRecordsRemaining, attemptNumber + 1)
     }
   }
 
