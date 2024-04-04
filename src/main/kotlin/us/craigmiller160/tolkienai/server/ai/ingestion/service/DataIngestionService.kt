@@ -1,5 +1,6 @@
 package us.craigmiller160.tolkienai.server.ai.ingestion.service
 
+import kotlin.time.Duration.Companion.nanoseconds
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.map
@@ -54,7 +55,7 @@ class DataIngestionService(
           .awaitAll()
     }
     val end = System.nanoTime()
-    val timeMillis = (end - start) / 1_000_000
+    val timeMillis = (end - start).nanoseconds.inWholeMilliseconds
 
     val totalTotals =
         allTokens.fold(Tokens(0, 0, 0)) { acc, elem ->
