@@ -11,6 +11,8 @@ import us.craigmiller160.tolkienai.server.ai.dto.floatEmbedding
 import us.craigmiller160.tolkienai.server.ai.ingestion.service.parsing.RawSourceParsingService
 import us.craigmiller160.tolkienai.server.ai.service.OpenAiService
 import us.craigmiller160.tolkienai.server.ai.service.WeaviateService
+import us.craigmiller160.tolkienai.server.data.entity.IngestionDetails
+import us.craigmiller160.tolkienai.server.data.entity.IngestionLog
 
 @Service
 class DataIngestionService(
@@ -33,6 +35,8 @@ class DataIngestionService(
       return
     }
 
+    val totalCharacters = segments.sumOf { it.length }
+
     runBlocking {
       segments
           .map { segment ->
@@ -44,6 +48,13 @@ class DataIngestionService(
           }
           .awaitAll()
     }
+
+    val ingestionLog =
+        IngestionLog(
+            details =
+                IngestionDetails(
+                    characters = totalCharacters, segments = segments.size, tokens = TODO()))
+
     log.info("Data ingestion complete")
   }
 

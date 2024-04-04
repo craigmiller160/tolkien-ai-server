@@ -4,7 +4,12 @@ import java.time.ZonedDateTime
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
-data class IngestionDetails(val characters: Int, val segments: Int, val tokens: Tokens)
+data class IngestionDetails(
+    val characters: Int,
+    val segments: Int,
+    val executionTimeMillis: Long,
+    val tokens: Tokens
+)
 
 @Document(collection = "ingestionLog")
 data class IngestionLog(
