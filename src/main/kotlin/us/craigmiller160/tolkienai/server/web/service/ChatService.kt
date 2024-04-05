@@ -66,6 +66,7 @@ class ChatService(
               model = chatResult.model,
               explanation = ChatExplanation(query = baseMessages, embeddingMatches = textMatches),
               tokens = chatResult.tokens,
+              group = request.group,
               executionTime =
                   ChatExecutionTime(
                       createQueryEmbeddingMillis =
