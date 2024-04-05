@@ -22,5 +22,6 @@ data class ChatResponse(
     val response: String,
     val explanation: ChatExplanation,
     val tokens: Tokens,
-    val executionTime: ChatExecutionTime
+    val executionTime: ChatExecutionTime,
+    val group: String? = null
 )
