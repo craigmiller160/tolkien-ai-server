@@ -14,7 +14,9 @@ fun <T> Result<T>.getOrThrow(): T {
 }
 
 val GraphQLResponse.dataAsMap
-  get() = data as Map<String, Any?>
+  get() =
+      if (data is Map<*, *>) data as Map<String, Any?>
+      else throw IllegalStateException("GraphQLResponse is not of type Map")
 
 fun Result<GraphQLResponse>.toDataAsMapKotlinResult(): kotlin.Result<GraphQLResponse> =
     kotlin.runCatching { getOrThrow() }

@@ -1,0 +1,8 @@
+testcontainers:
+  common:
+    postgres:
+      enable: false
+    keycloak:
+      enable: true
+    mongodb:
+      enable: true
