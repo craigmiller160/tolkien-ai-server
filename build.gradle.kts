@@ -47,6 +47,7 @@ dependencies {
 
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
     testImplementation("io.mockk:mockk:1.13.10")
+    testImplementation("us.craigmiller160:testcontainers-common-spring:2.0.0-SNAPSHOT")
 }
 
 kotlin {
