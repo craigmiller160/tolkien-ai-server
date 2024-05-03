@@ -10,7 +10,8 @@ import us.craigmiller160.testcontainers.common.spring.SpringTestContainersExtens
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
 @SpringBootTest
-@ExtendWith(value = [SpringTestContainersExtension::class, SpringExtension::class])
+@ExtendWith(
+    value = [SpringTestContainersExtension::class, SpringExtension::class, MockExtension::class])
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 annotation class IntegrationTest
