@@ -1,5 +1,6 @@
 package us.craigmiller160.tolkienai.server.web.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -34,7 +35,8 @@ import us.craigmiller160.tolkienai.server.web.type.IngestionLogSearchResponse
 class LogControllerTest(
     private val ingestionLogRepo: IngestionLogRepository,
     private val chatLogRepo: ChatLogRepository,
-    private val mockMvc: MockMvc
+    private val mockMvc: MockMvc,
+    private val objectMapper: ObjectMapper
 ) {
   companion object {
     @JvmStatic fun ingestionLogArgs(): Stream<IngestionLogArgs> = TODO()
@@ -113,13 +115,17 @@ class LogControllerTest(
             pageNumber = args.page,
             totalRecords = args.totalMatchingRecords,
             logs = args.responseIndexes.map { logs[it] })
-    mockMvc.get("/logs/ingestion") {
-      param("pageNumber", args.page.toString())
-      param("pageSize", "10")
-      args.start?.let { param("startTimestamp", it.toString()) }
-      args.end?.let { param("endTimestamp", it.toString()) }
-    }
-    TODO()
+    mockMvc
+        .get("/logs/ingestion") {
+          param("pageNumber", args.page.toString())
+          param("pageSize", "10")
+          args.start?.let { param("startTimestamp", it.toString()) }
+          args.end?.let { param("endTimestamp", it.toString()) }
+        }
+        .andExpect {
+          status { isOk() }
+          content { json(objectMapper.writeValueAsString(expected)) }
+        }
   }
 }
 
