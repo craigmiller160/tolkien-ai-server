@@ -1,6 +1,6 @@
 tolkienai:
   weaviate:
-    host: craigmiller160.us:30000
+    host: craigpc:30000
     scheme: https
 
   openai:
@@ -32,7 +32,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://${spring.data.mongodb.username}:${spring.data.mongodb.password}@craigmiller160.us:30021/${spring.data.mongodb.database}?ssl=true&authSource=admin
+      uri: mongodb://${spring.data.mongodb.username}:${spring.data.mongodb.password}@craigpc:30021/${spring.data.mongodb.database}?ssl=true&authSource=admin
       database: tolkienai_dev
     migrations:
       enabled: true
