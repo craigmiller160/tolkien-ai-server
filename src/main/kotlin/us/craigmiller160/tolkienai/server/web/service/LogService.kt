@@ -13,8 +13,12 @@ class LogService(
     private val chatLogRepository: ChatLogRepository,
     private val ingestionLogRepository: IngestionLogRepository
 ) {
-  fun searchForIngestionLogs(request: IngestionLogSearchRequest): IngestionLogSearchResponse =
-      TODO()
+  fun searchForIngestionLogs(request: IngestionLogSearchRequest): IngestionLogSearchResponse {
+    return IngestionLogSearchResponse(
+        pageNumber = 0, pageSize = 0, logs = listOf(), totalRecords = 0)
+  }
 
-  fun searchForChatLogs(request: ChatLogSearchRequest): ChatLogSearchResponse = TODO()
+  fun searchForChatLogs(request: ChatLogSearchRequest): ChatLogSearchResponse {
+    return ChatLogSearchResponse(pageNumber = 0, pageSize = 0, logs = listOf(), totalRecords = 0)
+  }
 }
