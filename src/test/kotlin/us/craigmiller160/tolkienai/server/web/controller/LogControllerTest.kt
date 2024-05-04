@@ -5,12 +5,17 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.UUID
+import java.util.stream.Stream
 import kotlin.random.Random
 import kotlinx.coroutines.runBlocking
 import net.datafaker.Faker
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.get
 import us.craigmiller160.tolkienai.server.ai.dto.ChatMessageContainer
 import us.craigmiller160.tolkienai.server.ai.dto.ChatMessageRole
 import us.craigmiller160.tolkienai.server.ai.dto.Tokens
@@ -27,8 +32,13 @@ import us.craigmiller160.tolkienai.server.web.type.ChatResponse
 @IntegrationTest
 class LogControllerTest(
     private val ingestionLogRepo: IngestionLogRepository,
-    private val chatLogRepo: ChatLogRepository
+    private val chatLogRepo: ChatLogRepository,
+    private val mockMvc: MockMvc
 ) {
+  companion object {
+    @JvmStatic fun ingestionLogArgs(): Stream<IngestionLogArgs> = TODO()
+  }
+
   private val faker = Faker()
 
   private fun clearData() = runBlocking {
@@ -92,17 +102,26 @@ class LogControllerTest(
     TODO()
   }
 
-  @Test
-  fun `all options for getting ingestion logs`() {
+  @ParameterizedTest
+  @MethodSource("ingestionLogArgs")
+  fun `all options for getting ingestion logs`(args: IngestionLogArgs) {
+    val logs = createIngestionLogs()
+    val expected = args.matchingIndexes.map { logs[it] }
+    mockMvc.get("/logs/ingestion") {
+      param("pageNumber", args.page.toString())
+      param("pageSize", "10")
+      args.start?.let { param("startTimestamp", it.toString()) }
+      args.end?.let { param("endTimestamp", it.toString()) }
+    }
     TODO()
   }
 }
 
 data class IngestionLogArgs(
     val matchingIndexes: List<Int>,
-    val start: ZonedDateTime,
-    val end: ZonedDateTime,
-    val page: Int
+    val page: Int,
+    val start: ZonedDateTime? = null,
+    val end: ZonedDateTime? = null
 )
 
 private val BASE_TIMESTAMP =
