@@ -8,3 +8,11 @@ spring:
     mongodb:
       uri: ${testcontainers.common.mongodb.url}
       database: test
+
+  security:
+    keycloak:
+      oauth2:
+        resourceserver:
+          host: ${testcontainers.common.keycloak.url}
+          realm: ${testcontainers.common.keycloak.realm}
+          client-id: ${testcontainers.common.keycloak.client.id}

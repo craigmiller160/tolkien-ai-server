@@ -27,6 +27,7 @@ import us.craigmiller160.tolkienai.server.data.entity.IngestionDetails
 import us.craigmiller160.tolkienai.server.data.entity.IngestionLog
 import us.craigmiller160.tolkienai.server.data.repository.ChatLogRepository
 import us.craigmiller160.tolkienai.server.data.repository.IngestionLogRepository
+import us.craigmiller160.tolkienai.server.testcore.DefaultUsers
 import us.craigmiller160.tolkienai.server.testcore.IntegrationTest
 import us.craigmiller160.tolkienai.server.web.type.ChatExecutionTime
 import us.craigmiller160.tolkienai.server.web.type.ChatExplanation
@@ -41,7 +42,8 @@ constructor(
     private val ingestionLogRepo: IngestionLogRepository,
     private val chatLogRepo: ChatLogRepository,
     private val mockMvc: MockMvc,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val defaultUsers: DefaultUsers
 ) {
   companion object {
     @JvmStatic
@@ -143,6 +145,7 @@ constructor(
           param("pageSize", "10")
           start?.let { param("startTimestamp", it) }
           end?.let { param("endTimestamp", it) }
+          header("Authorization", "Bearer ${defaultUsers.primaryUser.token}")
         }
         .andExpect {
           status { isOk() }
