@@ -74,7 +74,38 @@ constructor(
                     totalMatchingRecords = 5))
             .map { it.toArguments() }
 
-    @JvmStatic fun chatLogArgs(): Stream<Arguments> = Stream.of("").map { Arguments.of() }
+    @JvmStatic
+    fun chatLogArgs(): Stream<Arguments> =
+        Stream.of(
+                ChatLogArgs(
+                    responseIndexes = (0 until 10).toList(),
+                    page = 0,
+                    group = null,
+                    start = null,
+                    end = null,
+                    totalMatchingRecords = 100),
+                ChatLogArgs(
+                    responseIndexes = (10 until 20).toList(),
+                    page = 1,
+                    group = null,
+                    start = null,
+                    end = null,
+                    totalMatchingRecords = 100),
+                ChatLogArgs(
+                    responseIndexes = (15 until 25).toList(),
+                    page = 0,
+                    group = null,
+                    start = null,
+                    end = BASE_TIMESTAMP.plusHours(15),
+                    totalMatchingRecords = 85),
+                ChatLogArgs(
+                    responseIndexes = (0 until 5).toList(),
+                    page = 0,
+                    group = null,
+                    start = BASE_TIMESTAMP.plusHours(5),
+                    end = null,
+                    totalMatchingRecords = 5))
+            .map { it.toArguments() }
   }
 
   private val faker = Faker()
