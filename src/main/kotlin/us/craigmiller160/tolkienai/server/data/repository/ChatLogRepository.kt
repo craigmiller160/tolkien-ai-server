@@ -14,6 +14,6 @@ class ChatLogRepository(private val mongoTemplate: MongoTemplate) {
   suspend fun insertChatLog(chat: ChatResponse) =
       withContext(Dispatchers.IO) { ChatLog(chat).let { mongoTemplate.insert(it) } }
 
-  suspend fun deleteAllIngestionLogs() =
+  suspend fun deleteAllChatLogs() =
       withContext(Dispatchers.IO) { mongoTemplate.remove(Query(), CHAT_LOG_COLLECTION) }
 }

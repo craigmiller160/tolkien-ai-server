@@ -1,5 +1,6 @@
 package us.craigmiller160.tolkienai.server.web.controller
 
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -13,9 +14,20 @@ class LogControllerTest(
     private val chatLogRepo: ChatLogRepository
 ) {
 
-  @BeforeEach fun setup() {}
+  fun clearData() = runBlocking {
+    ingestionLogRepo.deleteAllIngestionLogs()
+    chatLogRepo.deleteAllChatLogs()
+  }
 
-  @AfterEach fun cleanup() {}
+  @BeforeEach
+  fun setup() {
+    clearData()
+  }
+
+  @AfterEach
+  fun cleanup() {
+    clearData()
+  }
 
   @Test
   fun `all options for getting chat logs`() {
