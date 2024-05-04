@@ -1,8 +1,12 @@
 spring:
+  profiles:
+    active: test
+
   data:
     migrations:
       weaviate:
         enabled: false
+
     mongodb:
       uri: ${testcontainers.common.mongodb.url}
       database: test
