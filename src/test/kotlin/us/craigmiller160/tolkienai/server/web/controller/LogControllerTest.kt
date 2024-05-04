@@ -30,6 +30,7 @@ import us.craigmiller160.tolkienai.server.testcore.DefaultUsers
 import us.craigmiller160.tolkienai.server.testcore.IntegrationTest
 import us.craigmiller160.tolkienai.server.web.type.ChatExecutionTime
 import us.craigmiller160.tolkienai.server.web.type.ChatExplanation
+import us.craigmiller160.tolkienai.server.web.type.ChatLogSearchResponse
 import us.craigmiller160.tolkienai.server.web.type.ChatResponse
 import us.craigmiller160.tolkienai.server.web.type.IngestionLogSearchResponse
 import us.craigmiller160.tolkienai.server.web.type.TIMESTAMP_FORMATTER
@@ -184,7 +185,25 @@ constructor(
       totalMatchingRecords: Int
   ) {
     val logs = createChatLogs()
-    TODO()
+    val expected =
+        ChatLogSearchResponse(
+            pageSize = 10,
+            pageNumber = page,
+            totalRecords = totalMatchingRecords,
+            logs = responseIndexes.map { logs[it] })
+    mockMvc
+        .get("/logs/chat") {
+          param("pageNumber", page.toString())
+          param("pageSize", "10")
+          start?.let { param("startTimestamp", it) }
+          end?.let { param("endTimestamp", it) }
+          group?.let { param("group", it) }
+          header("Authorization", "Bearer ${defaultUsers.primaryUser.token}")
+        }
+        .andExpect {
+          status { isOk() }
+          content { json(objectMapper.writeValueAsString(expected)) }
+        }
   }
 
   @ParameterizedTest(name = "searching for ingestion logs between {1} and {2} on page {0}")
