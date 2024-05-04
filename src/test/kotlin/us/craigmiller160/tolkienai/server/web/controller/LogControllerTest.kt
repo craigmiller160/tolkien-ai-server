@@ -14,6 +14,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.MockMvc
@@ -43,14 +44,15 @@ constructor(
 ) {
   companion object {
     @JvmStatic
-    fun ingestionLogArgs(): Stream<IngestionLogArgs> {
+    fun ingestionLogArgs(): Stream<Arguments> {
       return Stream.of(
-          IngestionLogArgs(
-              responseIndexes = listOf(),
-              page = 0,
-              start = ZonedDateTime.now(),
-              end = ZonedDateTime.now(),
-              totalMatchingRecords = 10))
+              IngestionLogArgs(
+                  responseIndexes = listOf(),
+                  page = 0,
+                  start = ZonedDateTime.now(),
+                  end = ZonedDateTime.now(),
+                  totalMatchingRecords = 10))
+          .map { it.toArguments() }
     }
   }
 
@@ -118,22 +120,28 @@ constructor(
     TODO()
   }
 
-  @ParameterizedTest(name = "searching for ingestion logs between {0}")
+  @ParameterizedTest(name = "searching for ingestion logs between {1} and {2} on page {0}")
   @MethodSource("ingestionLogArgs")
-  fun `searching for ingestion logs`(args: IngestionLogArgs) {
+  fun `searching for ingestion logs`(
+      page: Int,
+      start: ZonedDateTime?,
+      end: ZonedDateTime?,
+      responseIndexes: List<Int>,
+      totalMatchingRecords: Int
+  ) {
     val logs = createIngestionLogs()
     val expected =
         IngestionLogSearchResponse(
             pageSize = 10,
-            pageNumber = args.page,
-            totalRecords = args.totalMatchingRecords,
-            logs = args.responseIndexes.map { logs[it] })
+            pageNumber = page,
+            totalRecords = totalMatchingRecords,
+            logs = responseIndexes.map { logs[it] })
     mockMvc
         .get("/logs/ingestion") {
-          param("pageNumber", args.page.toString())
+          param("pageNumber", page.toString())
           param("pageSize", "10")
-          args.start?.let { param("startTimestamp", it.toString()) }
-          args.end?.let { param("endTimestamp", it.toString()) }
+          start?.let { param("startTimestamp", it.toString()) }
+          end?.let { param("endTimestamp", it.toString()) }
         }
         .andExpect {
           status { isOk() }
@@ -142,13 +150,16 @@ constructor(
   }
 }
 
-data class IngestionLogArgs(
+private data class IngestionLogArgs(
     val responseIndexes: List<Int>,
     val totalMatchingRecords: Int,
     val page: Int,
     val start: ZonedDateTime? = null,
     val end: ZonedDateTime? = null
 )
+
+private fun IngestionLogArgs.toArguments(): Arguments =
+    Arguments.of(page, start, end, responseIndexes, totalMatchingRecords)
 
 private val BASE_TIMESTAMP =
     ZonedDateTime.of(LocalDate.of(2024, 1, 1), LocalTime.of(0, 0, 0), ZoneId.of("UTC"))
