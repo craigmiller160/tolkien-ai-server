@@ -48,6 +48,7 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
     testImplementation("io.mockk:mockk:1.13.10")
     testImplementation("us.craigmiller160:testcontainers-common:2.0.0-SNAPSHOT")
+    testImplementation("net.datafaker:datafaker:2.2.2")
 }
 
 kotlin {
