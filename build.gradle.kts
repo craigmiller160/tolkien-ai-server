@@ -22,6 +22,12 @@ java {
     sourceCompatibility = JavaVersion.VERSION_20
 }
 
+dependencyManagement {
+    imports {
+        mavenBom("com.fasterxml.jackson:jackson-bom:2.17.0")
+    }
+}
+
 dependencies {
     val kotestVersion = "5.8.1"
     val kotlinCoroutinesVersion = "1.8.0"
