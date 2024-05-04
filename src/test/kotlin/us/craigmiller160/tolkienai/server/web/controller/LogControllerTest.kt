@@ -115,8 +115,6 @@ constructor(
             .map { it.toArguments() }
   }
 
-  private val faker = Faker()
-
   private fun clearData() = runBlocking {
     ingestionLogRepo.deleteAllIngestionLogs()
     chatLogRepo.deleteAllChatLogs()
@@ -219,6 +217,8 @@ constructor(
         }
   }
 }
+
+private val faker = Faker()
 
 private data class IngestionLogArgs(
     val responseIndexes: List<Int>,
