@@ -4,6 +4,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.UUID
 import kotlin.random.Random
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterEach
@@ -16,6 +17,7 @@ import us.craigmiller160.tolkienai.server.data.entity.IngestionLog
 import us.craigmiller160.tolkienai.server.data.repository.ChatLogRepository
 import us.craigmiller160.tolkienai.server.data.repository.IngestionLogRepository
 import us.craigmiller160.tolkienai.server.testcore.IntegrationTest
+import us.craigmiller160.tolkienai.server.web.type.ChatExecutionTime
 import us.craigmiller160.tolkienai.server.web.type.ChatResponse
 
 @IntegrationTest
@@ -29,26 +31,41 @@ class LogControllerTest(
     chatLogRepo.deleteAllChatLogs()
   }
 
-  private fun createIngestionLogs(): List<IngestionLog> {
-    recordCreationRange()
-        .map { index ->
-          IngestionLog(
-              timestamp = BASE_TIMESTAMP.plusHours(index.toLong()),
-              details =
-                  IngestionDetails(
-                      characters = randomCount(),
-                      segments = randomCount(),
-                      executionTimeMillis = randomMillis(),
-                      tokens = Tokens(prompt = 0, completion = 0, total = 0)))
-        }
-        .let { runBlocking { ingestionLogRepo.insertAllIngestionLogs(it) } }
-  }
+  private fun createIngestionLogs(): List<IngestionLog> =
+      recordCreationRange()
+          .map { index ->
+            IngestionLog(
+                timestamp = BASE_TIMESTAMP.plusHours(index.toLong()),
+                details =
+                    IngestionDetails(
+                        characters = randomCount(),
+                        segments = randomCount(),
+                        executionTimeMillis = randomMillis(),
+                        tokens = Tokens(prompt = 0, completion = 0, total = 0)))
+          }
+          .let { runBlocking { ingestionLogRepo.insertAllIngestionLogs(it) } }
 
-  private fun createChatLogs(): List<ChatLog> {
-    recordCreationRange().map { index ->
-      ChatLog(timestamp = BASE_TIMESTAMP.plusHours(index.toLong()), details = ChatResponse())
-    }
-  }
+  private fun createChatLogs(): List<ChatLog> =
+      recordCreationRange()
+          .map { index ->
+            ChatLog(
+                timestamp = BASE_TIMESTAMP.plusHours(index.toLong()),
+                details =
+                    ChatResponse(
+                        chatId = UUID.randomUUID(),
+                        model = "gpt-4",
+                        response = TODO(),
+                        explanation = TODO(),
+                        tokens = Tokens(prompt = 0, completion = 0, total = 0),
+                        group = TODO(),
+                        executionTime =
+                            ChatExecutionTime(
+                                createQueryEmbeddingMillis = randomMillis(),
+                                vectorSearchMillis = randomMillis(),
+                                chatMillis = randomMillis(),
+                                totalMillis = randomMillis())))
+          }
+          .let { runBlocking { chatLogRepo.insertAllChatLogs(it) } }
 
   @BeforeEach
   fun setup() {
