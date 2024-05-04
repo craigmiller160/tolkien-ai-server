@@ -7,9 +7,12 @@ import java.time.ZonedDateTime
 import java.util.UUID
 import kotlin.random.Random
 import kotlinx.coroutines.runBlocking
+import net.datafaker.Faker
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import us.craigmiller160.tolkienai.server.ai.dto.ChatMessageContainer
+import us.craigmiller160.tolkienai.server.ai.dto.ChatMessageRole
 import us.craigmiller160.tolkienai.server.ai.dto.Tokens
 import us.craigmiller160.tolkienai.server.data.entity.ChatLog
 import us.craigmiller160.tolkienai.server.data.entity.IngestionDetails
@@ -18,6 +21,7 @@ import us.craigmiller160.tolkienai.server.data.repository.ChatLogRepository
 import us.craigmiller160.tolkienai.server.data.repository.IngestionLogRepository
 import us.craigmiller160.tolkienai.server.testcore.IntegrationTest
 import us.craigmiller160.tolkienai.server.web.type.ChatExecutionTime
+import us.craigmiller160.tolkienai.server.web.type.ChatExplanation
 import us.craigmiller160.tolkienai.server.web.type.ChatResponse
 
 @IntegrationTest
@@ -25,6 +29,7 @@ class LogControllerTest(
     private val ingestionLogRepo: IngestionLogRepository,
     private val chatLogRepo: ChatLogRepository
 ) {
+  private val faker = Faker()
 
   private fun clearData() = runBlocking {
     ingestionLogRepo.deleteAllIngestionLogs()
@@ -54,8 +59,15 @@ class LogControllerTest(
                     ChatResponse(
                         chatId = UUID.randomUUID(),
                         model = "gpt-4",
-                        response = TODO(),
-                        explanation = TODO(),
+                        response = faker.text().text(50),
+                        explanation =
+                            ChatExplanation(
+                                query =
+                                    listOf(
+                                        ChatMessageContainer(
+                                            role = ChatMessageRole.USER,
+                                            message = faker.text().text(50))),
+                                embeddingMatches = listOf(faker.text().text(50))),
                         tokens = Tokens(prompt = 0, completion = 0, total = 0),
                         group = "test",
                         executionTime =
