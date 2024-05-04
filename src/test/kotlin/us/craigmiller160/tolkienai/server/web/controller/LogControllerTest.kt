@@ -53,6 +53,11 @@ class LogControllerTest(
   private fun createChatLogs(): List<ChatLog> =
       recordCreationRange()
           .map { index ->
+            val message =
+                ChatMessageContainer(role = ChatMessageRole.USER, message = faker.text().text(50))
+            val explanation =
+                ChatExplanation(
+                    query = listOf(message), embeddingMatches = listOf(faker.text().text(50)))
             ChatLog(
                 timestamp = BASE_TIMESTAMP.plusHours(index.toLong()),
                 details =
@@ -60,14 +65,7 @@ class LogControllerTest(
                         chatId = UUID.randomUUID(),
                         model = "gpt-4",
                         response = faker.text().text(50),
-                        explanation =
-                            ChatExplanation(
-                                query =
-                                    listOf(
-                                        ChatMessageContainer(
-                                            role = ChatMessageRole.USER,
-                                            message = faker.text().text(50))),
-                                embeddingMatches = listOf(faker.text().text(50))),
+                        explanation = explanation,
                         tokens = Tokens(prompt = 0, completion = 0, total = 0),
                         group = "test",
                         executionTime =
