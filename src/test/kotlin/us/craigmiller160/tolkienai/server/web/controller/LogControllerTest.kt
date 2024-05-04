@@ -47,16 +47,33 @@ constructor(
 ) {
   companion object {
     @JvmStatic
-    fun ingestionLogArgs(): Stream<Arguments> {
-      return Stream.of(
-              IngestionLogArgs(
-                  responseIndexes = listOf(),
-                  page = 0,
-                  start = ZonedDateTime.now(),
-                  end = ZonedDateTime.now(),
-                  totalMatchingRecords = 10))
-          .map { it.toArguments() }
-    }
+    fun ingestionLogArgs(): Stream<Arguments> =
+        Stream.of(
+                IngestionLogArgs(
+                    responseIndexes = (0 until 10).toList(),
+                    page = 0,
+                    start = null,
+                    end = null,
+                    totalMatchingRecords = 100),
+                IngestionLogArgs(
+                    responseIndexes = (10 until 20).toList(),
+                    page = 1,
+                    start = null,
+                    end = null,
+                    totalMatchingRecords = 100),
+                IngestionLogArgs(
+                    responseIndexes = (15 until 25).toList(),
+                    page = 0,
+                    start = null,
+                    end = BASE_TIMESTAMP.plusHours(15),
+                    totalMatchingRecords = 85),
+                IngestionLogArgs(
+                    responseIndexes = (0 until 5).toList(),
+                    page = 0,
+                    start = BASE_TIMESTAMP.plusHours(5),
+                    end = null,
+                    totalMatchingRecords = 5))
+            .map { it.toArguments() }
   }
 
   private val faker = Faker()
@@ -78,6 +95,7 @@ constructor(
                         executionTimeMillis = randomMillis(),
                         tokens = Tokens(prompt = 0, completion = 0, total = 0)))
           }
+          .reversed()
           .let { runBlocking { ingestionLogRepo.insertAllIngestionLogs(it) } }
 
   private fun createChatLogs(): List<ChatLog> =
@@ -105,6 +123,7 @@ constructor(
                                 chatMillis = randomMillis(),
                                 totalMillis = randomMillis())))
           }
+          .reversed()
           .let { runBlocking { chatLogRepo.insertAllChatLogs(it) } }
 
   @BeforeEach
