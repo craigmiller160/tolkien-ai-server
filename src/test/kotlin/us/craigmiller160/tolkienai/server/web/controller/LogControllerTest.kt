@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import us.craigmiller160.tolkienai.server.ai.dto.ChatMessageContainer
@@ -32,14 +33,25 @@ import us.craigmiller160.tolkienai.server.web.type.ChatResponse
 import us.craigmiller160.tolkienai.server.web.type.IngestionLogSearchResponse
 
 @IntegrationTest
-class LogControllerTest(
+class LogControllerTest
+@Autowired
+constructor(
     private val ingestionLogRepo: IngestionLogRepository,
     private val chatLogRepo: ChatLogRepository,
     private val mockMvc: MockMvc,
     private val objectMapper: ObjectMapper
 ) {
   companion object {
-    @JvmStatic fun ingestionLogArgs(): Stream<IngestionLogArgs> = TODO()
+    @JvmStatic
+    fun ingestionLogArgs(): Stream<IngestionLogArgs> {
+      return Stream.of(
+          IngestionLogArgs(
+              responseIndexes = listOf(),
+              page = 0,
+              start = ZonedDateTime.now(),
+              end = ZonedDateTime.now(),
+              totalMatchingRecords = 10))
+    }
   }
 
   private val faker = Faker()
@@ -101,13 +113,14 @@ class LogControllerTest(
   }
 
   @Test
-  fun `all options for getting chat logs`() {
+  fun `searching for chat logs`() {
+    val logs = createChatLogs()
     TODO()
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "searching for ingestion logs between {0}")
   @MethodSource("ingestionLogArgs")
-  fun `all options for getting ingestion logs`(args: IngestionLogArgs) {
+  fun `searching for ingestion logs`(args: IngestionLogArgs) {
     val logs = createIngestionLogs()
     val expected =
         IngestionLogSearchResponse(
