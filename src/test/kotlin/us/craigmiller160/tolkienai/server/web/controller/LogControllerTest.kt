@@ -98,6 +98,13 @@ class LogControllerTest(
   }
 }
 
+data class IngestionLogArgs(
+    val matchingIndexes: List<Int>,
+    val start: ZonedDateTime,
+    val end: ZonedDateTime,
+    val page: Int
+)
+
 private val BASE_TIMESTAMP =
     ZonedDateTime.of(LocalDate.of(2024, 1, 1), LocalTime.of(0, 0, 0), ZoneId.of("UTC"))
 
