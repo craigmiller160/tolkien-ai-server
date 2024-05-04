@@ -274,7 +274,7 @@ private fun ChatLogArgs.toArguments(): Arguments =
         totalMatchingRecords)
 
 private val BASE_TIMESTAMP =
-    ZonedDateTime.of(LocalDate.of(2024, 1, 1), LocalTime.of(0, 0, 0), ZoneId.of("UTC"))
+    ZonedDateTime.of(LocalDate.of(2024, 1, 1), LocalTime.of(0, 0, 0, 0), ZoneId.of("UTC"))
 
 private fun randomCount(): Int = Random.nextInt(0, 10_001)
 
