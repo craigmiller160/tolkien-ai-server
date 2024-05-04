@@ -10,33 +10,27 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import us.craigmiller160.tolkienai.server.ai.dto.Tokens
+import us.craigmiller160.tolkienai.server.data.entity.ChatLog
 import us.craigmiller160.tolkienai.server.data.entity.IngestionDetails
 import us.craigmiller160.tolkienai.server.data.entity.IngestionLog
 import us.craigmiller160.tolkienai.server.data.repository.ChatLogRepository
 import us.craigmiller160.tolkienai.server.data.repository.IngestionLogRepository
 import us.craigmiller160.tolkienai.server.testcore.IntegrationTest
+import us.craigmiller160.tolkienai.server.web.type.ChatResponse
 
 @IntegrationTest
 class LogControllerTest(
     private val ingestionLogRepo: IngestionLogRepository,
     private val chatLogRepo: ChatLogRepository
 ) {
-  companion object {
-    private val BASE_TIMESTAMP =
-        ZonedDateTime.of(LocalDate.of(2024, 1, 1), LocalTime.of(0, 0, 0), ZoneId.of("UTC"))
-  }
 
   private fun clearData() = runBlocking {
     ingestionLogRepo.deleteAllIngestionLogs()
     chatLogRepo.deleteAllChatLogs()
   }
 
-  private fun randomCount(): Int = Random.nextInt(0, 10_001)
-
-  private fun randomMillis(): Long = Random.nextLong()
-
-  fun createIngestionLogs() {
-    (0 until 100)
+  private fun createIngestionLogs(): List<IngestionLog> {
+    recordCreationRange()
         .map { index ->
           IngestionLog(
               timestamp = BASE_TIMESTAMP.plusHours(index.toLong()),
@@ -50,10 +44,15 @@ class LogControllerTest(
         .let { runBlocking { ingestionLogRepo.insertAllIngestionLogs(it) } }
   }
 
+  private fun createChatLogs(): List<ChatLog> {
+    recordCreationRange().map { index ->
+      ChatLog(timestamp = BASE_TIMESTAMP.plusHours(index.toLong()), details = ChatResponse())
+    }
+  }
+
   @BeforeEach
   fun setup() {
     clearData()
-    createIngestionLogs()
   }
 
   @AfterEach
@@ -71,3 +70,12 @@ class LogControllerTest(
     TODO()
   }
 }
+
+private val BASE_TIMESTAMP =
+    ZonedDateTime.of(LocalDate.of(2024, 1, 1), LocalTime.of(0, 0, 0), ZoneId.of("UTC"))
+
+private fun randomCount(): Int = Random.nextInt(0, 10_001)
+
+private fun randomMillis(): Long = Random.nextLong(0, 1_000 * 60 * 10)
+
+private fun recordCreationRange(): IntRange = (0 until 100)
