@@ -12,7 +12,6 @@ import kotlinx.coroutines.runBlocking
 import net.datafaker.Faker
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -74,6 +73,8 @@ constructor(
                     end = null,
                     totalMatchingRecords = 5))
             .map { it.toArguments() }
+
+    @JvmStatic fun chatLogArgs(): Stream<Arguments> = Stream.of("").map { Arguments.of() }
   }
 
   private val faker = Faker()
@@ -136,8 +137,16 @@ constructor(
     clearData()
   }
 
-  @Test
-  fun `searching for chat logs`() {
+  @ParameterizedTest(name = "searching for chat logs between {1} and {2} in group {3} on page {0}")
+  @MethodSource("chatLogArgs")
+  fun `searching for chat logs`(
+      page: Int,
+      start: String?,
+      end: String?,
+      group: String?,
+      responseIndexes: List<Int>,
+      totalMatchingRecords: Int
+  ) {
     val logs = createChatLogs()
     TODO()
   }
@@ -186,6 +195,24 @@ private fun IngestionLogArgs.toArguments(): Arguments =
         page,
         start?.format(TIMESTAMP_FORMATTER),
         end?.format(TIMESTAMP_FORMATTER),
+        responseIndexes,
+        totalMatchingRecords)
+
+private data class ChatLogArgs(
+    val responseIndexes: List<Int>,
+    val totalMatchingRecords: Int,
+    val page: Int,
+    val group: String? = null,
+    val start: ZonedDateTime? = null,
+    val end: ZonedDateTime? = null
+)
+
+private fun ChatLogArgs.toArguments(): Arguments =
+    Arguments.of(
+        page,
+        start?.format(TIMESTAMP_FORMATTER),
+        end?.format(TIMESTAMP_FORMATTER),
+        group,
         responseIndexes,
         totalMatchingRecords)
 
