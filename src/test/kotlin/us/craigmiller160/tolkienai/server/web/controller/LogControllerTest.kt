@@ -32,6 +32,7 @@ import us.craigmiller160.tolkienai.server.web.type.ChatExecutionTime
 import us.craigmiller160.tolkienai.server.web.type.ChatExplanation
 import us.craigmiller160.tolkienai.server.web.type.ChatResponse
 import us.craigmiller160.tolkienai.server.web.type.IngestionLogSearchResponse
+import us.craigmiller160.tolkienai.server.web.type.TIMESTAMP_FORMATTER
 
 @IntegrationTest
 class LogControllerTest
@@ -124,8 +125,8 @@ constructor(
   @MethodSource("ingestionLogArgs")
   fun `searching for ingestion logs`(
       page: Int,
-      start: ZonedDateTime?,
-      end: ZonedDateTime?,
+      start: String?,
+      end: String?,
       responseIndexes: List<Int>,
       totalMatchingRecords: Int
   ) {
@@ -140,8 +141,8 @@ constructor(
         .get("/logs/ingestion") {
           param("pageNumber", page.toString())
           param("pageSize", "10")
-          start?.let { param("startTimestamp", it.toString()) }
-          end?.let { param("endTimestamp", it.toString()) }
+          start?.let { param("startTimestamp", it) }
+          end?.let { param("endTimestamp", it) }
         }
         .andExpect {
           status { isOk() }
@@ -159,7 +160,12 @@ private data class IngestionLogArgs(
 )
 
 private fun IngestionLogArgs.toArguments(): Arguments =
-    Arguments.of(page, start, end, responseIndexes, totalMatchingRecords)
+    Arguments.of(
+        page,
+        start?.format(TIMESTAMP_FORMATTER),
+        end?.format(TIMESTAMP_FORMATTER),
+        responseIndexes,
+        totalMatchingRecords)
 
 private val BASE_TIMESTAMP =
     ZonedDateTime.of(LocalDate.of(2024, 1, 1), LocalTime.of(0, 0, 0), ZoneId.of("UTC"))
