@@ -28,6 +28,7 @@ import us.craigmiller160.tolkienai.server.testcore.IntegrationTest
 import us.craigmiller160.tolkienai.server.web.type.ChatExecutionTime
 import us.craigmiller160.tolkienai.server.web.type.ChatExplanation
 import us.craigmiller160.tolkienai.server.web.type.ChatResponse
+import us.craigmiller160.tolkienai.server.web.type.IngestionLogSearchResponse
 
 @IntegrationTest
 class LogControllerTest(
@@ -106,7 +107,12 @@ class LogControllerTest(
   @MethodSource("ingestionLogArgs")
   fun `all options for getting ingestion logs`(args: IngestionLogArgs) {
     val logs = createIngestionLogs()
-    val expected = args.matchingIndexes.map { logs[it] }
+    val expected =
+        IngestionLogSearchResponse(
+            pageSize = 10,
+            pageNumber = args.page,
+            totalRecords = args.totalMatchingRecords,
+            logs = args.responseIndexes.map { logs[it] })
     mockMvc.get("/logs/ingestion") {
       param("pageNumber", args.page.toString())
       param("pageSize", "10")
@@ -118,7 +124,8 @@ class LogControllerTest(
 }
 
 data class IngestionLogArgs(
-    val matchingIndexes: List<Int>,
+    val responseIndexes: List<Int>,
+    val totalMatchingRecords: Int,
     val page: Int,
     val start: ZonedDateTime? = null,
     val end: ZonedDateTime? = null
