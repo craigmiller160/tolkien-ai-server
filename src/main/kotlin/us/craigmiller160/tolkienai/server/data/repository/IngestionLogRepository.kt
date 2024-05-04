@@ -11,10 +11,19 @@ import us.craigmiller160.tolkienai.server.data.entity.IngestionLog
 
 @Repository
 class IngestionLogRepository(private val mongoTemplate: MongoTemplate) {
-  suspend fun insertIngestionLog(ingestionDetails: IngestionDetails) =
+  suspend fun insertIngestionLog(ingestionDetails: IngestionDetails): IngestionLog =
+      IngestionLog(ingestionDetails).let { insertIngestionLog(it) }
+
+  suspend fun insertIngestionLog(ingestionLog: IngestionLog): IngestionLog =
+      withContext(Dispatchers.IO) { ingestionLog.copy(id = null).let { mongoTemplate.insert(it) } }
+
+  suspend fun insertAllIngestionLogs(ingestionLogs: List<IngestionLog>): List<IngestionLog> =
       withContext(Dispatchers.IO) {
-        IngestionLog(ingestionDetails).let { mongoTemplate.insert(it) }
+        ingestionLogs.map { it.copy(id = null) }.let { mongoTemplate.insertAll(it) }.toList()
       }
+
+  suspend fun insertAllIngestionLogs(ingestionDetails: List<IngestionDetails>): List<IngestionLog> =
+      ingestionDetails.map { IngestionLog(it) }.let { insertAllIngestionLogs(it) }
 
   suspend fun deleteAllIngestionLogs() =
       withContext(Dispatchers.IO) { mongoTemplate.remove(Query(), INGESTION_LOG_COLLECTION) }
