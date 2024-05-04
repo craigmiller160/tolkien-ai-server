@@ -104,7 +104,14 @@ constructor(
                     group = null,
                     start = BASE_TIMESTAMP.plusHours(5),
                     end = null,
-                    totalMatchingRecords = 5))
+                    totalMatchingRecords = 5),
+                ChatLogArgs(
+                    responseIndexes = listOf(0, 2, 4, 6, 8, 10, 12, 14, 16, 18),
+                    page = 0,
+                    group = FIRST_GROUP,
+                    start = null,
+                    end = null,
+                    totalMatchingRecords = 50))
             .map { it.toArguments() }
   }
 
@@ -147,7 +154,7 @@ constructor(
                         response = faker.text().text(50),
                         explanation = explanation,
                         tokens = Tokens(prompt = 0, completion = 0, total = 0),
-                        group = "test",
+                        group = if (index % 2 == 0) FIRST_GROUP else SECOND_GROUP,
                         executionTime =
                             ChatExecutionTime(
                                 createQueryEmbeddingMillis = randomMillis(),
@@ -255,3 +262,6 @@ private fun randomCount(): Int = Random.nextInt(0, 10_001)
 private fun randomMillis(): Long = Random.nextLong(0, 1_000 * 60 * 10)
 
 private fun recordCreationRange(): IntRange = (0 until 100)
+
+private const val FIRST_GROUP = "first_group"
+private const val SECOND_GROUP = "second_group"
