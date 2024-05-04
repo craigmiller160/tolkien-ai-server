@@ -3,7 +3,6 @@ package us.craigmiller160.tolkienai.server.ai.ingestion.service
 import kotlin.time.Duration.Companion.nanoseconds
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
@@ -71,7 +70,7 @@ class DataIngestionService(
             segments = segments.size,
             executionTimeMillis = timeMillis,
             tokens = totalTotals)
-    runBlocking { ingestionLogRepository.insertIngestionLog(ingestionDetails) }
+    runBlocking { ingestionLogRepository.insertIngestionDetails(ingestionDetails) }
 
     log.info("Data ingestion complete")
   }

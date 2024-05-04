@@ -78,7 +78,7 @@ class ChatService(
                       chatMillis =
                           (afterChatTime - afterVectorSearchTime).nanoseconds.inWholeMilliseconds,
                       totalMillis = (endTime - startTime).nanoseconds.inWholeMilliseconds))
-          .also { chatLogRepository.insertChatLog(it) }
+          .also { chatLogRepository.insertChatResponse(it) }
     }
   }
 }

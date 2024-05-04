@@ -11,7 +11,7 @@ import us.craigmiller160.tolkienai.server.web.type.ChatResponse
 
 @Repository
 class ChatLogRepository(private val mongoTemplate: MongoTemplate) {
-  suspend fun insertChatLog(chatDetails: ChatResponse): ChatLog =
+  suspend fun insertChatResponse(chatDetails: ChatResponse): ChatLog =
       ChatLog(chatDetails).let { insertChatLog(it) }
 
   suspend fun insertChatLog(chatLog: ChatLog): ChatLog =
@@ -22,7 +22,7 @@ class ChatLogRepository(private val mongoTemplate: MongoTemplate) {
         chatLogs.map { it.copy(id = null) }.let { mongoTemplate.insertAll(it) }.toList()
       }
 
-  suspend fun insertAllChatLogs(chatDetails: List<ChatResponse>): List<ChatLog> =
+  suspend fun insertAllChatResponses(chatDetails: List<ChatResponse>): List<ChatLog> =
       withContext(Dispatchers.IO) { chatDetails.map { ChatLog(it) }.let { insertAllChatLogs(it) } }
 
   suspend fun deleteAllChatLogs() =
