@@ -57,7 +57,7 @@ class LogControllerTest(
                         response = TODO(),
                         explanation = TODO(),
                         tokens = Tokens(prompt = 0, completion = 0, total = 0),
-                        group = TODO(),
+                        group = "test",
                         executionTime =
                             ChatExecutionTime(
                                 createQueryEmbeddingMillis = randomMillis(),
