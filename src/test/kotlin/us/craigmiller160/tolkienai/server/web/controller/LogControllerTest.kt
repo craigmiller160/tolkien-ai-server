@@ -36,16 +36,18 @@ class LogControllerTest(
   private fun randomMillis(): Long = Random.nextLong()
 
   fun createIngestionLogs() {
-    (0 until 100).map { index ->
-      IngestionLog(
-          timestamp = BASE_TIMESTAMP.plusHours(index.toLong()),
-          details =
-              IngestionDetails(
-                  characters = randomCount(),
-                  segments = randomCount(),
-                  executionTimeMillis = randomMillis(),
-                  tokens = Tokens(prompt = 0, completion = 0, total = 0)))
-    }
+    (0 until 100)
+        .map { index ->
+          IngestionLog(
+              timestamp = BASE_TIMESTAMP.plusHours(index.toLong()),
+              details =
+                  IngestionDetails(
+                      characters = randomCount(),
+                      segments = randomCount(),
+                      executionTimeMillis = randomMillis(),
+                      tokens = Tokens(prompt = 0, completion = 0, total = 0)))
+        }
+        .let { runBlocking { ingestionLogRepo.insertAllIngestionLogs(it) } }
   }
 
   @BeforeEach
