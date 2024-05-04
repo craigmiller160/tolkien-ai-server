@@ -20,6 +20,11 @@ abstract class AbstractMigrationImplementationRunner<Helper>(
   abstract val helper: Helper
 
   override fun run(): List<MigrationReport> {
+    if (!properties.enabled) {
+      log.info("{} disabled", javaClass.simpleName)
+      return listOf()
+    }
+
     log.debug("Finding and running migrations")
     val historyRecords =
         Query().with(Sort.by(Sort.Direction.ASC, "index")).let { query ->
