@@ -27,5 +27,5 @@ class ZonedDateTimeToStringConverter : Converter<ZonedDateTime, String> {
 @WritingConverter
 class StringToZonedDateTimeConverter : Converter<String, ZonedDateTime> {
   override fun convert(source: String): ZonedDateTime =
-      ZonedDateTime.parse(source, TIMESTAMP_FORMATTER)
+      ZonedDateTime.parse(source, TIMESTAMP_FORMATTER, ZoneId.of("UTC"))
 }
