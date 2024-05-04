@@ -6,3 +6,9 @@ testcontainers:
       enable: true
     mongodb:
       enable: true
+
+spring:
+  data:
+    migrations:
+      weaviate:
+        enabled: false
