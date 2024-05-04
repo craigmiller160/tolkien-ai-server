@@ -5,13 +5,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import us.craigmiller160.testcontainers.common.spring.SpringTestContainersExtension
+import us.craigmiller160.testcontainers.common.TestcontainersExtension
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
 @SpringBootTest
-@ExtendWith(
-    value = [SpringTestContainersExtension::class, SpringExtension::class, MockExtension::class])
+@ExtendWith(value = [TestcontainersExtension::class, SpringExtension::class, MockExtension::class])
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 annotation class IntegrationTest
