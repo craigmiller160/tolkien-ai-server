@@ -1,0 +1,5 @@
+logging:
+  level:
+    us.craigmiller160.tolkienai.server: DEBUG
+    org.springframework.data.mongodb: DEBUG
+    us.craigmiller160.tolkienai.server.data.Logger: TRACE
