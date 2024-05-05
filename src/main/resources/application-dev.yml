@@ -1,0 +1,21 @@
+tolkienai:
+  weaviate:
+    host: craigpc:30000
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://${spring.data.mongodb.username}:${spring.data.mongodb.password}@craigpc:30021/${spring.data.mongodb.database}?ssl=true&authSource=admin
+      database: tolkienai_dev
+
+  security:
+    keycloak:
+      oauth2:
+        resourceserver:
+          realm: apps-dev
+
+logging:
+  level:
+    us.craigmiller160.tolkienai.server: DEBUG
+    org.springframework.data.mongodb: DEBUG
+    us.craigmiller160.tolkienai.server.data.Logger: TRACE

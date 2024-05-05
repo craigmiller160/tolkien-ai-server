@@ -1,7 +1,7 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
     val kotlinVersion = "2.0.0-Beta5"
@@ -20,6 +20,12 @@ version = "0.0.1-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_20
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("com.fasterxml.jackson:jackson-bom:2.17.0")
+    }
 }
 
 dependencies {
@@ -47,6 +53,8 @@ dependencies {
 
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
     testImplementation("io.mockk:mockk:1.13.10")
+    testImplementation("us.craigmiller160:testcontainers-common:2.0.0-SNAPSHOT")
+    testImplementation("net.datafaker:datafaker:2.2.2")
 }
 
 kotlin {
@@ -65,4 +73,11 @@ configure<SpotlessExtension> {
     kotlin {
         ktfmt()
     }
+}
+
+tasks.withType<BootRun> {
+    jvmArgs(
+        "-Dspring.profiles.active=dev",
+        "-Dspring.config.location=classpath:application.yml,classpath:application-dev.yml,file:./secrets.yml"
+    )
 }

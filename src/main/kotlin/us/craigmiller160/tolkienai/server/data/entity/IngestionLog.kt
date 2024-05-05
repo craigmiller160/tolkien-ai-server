@@ -12,7 +12,7 @@ data class IngestionDetails(
     val tokens: Tokens
 )
 
-@Document(collection = "ingestionLog")
+@Document(collection = INGESTION_LOG_COLLECTION)
 data class IngestionLog(
     val details: IngestionDetails,
     val timestamp: ZonedDateTime = ZonedDateTime.now(),

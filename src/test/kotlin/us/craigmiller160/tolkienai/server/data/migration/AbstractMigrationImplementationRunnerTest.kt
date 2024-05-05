@@ -185,6 +185,6 @@ class TestMigrationImplementationRunner(
     override val collectionName: String
 ) :
     AbstractMigrationImplementationRunner<String>(
-        mongoTemplate, MigrationImplementationProperties(paths)) {
+        mongoTemplate, MigrationImplementationProperties(true, paths)) {
   override val helper: String = ""
 }
