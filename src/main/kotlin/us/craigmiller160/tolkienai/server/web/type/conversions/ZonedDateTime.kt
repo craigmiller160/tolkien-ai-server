@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.web.type.converters
+package us.craigmiller160.tolkienai.server.web.type.conversions
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
