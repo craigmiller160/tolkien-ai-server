@@ -3,8 +3,9 @@ package us.craigmiller160.tolkienai.server.data.repository
 import java.time.ZonedDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.count
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
@@ -34,12 +35,14 @@ class IngestionLogRepository(private val mongoTemplate: MongoTemplate) {
       withContext(Dispatchers.IO) { mongoTemplate.remove(Query(), INGESTION_LOG_COLLECTION) }
 
   suspend fun searchForIngestionLogs(
-      pageNumber: Int,
-      pageSize: Int,
+      page: Pageable,
       startTimestamp: ZonedDateTime? = null,
       endTimestamp: ZonedDateTime? = null
   ): List<IngestionLog> {
-    val query = createSearchQuery(startTimestamp, endTimestamp)
+    val query =
+        createSearchQuery(startTimestamp, endTimestamp)
+            .with(page)
+            .with(Sort.by(Sort.Order.desc("timestamp")))
 
     return mongoTemplate.find(query, IngestionLog::class.java)
   }
