@@ -1,5 +1,6 @@
 package us.craigmiller160.tolkienai.server.data.repository
 
+import java.time.ZonedDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -29,4 +30,24 @@ class IngestionLogRepository(private val mongoTemplate: MongoTemplate) {
 
   suspend fun deleteAllIngestionLogs() =
       withContext(Dispatchers.IO) { mongoTemplate.remove(Query(), INGESTION_LOG_COLLECTION) }
+
+  suspend fun searchForIngestionLogs(
+      pageNumber: Int,
+      pageSize: Int,
+      startTimestamp: ZonedDateTime? = null,
+      endTimestamp: ZonedDateTime? = null
+  ): List<IngestionLog> {
+    //        mongoTemplate.find()
+    TODO()
+  }
+
+  suspend fun getCountForSearchForIngestionLogs(
+      pageNumber: Int,
+      pageSize: Int,
+      group: String? = null,
+      startTimestamp: ZonedDateTime? = null,
+      endTimestamp: ZonedDateTime? = null
+  ): Long {
+    TODO()
+  }
 }
