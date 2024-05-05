@@ -182,7 +182,7 @@ constructor(
       end: String?,
       group: String?,
       responseIndexes: List<Int>,
-      totalMatchingRecords: Int
+      totalMatchingRecords: Long
   ) {
     val logs = createChatLogs()
     val expected =
@@ -213,7 +213,7 @@ constructor(
       start: String?,
       end: String?,
       responseIndexes: List<Int>,
-      totalMatchingRecords: Int
+      totalMatchingRecords: Long
   ) {
     val logs = createIngestionLogs()
     val expected =
@@ -241,7 +241,7 @@ private val faker = Faker()
 
 private data class IngestionLogArgs(
     val responseIndexes: List<Int>,
-    val totalMatchingRecords: Int,
+    val totalMatchingRecords: Long,
     val page: Int,
     val start: ZonedDateTime? = null,
     val end: ZonedDateTime? = null
@@ -257,7 +257,7 @@ private fun IngestionLogArgs.toArguments(): Arguments =
 
 private data class ChatLogArgs(
     val responseIndexes: List<Int>,
-    val totalMatchingRecords: Int,
+    val totalMatchingRecords: Long,
     val page: Int,
     val group: String? = null,
     val start: ZonedDateTime? = null,
