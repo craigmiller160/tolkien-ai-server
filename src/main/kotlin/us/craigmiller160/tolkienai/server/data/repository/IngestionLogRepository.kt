@@ -65,7 +65,10 @@ class IngestionLogRepository(private val mongoTemplate: MongoTemplate) {
       startTimestamp: ZonedDateTime? = null,
       endTimestamp: ZonedDateTime? = null
   ): Long {
-    val query = createSearchQuery(startTimestamp, endTimestamp)
+    val query =
+        createSearchQuery(startTimestamp, endTimestamp).also {
+          it.log("Get Count For Search For Ingestion Logs")
+        }
     return mongoTemplate.count(query, INGESTION_LOG_COLLECTION)
   }
 }
