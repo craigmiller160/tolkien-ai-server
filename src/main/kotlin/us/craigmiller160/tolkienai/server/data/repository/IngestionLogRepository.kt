@@ -4,6 +4,7 @@ import java.time.ZonedDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
 import us.craigmiller160.tolkienai.server.data.entity.INGESTION_LOG_COLLECTION
@@ -37,13 +38,18 @@ class IngestionLogRepository(private val mongoTemplate: MongoTemplate) {
       startTimestamp: ZonedDateTime? = null,
       endTimestamp: ZonedDateTime? = null
   ): List<IngestionLog> {
-    //        mongoTemplate.find()
+    val query =
+        listOfNotNull(
+                startTimestamp?.let { Criteria.where("timestamp").gte(it) },
+                endTimestamp?.let { Criteria.where("timestamp").lte(it) })
+            .reduceOrNull { acc, criteria -> acc.andOperator(criteria) }
+            ?.let { Query(it) }
+            ?: Query()
+
     TODO()
   }
 
   suspend fun getCountForSearchForIngestionLogs(
-      pageNumber: Int,
-      pageSize: Int,
       group: String? = null,
       startTimestamp: ZonedDateTime? = null,
       endTimestamp: ZonedDateTime? = null
