@@ -1,6 +1,5 @@
 tolkienai:
   weaviate:
-    host: craigpc:30000
     scheme: https
 
   openai:
@@ -27,13 +26,7 @@ tolkienai:
       record-limit: 10
 
 spring:
-  profiles:
-    active: dev
-
   data:
-    mongodb:
-      uri: mongodb://${spring.data.mongodb.username}:${spring.data.mongodb.password}@craigpc:30021/${spring.data.mongodb.database}?ssl=true&authSource=admin
-      database: tolkienai_dev
     migrations:
       enabled: true
       mongo:
@@ -48,7 +41,6 @@ spring:
       oauth2:
         resourceserver:
           host: https://auth.craigmiller160.us
-          realm: apps-dev
           client-id: tolkien-ai-server
 
 logging:
