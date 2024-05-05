@@ -30,7 +30,17 @@ class LogService(
             logs = results)
       }
 
-  fun searchForChatLogs(request: ChatLogSearchRequest): ChatLogSearchResponse {
-    return ChatLogSearchResponse(pageNumber = 0, pageSize = 0, logs = listOf(), totalRecords = 0)
+  fun searchForChatLogs(request: ChatLogSearchRequest): ChatLogSearchResponse = runBlocking {
+    val results =
+        chatLogRepository.searchForChatLogs(
+            request.page, request.group, request.startTimestamp, request.endTimestamp)
+    val count =
+        chatLogRepository.getCountForSearchForChatLogs(
+            request.group, request.startTimestamp, request.endTimestamp)
+    ChatLogSearchResponse(
+        pageNumber = request.pageNumber,
+        pageSize = request.pageSize,
+        totalRecords = count,
+        logs = results)
   }
 }
