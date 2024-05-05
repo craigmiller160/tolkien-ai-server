@@ -54,4 +54,4 @@ spring:
 logging:
   level:
     us.craigmiller160.tolkienai.server: DEBUG
-    org.springframework.data.mongodb: TRACE
+    org.springframework.data.mongodb: DEBUG
