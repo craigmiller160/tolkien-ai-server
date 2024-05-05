@@ -63,11 +63,11 @@ constructor(
                     end = null,
                     totalMatchingRecords = 100),
                 IngestionLogArgs(
-                    responseIndexes = (15 until 25).toList(),
+                    responseIndexes = (84 until 94).toList(),
                     page = 0,
                     start = null,
                     end = BASE_TIMESTAMP.plusHours(15),
-                    totalMatchingRecords = 85),
+                    totalMatchingRecords = 16),
                 IngestionLogArgs(
                     responseIndexes = (0 until 5).toList(),
                     page = 0,
