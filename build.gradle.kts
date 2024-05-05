@@ -25,6 +25,7 @@ java {
 dependencyManagement {
     imports {
         mavenBom("com.fasterxml.jackson:jackson-bom:2.17.0")
+        mavenBom("org.springdoc:springdoc-openapi:2.5.0")
     }
 }
 
@@ -32,6 +33,7 @@ dependencies {
     val kotestVersion = "5.8.1"
     val kotlinCoroutinesVersion = "1.8.0"
 
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
