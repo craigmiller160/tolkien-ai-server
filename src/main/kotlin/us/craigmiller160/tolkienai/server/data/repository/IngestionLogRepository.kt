@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository
 import us.craigmiller160.tolkienai.server.data.entity.INGESTION_LOG_COLLECTION
 import us.craigmiller160.tolkienai.server.data.entity.IngestionDetails
 import us.craigmiller160.tolkienai.server.data.entity.IngestionLog
+import us.craigmiller160.tolkienai.server.data.log
 
 @Repository
 class IngestionLogRepository(private val mongoTemplate: MongoTemplate) {
@@ -44,10 +45,7 @@ class IngestionLogRepository(private val mongoTemplate: MongoTemplate) {
         createSearchQuery(startTimestamp, endTimestamp)
             .with(page)
             .with(Sort.by(Sort.Order.desc("timestamp")))
-    println(query.queryObject.toJson()) // TODO delete this
-    println(query.sortObject.toJson()) // TODO delete this
-    println(query.fieldsObject.toJson()) // TODO delete this
-    println(query) // TODO delete this
+            .also { it.log("Search For Ingestion Logs") }
 
     return mongoTemplate.find(query, IngestionLog::class.java)
   }
