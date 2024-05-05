@@ -3,9 +3,6 @@ tolkienai:
     host: craigpc:30000
 
 spring:
-  profiles:
-    active: dev
-
   data:
     mongodb:
       uri: mongodb://${spring.data.mongodb.username}:${spring.data.mongodb.password}@craigpc:30021/${spring.data.mongodb.database}?ssl=true&authSource=admin
