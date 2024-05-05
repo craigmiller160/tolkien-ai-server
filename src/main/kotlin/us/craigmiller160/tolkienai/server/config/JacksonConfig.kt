@@ -20,6 +20,6 @@ class JacksonConfig {
   @Bean
   fun objectMapperCustomizer(): Jackson2ObjectMapperBuilderCustomizer =
       Jackson2ObjectMapperBuilderCustomizer { builder ->
-        builder.modules(zonedDateTimeModule)
+        builder.modules { list -> list += zonedDateTimeModule }
       }
 }

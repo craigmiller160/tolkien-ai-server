@@ -10,6 +10,7 @@ import java.util.stream.Stream
 import kotlin.random.Random
 import kotlinx.coroutines.runBlocking
 import net.datafaker.Faker
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
@@ -68,7 +69,7 @@ constructor(
                     end = BASE_TIMESTAMP.plusHours(15),
                     totalMatchingRecords = 85),
                 IngestionLogArgs(
-                    responseIndexes = (0 until 5).toList(),
+                    responseIndexes = (0 until 10).toList(),
                     page = 0,
                     start = BASE_TIMESTAMP.plusHours(5),
                     end = null,
@@ -222,18 +223,22 @@ constructor(
             pageNumber = page,
             totalRecords = totalMatchingRecords,
             logs = responseIndexes.map { logs[it] })
-    mockMvc
-        .get("/logs/ingestion") {
-          param("pageNumber", page.toString())
-          param("pageSize", "10")
-          start?.let { param("startTimestamp", it) }
-          end?.let { param("endTimestamp", it) }
-          header("Authorization", "Bearer ${defaultUsers.primaryUser.token}")
-        }
-        .andExpect {
-          status { isOk() }
-          content { json(objectMapper.writeValueAsString(expected)) }
-        }
+
+    val actual =
+        mockMvc
+            .get("/logs/ingestion") {
+              param("pageNumber", page.toString())
+              param("pageSize", "10")
+              start?.let { param("startTimestamp", it) }
+              end?.let { param("endTimestamp", it) }
+              header("Authorization", "Bearer ${defaultUsers.primaryUser.token}")
+            }
+            .andExpect { status { isOk() } }
+            .andReturn()
+            .response
+            .contentAsString
+            .let { objectMapper.readValue(it, IngestionLogSearchResponse::class.java) }
+    assertThat(actual).isEqualTo(expected)
   }
 }
 
