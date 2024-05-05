@@ -105,7 +105,7 @@ constructor(
                     responseIndexes = (0 until 5).toList(),
                     page = 0,
                     group = null,
-                    start = BASE_TIMESTAMP.plusHours(5),
+                    start = BASE_TIMESTAMP.plusHours(95),
                     end = null,
                     totalMatchingRecords = 5),
                 ChatLogArgs(
