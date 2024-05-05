@@ -1,6 +1,7 @@
 package us.craigmiller160.tolkienai.server.web.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -192,19 +193,22 @@ constructor(
             pageNumber = page,
             totalRecords = totalMatchingRecords,
             logs = responseIndexes.map { logs[it] })
-    mockMvc
-        .get("/logs/chat") {
-          param("pageNumber", page.toString())
-          param("pageSize", "10")
-          start?.let { param("startTimestamp", it) }
-          end?.let { param("endTimestamp", it) }
-          group?.let { param("group", it) }
-          header("Authorization", "Bearer ${defaultUsers.primaryUser.token}")
-        }
-        .andExpect {
-          status { isOk() }
-          content { json(objectMapper.writeValueAsString(expected)) }
-        }
+    val actual =
+        mockMvc
+            .get("/logs/chat") {
+              param("pageNumber", page.toString())
+              param("pageSize", "10")
+              start?.let { param("startTimestamp", it) }
+              end?.let { param("endTimestamp", it) }
+              group?.let { param("group", it) }
+              header("Authorization", "Bearer ${defaultUsers.primaryUser.token}")
+            }
+            .andExpect { status { isOk() } }
+            .andReturn()
+            .response
+            .contentAsString
+            .let { objectMapper.readValue(it, ChatLogSearchResponse::class.java) }
+    assertThat(actual).isEqualTo(expected)
   }
 
   @ParameterizedTest(name = "searching for ingestion logs between {1} and {2} on page {0}")
