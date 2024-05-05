@@ -69,9 +69,9 @@ constructor(
                     end = BASE_TIMESTAMP.plusHours(15),
                     totalMatchingRecords = 85),
                 IngestionLogArgs(
-                    responseIndexes = (0 until 10).toList(),
+                    responseIndexes = (0 until 5).toList(),
                     page = 0,
-                    start = BASE_TIMESTAMP.plusHours(5),
+                    start = BASE_TIMESTAMP.plusHours(95),
                     end = null,
                     totalMatchingRecords = 5))
             .map { it.toArguments() }
