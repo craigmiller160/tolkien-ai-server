@@ -4,6 +4,7 @@ import java.time.ZonedDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.count
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
@@ -38,22 +39,28 @@ class IngestionLogRepository(private val mongoTemplate: MongoTemplate) {
       startTimestamp: ZonedDateTime? = null,
       endTimestamp: ZonedDateTime? = null
   ): List<IngestionLog> {
-    val query =
-        listOfNotNull(
-                startTimestamp?.let { Criteria.where("timestamp").gte(it) },
-                endTimestamp?.let { Criteria.where("timestamp").lte(it) })
-            .reduceOrNull { acc, criteria -> acc.andOperator(criteria) }
-            ?.let { Query(it) }
-            ?: Query()
+    val query = createSearchQuery(startTimestamp, endTimestamp)
 
     return mongoTemplate.find(query, IngestionLog::class.java)
   }
+
+  private fun createSearchQuery(
+      startTimestamp: ZonedDateTime? = null,
+      endTimestamp: ZonedDateTime? = null
+  ): Query =
+      listOfNotNull(
+              startTimestamp?.let { Criteria.where("timestamp").gte(it) },
+              endTimestamp?.let { Criteria.where("timestamp").lte(it) })
+          .reduceOrNull { acc, criteria -> acc.andOperator(criteria) }
+          ?.let { Query(it) }
+          ?: Query()
 
   suspend fun getCountForSearchForIngestionLogs(
       group: String? = null,
       startTimestamp: ZonedDateTime? = null,
       endTimestamp: ZonedDateTime? = null
   ): Long {
-    TODO()
+    val query = createSearchQuery(startTimestamp, endTimestamp)
+    return mongoTemplate.count(query, INGESTION_LOG_COLLECTION)
   }
 }
