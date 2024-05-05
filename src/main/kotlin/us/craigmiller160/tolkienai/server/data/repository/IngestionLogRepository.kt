@@ -1,6 +1,7 @@
 package us.craigmiller160.tolkienai.server.data.repository
 
 import java.time.ZonedDateTime
+import java.util.Date
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.data.domain.Pageable
@@ -43,6 +44,10 @@ class IngestionLogRepository(private val mongoTemplate: MongoTemplate) {
         createSearchQuery(startTimestamp, endTimestamp)
             .with(page)
             .with(Sort.by(Sort.Order.desc("timestamp")))
+    println(query.queryObject.toJson()) // TODO delete this
+    println(query.sortObject.toJson()) // TODO delete this
+    println(query.fieldsObject.toJson()) // TODO delete this
+    println(query) // TODO delete this
 
     return mongoTemplate.find(query, IngestionLog::class.java)
   }
@@ -52,8 +57,8 @@ class IngestionLogRepository(private val mongoTemplate: MongoTemplate) {
       endTimestamp: ZonedDateTime? = null
   ): Query =
       listOfNotNull(
-              startTimestamp?.let { Criteria.where("timestamp").gte(it) },
-              endTimestamp?.let { Criteria.where("timestamp").lte(it) })
+              startTimestamp?.let { Criteria.where("timestamp").gte(Date.from(it.toInstant())) },
+              endTimestamp?.let { Criteria.where("timestamp").lte(Date.from(it.toInstant())) })
           .reduceOrNull { acc, criteria -> acc.andOperator(criteria) }
           ?.let { Query(it) }
           ?: Query()
