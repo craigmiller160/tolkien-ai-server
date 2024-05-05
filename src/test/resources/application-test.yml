@@ -1,5 +1,10 @@
-spring:
+tolkienai:
+  openai:
+    key: openai-key
+  weaviate:
+    key: weaviate-key
 
+spring:
   data:
     migrations:
       weaviate:
