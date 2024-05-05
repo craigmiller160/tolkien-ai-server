@@ -7,5 +7,5 @@ interface PageRequest {
   val pageSize: Int
 }
 
-fun PageRequest.toPage(): Pageable =
-    org.springframework.data.domain.PageRequest.of(pageNumber, pageSize)
+val PageRequest.page: Pageable
+  get() = org.springframework.data.domain.PageRequest.of(pageNumber, pageSize)

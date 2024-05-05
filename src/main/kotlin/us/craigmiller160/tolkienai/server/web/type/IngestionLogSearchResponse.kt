@@ -5,6 +5,6 @@ import us.craigmiller160.tolkienai.server.data.entity.IngestionLog
 data class IngestionLogSearchResponse(
     override val pageSize: Int,
     override val pageNumber: Int,
-    override val totalRecords: Int,
+    override val totalRecords: Long,
     val logs: List<IngestionLog>
 ) : PageResponse

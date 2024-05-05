@@ -59,7 +59,6 @@ class IngestionLogRepository(private val mongoTemplate: MongoTemplate) {
           ?: Query()
 
   suspend fun getCountForSearchForIngestionLogs(
-      group: String? = null,
       startTimestamp: ZonedDateTime? = null,
       endTimestamp: ZonedDateTime? = null
   ): Long {
