@@ -46,7 +46,7 @@ class IngestionLogRepository(private val mongoTemplate: MongoTemplate) {
             ?.let { Query(it) }
             ?: Query()
 
-    TODO()
+    return mongoTemplate.find(query, IngestionLog::class.java)
   }
 
   suspend fun getCountForSearchForIngestionLogs(
