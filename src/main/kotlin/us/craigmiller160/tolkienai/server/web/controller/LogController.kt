@@ -1,5 +1,6 @@
 package us.craigmiller160.tolkienai.server.web.controller
 
+import org.springdoc.core.annotations.ParameterObject
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -13,10 +14,11 @@ import us.craigmiller160.tolkienai.server.web.type.IngestionLogSearchResponse
 @RequestMapping("/logs")
 class LogController(private val logService: LogService) {
   @GetMapping("/ingestion")
-  fun searchForIngestionLogs(request: IngestionLogSearchRequest): IngestionLogSearchResponse =
-      logService.searchForIngestionLogs(request)
+  fun searchForIngestionLogs(
+      @ParameterObject request: IngestionLogSearchRequest
+  ): IngestionLogSearchResponse = logService.searchForIngestionLogs(request)
 
   @GetMapping("/chat")
-  fun searchForChatLogs(request: ChatLogSearchRequest): ChatLogSearchResponse =
+  fun searchForChatLogs(@ParameterObject request: ChatLogSearchRequest): ChatLogSearchResponse =
       logService.searchForChatLogs(request)
 }
