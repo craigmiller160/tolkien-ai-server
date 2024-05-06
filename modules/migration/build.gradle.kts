@@ -20,6 +20,7 @@ java {
 dependencies {
     compileOnly("org.slf4j:slf4j-api:2.0.13")
     compileOnly("jakarta.annotation:jakarta.annotation-api")
+    compileOnly("org.mongodb:mongodb-driver-sync")
     compileOnly("org.springframework.boot:spring-boot")
     compileOnly("org.springframework:spring-context")
     compileOnly("org.springframework.data:spring-data-mongodb")
