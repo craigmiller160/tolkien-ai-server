@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.data.migration.other
+package us.craigmiller160.tolkienai.server.migration.other
 
 import us.craigmiller160.tolkienai.server.data.migration.Migration
 

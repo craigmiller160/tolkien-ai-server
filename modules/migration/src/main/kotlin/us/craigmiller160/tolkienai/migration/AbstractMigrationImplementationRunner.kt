@@ -4,13 +4,13 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
-import us.craigmiller160.tolkienai.server.config.MigrationImplementationProperties
-import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
+import us.craigmiller160.tolkienai.migration.config.MigrationImplementationProperties
+import us.craigmiller160.tolkienai.migration.exception.MigrationException
 
 abstract class AbstractMigrationImplementationRunner<Helper>(
     private val mongoTemplate: MongoTemplate,
     private val properties: MigrationImplementationProperties
-) : us.craigmiller160.tolkienai.migration.MigrationRunner {
+) : MigrationRunner {
   companion object {}
 
   private val log = LoggerFactory.getLogger(javaClass)
@@ -19,7 +19,7 @@ abstract class AbstractMigrationImplementationRunner<Helper>(
 
   abstract val helper: Helper
 
-  override fun run(): List<us.craigmiller160.tolkienai.migration.MigrationReport> {
+  override fun run(): List<MigrationReport> {
     if (!properties.enabled) {
       log.info("{} disabled", javaClass.simpleName)
       return listOf()
@@ -28,14 +28,10 @@ abstract class AbstractMigrationImplementationRunner<Helper>(
     log.debug("Finding and running migrations")
     val historyRecords =
         Query().with(Sort.by(Sort.Direction.ASC, "index")).let { query ->
-          mongoTemplate.find(
-              query,
-              us.craigmiller160.tolkienai.migration.MigrationHistoryRecord::class.java,
-              collectionName)
+          mongoTemplate.find(query, MigrationHistoryRecord::class.java, collectionName)
         }
 
-    return us.craigmiller160.tolkienai.migration
-        .loadMigrations<Helper>(*properties.migrationPaths.toTypedArray())
+    return loadMigrations<Helper>(*properties.migrationPaths.toTypedArray())
         .mapIndexed { index, migration ->
           val actualIndex = index + 1
           val migrationName =

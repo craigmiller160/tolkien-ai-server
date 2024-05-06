@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.data.migration
+package us.craigmiller160.tolkienai.server.migration
 
 import io.kotest.matchers.shouldBe
 import java.nio.file.Paths
@@ -6,7 +6,7 @@ import java.security.MessageDigest
 import kotlin.io.path.readBytes
 import org.apache.commons.codec.binary.Hex
 import org.junit.jupiter.api.Test
-import us.craigmiller160.tolkienai.server.data.migration.other.DummyMigration
+import us.craigmiller160.tolkienai.server.migration.other.DummyMigration
 
 class MigrationHashTest {
   @Test

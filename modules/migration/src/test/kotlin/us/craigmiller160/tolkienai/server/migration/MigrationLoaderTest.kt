@@ -1,12 +1,12 @@
-package us.craigmiller160.tolkienai.server.data.migration
+package us.craigmiller160.tolkienai.server.migration
 
 import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import org.junit.jupiter.api.Test
-import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240330__InitialMigration
-import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240331__MigrationTwo
-import us.craigmiller160.tolkienai.server.data.migration.test_migrations.V20240401__MigrationThree
-import us.craigmiller160.tolkienai.server.data.migration.test_migrations.bad.BadMockMigration
+import us.craigmiller160.tolkienai.server.migration.test_migrations.V20240330__InitialMigration
+import us.craigmiller160.tolkienai.server.migration.test_migrations.V20240331__MigrationTwo
+import us.craigmiller160.tolkienai.server.migration.test_migrations.V20240401__MigrationThree
+import us.craigmiller160.tolkienai.server.migration.test_migrations.bad.BadMockMigration
 
 class MigrationLoaderTest {
   companion object {

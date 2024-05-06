@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.data.migration
+package us.craigmiller160.tolkienai.server.migration
 
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.result.shouldBeFailure
@@ -16,8 +16,8 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import us.craigmiller160.tolkienai.server.config.MigrationImplementationProperties
 import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
-import us.craigmiller160.tolkienai.server.data.migration.other.AbstractMockMigration
-import us.craigmiller160.tolkienai.server.data.migration.test_migrations.bad.BadMockMigration
+import us.craigmiller160.tolkienai.server.migration.other.AbstractMockMigration
+import us.craigmiller160.tolkienai.server.migration.test_migrations.bad.BadMockMigration
 
 class AbstractMigrationImplementationRunnerTest {
   companion object {
