@@ -6,6 +6,7 @@ import io.swagger.v3.oas.models.SpecVersion
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.security.OAuthFlow
 import io.swagger.v3.oas.models.security.OAuthFlows
+import io.swagger.v3.oas.models.security.SecurityRequirement
 import io.swagger.v3.oas.models.security.SecurityScheme
 import io.swagger.v3.oas.models.servers.Server
 import org.springframework.beans.factory.annotation.Value
@@ -30,11 +31,18 @@ class OpenApiConfig(
         servers = createServers(server)
 
         components =
-            Components()
-                .addSecuritySchemes(
-                    "OAuth2Password", createSecurityScheme(authServerUrl, realm, clientId))
+            Components().apply {
+              addSecuritySchemes(
+                  OAUTH2_PASSWORD_SCHEME, createSecurityScheme(authServerUrl, realm, clientId))
+              addSecurityItem(createSecurityItem())
+            }
       }
 }
+
+private const val OAUTH2_PASSWORD_SCHEME = "OAuth2Password"
+
+private fun createSecurityItem(): SecurityRequirement =
+    SecurityRequirement().addList(OAUTH2_PASSWORD_SCHEME)
 
 private fun createSecurityScheme(
     authServerUrl: String,
