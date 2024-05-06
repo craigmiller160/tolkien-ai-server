@@ -3,9 +3,9 @@ package us.craigmiller160.tolkienai.migration
 import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import us.craigmiller160.tolkienai.server.config.MigrationProperties
-import us.craigmiller160.tolkienai.server.data.migration.mongo.MongoMigrationRunner
-import us.craigmiller160.tolkienai.server.data.migration.weaviate.WeaviateMigrationRunner
+import us.craigmiller160.tolkienai.migration.config.MigrationProperties
+import us.craigmiller160.tolkienai.migration.mongo.MongoMigrationRunner
+import us.craigmiller160.tolkienai.migration.weaviate.WeaviateMigrationRunner
 
 @Component
 class RootMigrationRunner(

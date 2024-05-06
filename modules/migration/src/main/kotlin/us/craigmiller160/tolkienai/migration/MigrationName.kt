@@ -1,6 +1,6 @@
 package us.craigmiller160.tolkienai.migration
 
-import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationException
+import us.craigmiller160.tolkienai.migration.exception.MigrationException
 
 data class MigrationName(val version: String, val name: String)
 
