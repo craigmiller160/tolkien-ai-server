@@ -1,0 +1,19 @@
+app_deployment:
+  appName: tolkien-ai-server
+  image: nexus-docker-craigmiller160.ddns.net/expense-tracker-api:latest
+  configMap:
+    spring.profiles.active: prod
+  onepassworditems:
+    - name:
+      itemPath:
+  ports:
+    - containerPort: 8080
+  secrets:
+    - envVariable:
+      secretName:
+      secretKey:
+  commonProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+      scheme: HTTP
