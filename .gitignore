@@ -42,3 +42,4 @@ secrets.yml
 temp/*
 .terraform
 raw/*.txt
+deploy/chart/charts
