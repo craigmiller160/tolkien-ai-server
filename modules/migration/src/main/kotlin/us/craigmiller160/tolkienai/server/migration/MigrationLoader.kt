@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.data.migration
+package us.craigmiller160.tolkienai.server.migration
 
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory

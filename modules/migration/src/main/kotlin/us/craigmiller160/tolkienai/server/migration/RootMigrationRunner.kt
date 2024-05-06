@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.data.migration
+package us.craigmiller160.tolkienai.server.migration
 
 import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory

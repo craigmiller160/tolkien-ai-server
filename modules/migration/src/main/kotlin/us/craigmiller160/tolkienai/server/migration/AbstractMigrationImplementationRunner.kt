@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.data.migration
+package us.craigmiller160.tolkienai.server.migration
 
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Sort
@@ -10,7 +10,7 @@ import us.craigmiller160.tolkienai.server.data.migration.exception.MigrationExce
 abstract class AbstractMigrationImplementationRunner<Helper>(
     private val mongoTemplate: MongoTemplate,
     private val properties: MigrationImplementationProperties
-) : MigrationRunner {
+) : us.craigmiller160.tolkienai.server.migration.MigrationRunner {
   companion object {}
 
   private val log = LoggerFactory.getLogger(javaClass)
@@ -19,7 +19,7 @@ abstract class AbstractMigrationImplementationRunner<Helper>(
 
   abstract val helper: Helper
 
-  override fun run(): List<MigrationReport> {
+  override fun run(): List<us.craigmiller160.tolkienai.server.migration.MigrationReport> {
     if (!properties.enabled) {
       log.info("{} disabled", javaClass.simpleName)
       return listOf()
@@ -28,19 +28,24 @@ abstract class AbstractMigrationImplementationRunner<Helper>(
     log.debug("Finding and running migrations")
     val historyRecords =
         Query().with(Sort.by(Sort.Direction.ASC, "index")).let { query ->
-          mongoTemplate.find(query, MigrationHistoryRecord::class.java, collectionName)
+          mongoTemplate.find(
+              query,
+              us.craigmiller160.tolkienai.server.migration.MigrationHistoryRecord::class.java,
+              collectionName)
         }
 
-    return loadMigrations<Helper>(*properties.migrationPaths.toTypedArray())
+    return us.craigmiller160.tolkienai.server.migration
+        .loadMigrations<Helper>(*properties.migrationPaths.toTypedArray())
         .mapIndexed { index, migration ->
           val actualIndex = index + 1
-          val migrationName = getMigrationName(actualIndex, migration)
+          val migrationName =
+              us.craigmiller160.tolkienai.server.migration.getMigrationName(actualIndex, migration)
           val historyRecord = getHistoryRecord(historyRecords, index)
           if (historyRecord == null) {
             log.debug("Running migration: ${migration.javaClass.name}")
             migration.migrate(helper)
             insertHistoryRecord(actualIndex, migration, migrationName)
-            return@mapIndexed MigrationReport(
+            return@mapIndexed us.craigmiller160.tolkienai.server.migration.MigrationReport(
                 migrationName = migration.javaClass.simpleName, executed = true)
           }
 
@@ -54,21 +59,22 @@ abstract class AbstractMigrationImplementationRunner<Helper>(
                 "Migration at index $actualIndex has incorrect name. Expected: ${historyRecord.name} Actual: ${migrationName.name}")
           }
 
-          if (historyRecord.hash != generateMigrationHash(migration)) {
+          if (historyRecord.hash !=
+              us.craigmiller160.tolkienai.server.migration.generateMigrationHash(migration)) {
             throw MigrationException(
                 "Migration at index $actualIndex has invalid hash. Changes are not allowed after migration is applied.")
           }
 
-          return@mapIndexed MigrationReport(
+          return@mapIndexed us.craigmiller160.tolkienai.server.migration.MigrationReport(
               migrationName = migration.javaClass.simpleName, executed = false)
         }
         .also { log.debug("All migrations completed") }
   }
 
   private fun getHistoryRecord(
-      historyRecords: List<MigrationHistoryRecord>,
+      historyRecords: List<us.craigmiller160.tolkienai.server.migration.MigrationHistoryRecord>,
       index: Int
-  ): MigrationHistoryRecord? {
+  ): us.craigmiller160.tolkienai.server.migration.MigrationHistoryRecord? {
     if (historyRecords.size > index) {
       return historyRecords[index]
     }
@@ -77,13 +83,14 @@ abstract class AbstractMigrationImplementationRunner<Helper>(
 
   private fun insertHistoryRecord(
       index: Int,
-      migration: Migration<Helper>,
-      migrationName: MigrationName
+      migration: us.craigmiller160.tolkienai.server.migration.Migration<Helper>,
+      migrationName: us.craigmiller160.tolkienai.server.migration.MigrationName
   ) =
-      MigrationHistoryRecord(
+      us.craigmiller160.tolkienai.server.migration
+          .MigrationHistoryRecord(
               index = index,
               version = migrationName.version,
               name = migrationName.name,
-              hash = generateMigrationHash(migration))
+              hash = us.craigmiller160.tolkienai.server.migration.generateMigrationHash(migration))
           .let { mongoTemplate.insert(it, collectionName) }
 }

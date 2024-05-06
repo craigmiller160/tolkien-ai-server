@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.data.migration.weaviate.migrations
+package us.craigmiller160.tolkienai.server.migration.weaviate.migrations
 
 import io.weaviate.client.v1.misc.model.InvertedIndexConfig
 import io.weaviate.client.v1.misc.model.StopwordConfig

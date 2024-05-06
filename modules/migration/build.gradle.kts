@@ -19,6 +19,8 @@ java {
 
 dependencies {
     compileOnly("org.slf4j:slf4j-api:2.0.13")
+    implementation("org.springframework.boot:spring-boot")
+    compileOnly("org.springframework:spring-context")
     compileOnly("org.springframework.data:spring-data-mongodb")
     compileOnly("io.weaviate:client:4.6.0") {
         exclude("commons-logging", "commons-logging")

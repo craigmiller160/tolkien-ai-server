@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.data.migration.mongo
+package us.craigmiller160.tolkienai.server.migration.mongo
 
 import com.mongodb.client.MongoDatabase
 import org.springframework.data.mongodb.core.MongoTemplate
