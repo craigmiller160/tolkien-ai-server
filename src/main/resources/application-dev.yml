@@ -1,6 +1,7 @@
 tolkienai:
   weaviate:
     host: craigpc:30000
+    class-name: tolkienai_dev
 
 openapi:
   server: http://localhost:8080

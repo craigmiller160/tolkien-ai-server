@@ -4,6 +4,7 @@ app_deployment:
   configMap:
     spring.profiles.active: prod
     tolkienai.weaviate.host: weaviate-service.infra-prod
+    tolkienai.weaviate.class-name: tolkienai_prod
     openapi.server: https://tolkien-ai.craigmiller160.us
     spring.data.mongodb.database: tolkienai_prod
     spring.data.mongodb.host: mongodb.infra-prod
