@@ -2,6 +2,7 @@ tolkienai:
   weaviate:
     host: craigpc:30000
 
+
 spring:
   data:
     mongodb:
