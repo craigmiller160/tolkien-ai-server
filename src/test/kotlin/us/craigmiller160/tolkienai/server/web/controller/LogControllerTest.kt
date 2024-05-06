@@ -242,6 +242,13 @@ constructor(
             .response
             .contentAsString
             .let { objectMapper.readValue(it, IngestionLogSearchResponse::class.java) }
+            .let { res ->
+              res.copy(
+                  logs =
+                      res.logs.map {
+                        it.copy(timestamp = it.timestamp.withZoneSameInstant(ZoneId.of("UTC")))
+                      })
+            }
     assertThat(actual).isEqualTo(expected)
   }
 }
