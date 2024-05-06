@@ -24,8 +24,8 @@ java {
 
 dependencyManagement {
     imports {
-        mavenBom("com.fasterxml.jackson:jackson-bom:2.17.0")
         mavenBom("org.springdoc:springdoc-openapi:2.5.0")
+        mavenBom("com.fasterxml.jackson:jackson-bom:2.17.0")
     }
 }
 
