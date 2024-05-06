@@ -4,11 +4,12 @@ import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.SpecVersion
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.servers.Server
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class OpenApiConfig {
+class OpenApiConfig(@Value("\${openapi.server}") private val server: String) {
   @Bean
   fun openApi(): OpenAPI =
       OpenAPI().apply {
@@ -22,7 +23,7 @@ class OpenApiConfig {
         servers =
             listOf(
                 Server().apply {
-                  url = "http://localhost:8080"
+                  url = server
                   description = "API Server URL"
                 })
       }
