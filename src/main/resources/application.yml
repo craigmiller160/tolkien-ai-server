@@ -36,6 +36,9 @@ spring:
         migration-paths:
           - classpath:us/craigmiller160/tolkienai/server/data/migration/weaviate/migrations
 
+    mongodb:
+      uri: mongodb://${spring.data.mongodb.username}:${spring.data.mongodb.password}@${spring.data.mongodb.host}:${spring.data.mongodb.port}/${spring.data.mongodb.database}?ssl=true&authSource=admin
+
   security:
     keycloak:
       oauth2:

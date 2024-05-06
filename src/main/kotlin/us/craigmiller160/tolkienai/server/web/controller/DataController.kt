@@ -29,5 +29,7 @@ class DataController(
 
   @GetMapping("/count") fun getRecordCount(): RecordCountResponse = dataService.getRecordCount()
 
-  @DeleteMapping fun deleteAllRecords() = dataService.deleteAllRecords()
+  @DeleteMapping
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  fun deleteAllRecords() = dataService.deleteAllRecords()
 }
