@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.migration.config
+package us.craigmiller160.tolkienai.migration.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

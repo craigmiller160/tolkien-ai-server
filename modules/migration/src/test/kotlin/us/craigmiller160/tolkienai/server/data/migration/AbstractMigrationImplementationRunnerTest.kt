@@ -184,7 +184,7 @@ class TestMigrationImplementationRunner(
     paths: List<String>,
     override val collectionName: String
 ) :
-    us.craigmiller160.tolkienai.server.migration.AbstractMigrationImplementationRunner<String>(
+    us.craigmiller160.tolkienai.migration.AbstractMigrationImplementationRunner<String>(
         mongoTemplate, MigrationImplementationProperties(true, paths)) {
   override val helper: String = ""
 }

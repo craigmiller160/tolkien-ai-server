@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.migration.weaviate
+package us.craigmiller160.tolkienai.migration.weaviate
 
 import us.craigmiller160.tolkienai.server.data.migration.Migration
 

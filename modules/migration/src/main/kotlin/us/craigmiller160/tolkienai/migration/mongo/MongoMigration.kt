@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.migration.mongo
+package us.craigmiller160.tolkienai.migration.mongo
 
 import us.craigmiller160.tolkienai.server.data.migration.Migration
 

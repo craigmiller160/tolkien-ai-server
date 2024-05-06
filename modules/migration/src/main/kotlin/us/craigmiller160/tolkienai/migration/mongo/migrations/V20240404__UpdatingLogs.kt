@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.migration.mongo.migrations
+package us.craigmiller160.tolkienai.migration.mongo.migrations
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Indexes

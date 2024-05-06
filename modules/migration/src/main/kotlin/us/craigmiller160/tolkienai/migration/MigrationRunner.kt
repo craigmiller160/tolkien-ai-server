@@ -1,4 +1,4 @@
-package us.craigmiller160.tolkienai.server.migration
+package us.craigmiller160.tolkienai.migration
 
 interface MigrationRunner {
   fun run(): List<MigrationReport>
