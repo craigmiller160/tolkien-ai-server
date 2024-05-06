@@ -19,13 +19,14 @@ import us.craigmiller160.tolkienai.server.ai.utils.COUNT_FIELD_NAME
 import us.craigmiller160.tolkienai.server.ai.utils.CREATION_TIME_UNIX_FIELD_NAME
 import us.craigmiller160.tolkienai.server.ai.utils.META_FIELD_NAME
 import us.craigmiller160.tolkienai.server.ai.utils.TEXT_FIELD_NAME
-import us.craigmiller160.tolkienai.server.ai.utils.TOLKIEN_CLASS_NAME
 import us.craigmiller160.tolkienai.server.ai.utils.dataAsMap
 import us.craigmiller160.tolkienai.server.ai.utils.getOrThrow
+import us.craigmiller160.tolkienai.server.config.WeaviateProperties
 
 @Service
 class WeaviateService(
     private val weaviateClient: WeaviateClient,
+    private val weaviateProperties: WeaviateProperties,
     private val objectMapper: ObjectMapper
 ) {
   companion object {
@@ -43,7 +44,7 @@ class WeaviateService(
             weaviateClient
                 .graphQL()
                 .get()
-                .withClassName(TOLKIEN_CLASS_NAME)
+                .withClassName(weaviateProperties.className)
                 .withFields(Field.builder().name(TEXT_FIELD_NAME).build())
                 .withNearVector(
                     NearVectorArgument.builder().vector(queryEmbedding.toTypedArray()).build())
@@ -52,7 +53,7 @@ class WeaviateService(
                 .getOrThrow()
         return@withContext objectMapper
             .convertValue(graphqlResult.dataAsMap, EmbeddingSearchResult::class.java)
-            .get[TOLKIEN_CLASS_NAME]
+            .get[weaviateProperties.className]
             ?: listOf()
       }
 
@@ -61,7 +62,7 @@ class WeaviateService(
         weaviateClient
             .data()
             .creator()
-            .withClassName(TOLKIEN_CLASS_NAME)
+            .withClassName(weaviateProperties.className)
             .withID(UUID.randomUUID().toString())
             .withProperties(mapOf(TEXT_FIELD_NAME to text))
             .withVector(embedding.toTypedArray())
@@ -81,14 +82,14 @@ class WeaviateService(
             weaviateClient
                 .graphQL()
                 .aggregate()
-                .withClassName(TOLKIEN_CLASS_NAME)
+                .withClassName(weaviateProperties.className)
                 .withFields(metaField)
                 .run()
                 .getOrThrow()
 
         return@withContext objectMapper
             .convertValue(graphqlResult.dataAsMap, GetRecordCountResult::class.java)
-            .aggregate[TOLKIEN_CLASS_NAME]
+            .aggregate[weaviateProperties.className]
             ?.first()
             ?.meta
             ?.count
@@ -127,7 +128,7 @@ class WeaviateService(
         weaviateClient
             .batch()
             .objectsBatchDeleter()
-            .withClassName(TOLKIEN_CLASS_NAME)
+            .withClassName(weaviateProperties.className)
             .withConsistencyLevel(ConsistencyLevel.ALL)
             .withWhere(where)
             .run()
