@@ -4,14 +4,27 @@ app_deployment:
   configMap:
     spring.profiles.active: prod
   onepassworditems:
-    - name:
-      itemPath:
+    - name: openai-key
+      itemPath: vaults/Home Server (Prod)/items/OpenAI Key
+    - name: weaviate-key
+      itemPath: vaults/Home Server (Prod)/items/Weaviate API Key
+    - name: mongo-root-account
+      itemPath: vaults/Home Server (Prod)/items/MongoDB Root Account
   ports:
     - containerPort: 8080
   secrets:
-    - envVariable:
-      secretName:
-      secretKey:
+    - envVariable: spring.data.mongodb.username
+      secretName: mongo-root-account
+      secretKey: username
+    - envVariable: spring.data.mongodb.password
+      secretName: mongo-root-account
+      secretKey: password
+    - envVariable: tolkienai.openai.key
+      secretName: openai-key
+      secretKey: password
+    - envVariable: tolkienai.weaviate.key
+      secretName: weaviate-key
+      secretKey: password
   commonProbe:
     httpGet:
       path: /actuator/health
