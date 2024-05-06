@@ -6,6 +6,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 import java.util.stream.Stream
 import kotlin.random.Random
@@ -35,7 +36,6 @@ import us.craigmiller160.tolkienai.server.web.type.ChatExplanation
 import us.craigmiller160.tolkienai.server.web.type.ChatLogSearchResponse
 import us.craigmiller160.tolkienai.server.web.type.ChatResponse
 import us.craigmiller160.tolkienai.server.web.type.IngestionLogSearchResponse
-import us.craigmiller160.tolkienai.server.web.type.TIMESTAMP_FORMATTER
 
 @IntegrationTest
 class LogControllerTest
@@ -259,8 +259,8 @@ private data class IngestionLogArgs(
 private fun IngestionLogArgs.toArguments(): Arguments =
     Arguments.of(
         page,
-        start?.format(TIMESTAMP_FORMATTER),
-        end?.format(TIMESTAMP_FORMATTER),
+        start?.format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
+        end?.format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
         responseIndexes,
         totalMatchingRecords)
 
@@ -276,8 +276,8 @@ private data class ChatLogArgs(
 private fun ChatLogArgs.toArguments(): Arguments =
     Arguments.of(
         page,
-        start?.format(TIMESTAMP_FORMATTER),
-        end?.format(TIMESTAMP_FORMATTER),
+        start?.format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
+        end?.format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
         group,
         responseIndexes,
         totalMatchingRecords)
