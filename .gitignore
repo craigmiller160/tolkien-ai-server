@@ -43,3 +43,5 @@ temp/*
 .terraform
 raw/*.txt
 deploy/chart/charts
+deploy/build
+deploy/*.tgz
