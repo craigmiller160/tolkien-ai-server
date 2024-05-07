@@ -5,6 +5,7 @@ app_deployment:
     spring.profiles.active: prod
     tolkienai.weaviate.host: weaviate-service.infra-prod:8080
     tolkienai.weaviate.class-name: Tolkienai_prod
+    tolkienai.raw-sources.silmarillion.path: /sources/silmarillion.txt
     openapi.server: https://tolkien-ai.craigmiller160.us
     spring.data.mongodb.database: tolkienai_prod
     spring.data.mongodb.host: mongodb.infra-prod
@@ -46,3 +47,8 @@ app_deployment:
           - path: /(.*)
             serviceName: tolkien-ai-server
             portNumber: 8080
+  volumes:
+    - name: sources-volume
+      type: HostPath
+      hostPath: /home/craig/MediaDrive/TolkienAiFiles
+      deploymentMountPath: /sources
