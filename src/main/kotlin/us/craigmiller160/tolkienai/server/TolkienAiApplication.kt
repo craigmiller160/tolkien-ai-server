@@ -24,8 +24,8 @@ private fun setupTruststore() {
           .classLoader
           .getResource("truststore.p12")!!
           .toURI()
+          .also { log.debug("TrustStore Path: {}", it) }
           .let { File(it) }
           .absolutePath
-  log.debug("TrustStore Path: {}", truststorePath)
   System.setProperty("javax.net.ssl.trustStore", truststorePath)
 }
