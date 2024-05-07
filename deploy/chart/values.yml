@@ -3,7 +3,7 @@ app_deployment:
   image: nexus-docker-craigmiller160.ddns.net/expense-tracker-api:latest
   configMap:
     spring.profiles.active: prod
-    tolkienai.weaviate.host: weaviate-service.infra-prod:50051
+    tolkienai.weaviate.host: weaviate-service.infra-prod:8080
     tolkienai.weaviate.class-name: tolkienai_prod
     openapi.server: https://tolkien-ai.craigmiller160.us
     spring.data.mongodb.database: tolkienai_prod
