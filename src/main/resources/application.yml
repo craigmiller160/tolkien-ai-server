@@ -16,7 +16,6 @@ tolkienai:
 
   raw-sources:
     silmarillion:
-      path: ${user.dir}/raw/silmarillion.txt
       exclude-lines:
         - 1-238
         - 16016-16410

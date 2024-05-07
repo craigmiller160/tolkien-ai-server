@@ -3,6 +3,10 @@ tolkienai:
     host: craigpc:30000
     class-name: Tolkienai_dev
 
+  raw-sources:
+    silmarillion:
+      path: ${user.dir}/raw/silmarillion.txt
+
 openapi:
   server: http://localhost:8080
 
