@@ -38,3 +38,11 @@ app_deployment:
       path: /actuator/health
       port: 8080
       scheme: HTTP
+  secure_ingress:
+    name: tolkien-ai-server-ingress
+    hosts:
+      - name: tolkien-ai.craigmiller160.us
+        services:
+          - path: /(.*)
+            serviceName: tolkien-ai-server
+            portNumber: 8080
