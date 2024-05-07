@@ -1,6 +1,7 @@
 package us.craigmiller160.tolkienai.server
 
 import java.io.File
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
@@ -8,6 +9,8 @@ import org.springframework.boot.runApplication
 @SpringBootApplication
 @ConfigurationPropertiesScan(basePackages = ["us.craigmiller160.tolkienai.server"])
 class TolkienAiApplication
+
+private val log = LoggerFactory.getLogger(TolkienAiApplication::class.java)
 
 fun main(args: Array<String>) {
   setupTruststore()
@@ -23,5 +26,6 @@ private fun setupTruststore() {
           .toURI()
           .let { File(it) }
           .absolutePath
+  log.debug("TrustStore Path: {}", truststorePath)
   System.setProperty("javax.net.ssl.trustStore", truststorePath)
 }

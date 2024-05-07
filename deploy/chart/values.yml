@@ -10,7 +10,7 @@ app_deployment:
     spring.data.mongodb.host: mongodb.infra-prod
     spring.data.mongodb.port: "27017"
     spring.security.keycloak.oauth2.resourceserver.realm: apps-prod
-    logging.level.us.craigmiller160.tolkienai.server: INFO
+    logging.level.us.craigmiller160.tolkienai.server: DEBUG
   onepassworditems:
     - name: openai-key
       itemPath: vaults/Home Server (Prod)/items/OpenAI Key
